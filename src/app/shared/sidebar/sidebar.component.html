@@ -1,3 +1,396 @@
-<nav class="hidden md:flex flex-col h-screen bg-gray-800 max-w-[200px]">
-    Make me collapsable on desktop too!
+<nav class="hidden md:flex flex-col h-[100vh] bg-gray-800 w-1/6 fixed z-20">
+    <div class="flex flex-col relative h-full">
+        <div class="flex flex-col overflow-y-auto kwacha-nav-menu pb-4 z-10">
+            <div 
+                class="
+                    flex flex-row p-4 items-center text-white text-sm cursor-pointer
+                    hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                "
+                [ngClass]="isMenuOpen('dashboard') ? 'bg-white text-gray-800' : ''"
+            >
+                <mat-icon
+                    fontIcon="home"
+                ></mat-icon>
+                <span class="ml-2">
+                    Dashboard
+                </span>
+            </div>
+            <div class="flex flex-col">
+                <div
+                    (click)="toggleSubmenu('stores')"
+                    class="
+                        flex flex-row p-4 justify-between items-center text-white text-sm cursor-pointer
+                        hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                    "
+                    [ngClass]="isMenuOpen('stores') ? 'bg-white text-gray-800' : ''"
+                >
+                    <div class="flex flex-row items-center">
+                        <mat-icon
+                            fontIcon="store"
+                        ></mat-icon>
+                        <span class="ml-2">
+                            Stores
+                        </span>
+                    </div>
+                    <mat-icon
+                        fontIcon="expand_more"
+                    ></mat-icon>
+                </div>
+                <div
+                    *ngIf="isMenuOpen('stores')"
+                    class="flex flex-col bg-gray-700"
+                >
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        All Stores
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Add New
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col">
+                <div
+                    (click)="toggleSubmenu('vendors')"
+                    class="
+                        flex flex-row p-4 justify-between items-center text-white text-sm cursor-pointer
+                        hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                    "
+                    [ngClass]="isMenuOpen('vendors') ? 'bg-white text-gray-800' : ''"
+                >
+                    <div class="flex flex-row items-center">
+                        <mat-icon
+                            fontIcon="verified_user"
+                        ></mat-icon>
+                        <span class="ml-2">
+                            Vendors
+                        </span>
+                    </div>
+                    <mat-icon
+                        fontIcon="expand_more"
+                    ></mat-icon>
+                </div>
+                <div
+                    *ngIf="isMenuOpen('vendors')"
+                    class="flex flex-col bg-gray-700"
+                >
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        All Vendors
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Add New
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Orders
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Customers
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Chat
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Deals
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Promotions
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Marketing
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Analytics
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Revenue
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Status
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Settings
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col">
+                <div
+                    (click)="toggleSubmenu('products')"
+                    class="
+                        flex flex-row p-4 justify-between items-center text-white text-sm cursor-pointer
+                        hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                    "
+                    [ngClass]="isMenuOpen('products') ? 'bg-white text-gray-800' : ''"
+                >
+                    <div class="flex flex-row items-center">
+                        <mat-icon
+                            fontIcon="shopping_basket"
+                        ></mat-icon>
+                        <span class="ml-2">
+                            Products
+                        </span>
+                    </div>
+                    <mat-icon
+                        fontIcon="expand_more"
+                    ></mat-icon>
+                </div>
+                <div
+                    *ngIf="isMenuOpen('products')"
+                    class="flex flex-col bg-gray-700"
+                >
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        All Products
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Add New
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Categories
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Tags
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Attributes
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Reviews
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col">
+                <div
+                    (click)="toggleSubmenu('users')"
+                    class="
+                        flex flex-row p-4 justify-between items-center text-white text-sm cursor-pointer
+                        hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                    "
+                    [ngClass]="isMenuOpen('users') ? 'bg-white text-gray-800' : ''"
+                >
+                    <div class="flex flex-row items-center">
+                        <mat-icon
+                            fontIcon="people"
+                        ></mat-icon>
+                        <span class="ml-2">
+                            Users
+                        </span>
+                    </div>
+                    <mat-icon
+                        fontIcon="expand_more"
+                    ></mat-icon>
+                </div>
+                <div
+                    *ngIf="isMenuOpen('users')"
+                    class="flex flex-col bg-gray-700"
+                >
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        All Users
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Add New
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        User Roles
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Status
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Profile
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Settings
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col">
+                <div
+                    (click)="toggleSubmenu('settings')"
+                    class="
+                        flex flex-row p-4 justify-between items-center text-white text-sm cursor-pointer
+                        hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                    "
+                    [ngClass]="isMenuOpen('settings') ? 'bg-white text-gray-800' : ''"
+                >
+                    <div class="flex flex-row items-center">
+                        <mat-icon
+                            fontIcon="settings"
+                        ></mat-icon>
+                        <span class="ml-2">
+                            Settings
+                        </span>
+                    </div>
+                    <mat-icon
+                        fontIcon="expand_more"
+                    ></mat-icon>
+                </div>
+                <div
+                    *ngIf="isMenuOpen('settings')"
+                    class="flex flex-col bg-gray-700"
+                >
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Pages
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Posts
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Media
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                    >
+                        Site Health
+                    </div>
+                </div>
+            </div>
+        </div>
+        <app-footer></app-footer>
+    </div>
 </nav>

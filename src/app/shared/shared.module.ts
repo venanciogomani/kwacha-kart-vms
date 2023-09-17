@@ -4,6 +4,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { SpinnerComponent } from './spinner/spinner.component';
+import { MatIconModule } from '@angular/material/icon';
 
 
 
@@ -15,7 +16,8 @@ import { SpinnerComponent } from './spinner/spinner.component';
         SpinnerComponent
     ],
     imports: [
-        CommonModule
+        CommonModule,
+        MatIconModule
     ],
     exports: [
         SidebarComponent,
