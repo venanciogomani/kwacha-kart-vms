@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 type SubmenuStatus = {
     [key in 'dashboard' | 'stores' | 'vendors' | 'products' | 'users' | 'settings']: boolean;
@@ -10,6 +11,8 @@ type SubmenuStatus = {
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent {
+    constructor(private router: Router) {}
+
     submenuStatus: SubmenuStatus = {
         dashboard: false,
         stores: false,
@@ -25,5 +28,9 @@ export class SidebarComponent {
 
     isMenuOpen(submenu: keyof SubmenuStatus): boolean {
         return this.submenuStatus[submenu];
+    }
+
+    navigateTo(path: string): void {
+        this.router.navigate([path]);
     }
 }

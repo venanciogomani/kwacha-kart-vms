@@ -1,27 +1,30 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HomeComponent } from './home/home.component';
-import { ProductsComponent } from './products/products.component';
-import { UsersComponent } from './users/users.component';
-import { CategoriesComponent } from './categories/categories.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { StoresModule } from './stores/stores.module';
+import { VendorsModule } from './vendors/vendors.module';
+import { ProductsModule } from './products/products.module';
+import { UsersModule } from './users/users.module';
 
 
 
 @NgModule({
     declarations: [
-        HomeComponent,
-        ProductsComponent,
-        UsersComponent,
-        CategoriesComponent
+        HomeComponent
     ],
     imports: [
-        CommonModule
+        CommonModule,
+        StoresModule,
+        VendorsModule,
+        ProductsModule,
+        UsersModule,
+        MatIconModule,
+        MatSlideToggleModule
     ],
     exports: [
-        HomeComponent,
-        ProductsComponent,
-        UsersComponent,
-        CategoriesComponent
+        HomeComponent
     ]
 })
 export class PagesModule { }

@@ -3,10 +3,11 @@
         <div class="flex flex-col overflow-y-auto kwacha-nav-menu pb-4 z-10">
             <div 
                 class="
-                    flex flex-row p-4 items-center text-white text-sm cursor-pointer
+                    flex flex-row p-4 items-center text-sm cursor-pointer
                     hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                 "
-                [ngClass]="isMenuOpen('dashboard') ? 'bg-white text-gray-800' : ''"
+                [ngClass]="isMenuOpen('dashboard') ? 'bg-white text-gray-800' : 'text-white'"
+                (click)="navigateTo('/dashboard')"
             >
                 <mat-icon
                     fontIcon="home"
@@ -19,10 +20,10 @@
                 <div
                     (click)="toggleSubmenu('stores')"
                     class="
-                        flex flex-row p-4 justify-between items-center text-white text-sm cursor-pointer
+                        flex flex-row p-4 justify-between items-center text-sm cursor-pointer
                         hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                     "
-                    [ngClass]="isMenuOpen('stores') ? 'bg-white text-gray-800' : ''"
+                    [ngClass]="isMenuOpen('stores') ? 'bg-white text-gray-800' : 'text-white'"
                 >
                     <div class="flex flex-row items-center">
                         <mat-icon
@@ -45,6 +46,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/store')"
                     >
                         All Stores
                     </div>
@@ -53,8 +55,36 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/store/add')"
                     >
                         Add New
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                        (click)="navigateTo('/store/plans')"
+                    >
+                        Plans
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                        (click)="navigateTo('/store/team')"
+                    >
+                        Team
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                        (click)="navigateTo('/store/roles')"
+                    >
+                        Roles & Permissions
                     </div>
                 </div>
             </div>
@@ -62,10 +92,10 @@
                 <div
                     (click)="toggleSubmenu('vendors')"
                     class="
-                        flex flex-row p-4 justify-between items-center text-white text-sm cursor-pointer
+                        flex flex-row p-4 justify-between items-center text-sm cursor-pointer
                         hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                     "
-                    [ngClass]="isMenuOpen('vendors') ? 'bg-white text-gray-800' : ''"
+                    [ngClass]="isMenuOpen('vendors') ? 'bg-white text-gray-800' : 'text-white'"
                 >
                     <div class="flex flex-row items-center">
                         <mat-icon
@@ -88,6 +118,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/vendors')"
                     >
                         All Vendors
                     </div>
@@ -96,6 +127,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/vendors/add')"
                     >
                         Add New
                     </div>
@@ -104,6 +136,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/vendors/orders')"
                     >
                         Orders
                     </div>
@@ -112,6 +145,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/vendors/customers')"
                     >
                         Customers
                     </div>
@@ -120,6 +154,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/vendors/chat')"
                     >
                         Chat
                     </div>
@@ -128,6 +163,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/vendors/deals')"
                     >
                         Deals
                     </div>
@@ -136,14 +172,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
-                    >
-                        Promotions
-                    </div>
-                    <div
-                        class="
-                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
-                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
-                        "
+                        (click)="navigateTo('/vendors/marketing')"
                     >
                         Marketing
                     </div>
@@ -152,6 +181,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/vendors/analytics')"
                     >
                         Analytics
                     </div>
@@ -160,6 +190,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/vendors/revenue')"
                     >
                         Revenue
                     </div>
@@ -168,6 +199,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/vendors/status')"
                     >
                         Status
                     </div>
@@ -176,6 +208,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/vendors/settings')"
                     >
                         Settings
                     </div>
@@ -185,10 +218,10 @@
                 <div
                     (click)="toggleSubmenu('products')"
                     class="
-                        flex flex-row p-4 justify-between items-center text-white text-sm cursor-pointer
+                        flex flex-row p-4 justify-between items-center text-sm cursor-pointer
                         hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                     "
-                    [ngClass]="isMenuOpen('products') ? 'bg-white text-gray-800' : ''"
+                    [ngClass]="isMenuOpen('products') ? 'bg-white text-gray-800' : 'text-white'"
                 >
                     <div class="flex flex-row items-center">
                         <mat-icon
@@ -211,6 +244,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/products')"
                     >
                         All Products
                     </div>
@@ -219,6 +253,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/products/add')"
                     >
                         Add New
                     </div>
@@ -227,6 +262,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/products/categories')"
                     >
                         Categories
                     </div>
@@ -235,6 +271,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/products/tags')"
                     >
                         Tags
                     </div>
@@ -243,6 +280,16 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/products/brands')"
+                    >
+                        Brands
+                    </div>
+                    <div
+                        class="
+                            text-white bg-transparent text-sm px-4 py-2 cursor-pointer
+                            hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
+                        "
+                        (click)="navigateTo('/products/attributes')"
                     >
                         Attributes
                     </div>
@@ -251,6 +298,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('products/reviews')"
                     >
                         Reviews
                     </div>
@@ -260,10 +308,10 @@
                 <div
                     (click)="toggleSubmenu('users')"
                     class="
-                        flex flex-row p-4 justify-between items-center text-white text-sm cursor-pointer
+                        flex flex-row p-4 justify-between items-center text-sm cursor-pointer
                         hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                     "
-                    [ngClass]="isMenuOpen('users') ? 'bg-white text-gray-800' : ''"
+                    [ngClass]="isMenuOpen('users') ? 'bg-white text-gray-800' : 'text-white'"
                 >
                     <div class="flex flex-row items-center">
                         <mat-icon
@@ -286,6 +334,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/users')"
                     >
                         All Users
                     </div>
@@ -294,6 +343,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/users/add')"
                     >
                         Add New
                     </div>
@@ -302,6 +352,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/users/roles')"
                     >
                         User Roles
                     </div>
@@ -310,6 +361,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/users/status')"
                     >
                         Status
                     </div>
@@ -318,6 +370,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('/users/profile')"
                     >
                         Profile
                     </div>
@@ -326,6 +379,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('users/settings')"
                     >
                         Settings
                     </div>
@@ -335,10 +389,10 @@
                 <div
                     (click)="toggleSubmenu('settings')"
                     class="
-                        flex flex-row p-4 justify-between items-center text-white text-sm cursor-pointer
+                        flex flex-row p-4 justify-between items-center text-sm cursor-pointer
                         hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                     "
-                    [ngClass]="isMenuOpen('settings') ? 'bg-white text-gray-800' : ''"
+                    [ngClass]="isMenuOpen('settings') ? 'bg-white text-gray-800' : 'text-white'"
                 >
                     <div class="flex flex-row items-center">
                         <mat-icon
@@ -361,6 +415,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('settings/pages')"
                     >
                         Pages
                     </div>
@@ -369,6 +424,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('settings/posts')"
                     >
                         Posts
                     </div>
@@ -377,6 +433,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('settings/media')"
                     >
                         Media
                     </div>
@@ -385,6 +442,7 @@
                             text-white bg-transparent text-sm px-4 py-2 cursor-pointer
                             hover:bg-white hover:text-gray-800 transition duration-300 ease-in-out
                         "
+                        (click)="navigateTo('settings/health')"
                     >
                         Site Health
                     </div>
