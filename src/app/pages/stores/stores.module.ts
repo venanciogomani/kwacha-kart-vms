@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AddStoreComponent } from './add-store/add-store.component';
 import { StoreTeamComponent } from './store-team/store-team.component';
@@ -9,7 +10,6 @@ import { UpdateStoreComponent } from './update-store/update-store.component';
 import { StoresComponent } from './stores.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { RouterModule } from '@angular/router';
 
 
 
@@ -26,6 +26,7 @@ import { RouterModule } from '@angular/router';
   imports: [
     CommonModule,
     MatIconModule,
+    FormsModule,
     MatSlideToggleModule
   ],
   exports: [

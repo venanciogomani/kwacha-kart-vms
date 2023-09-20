@@ -9,6 +9,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from './shared/shared.module';
 import { PagesModule } from './pages/pages.module';
 import { ErrorsModule } from './errors/errors.module';
+import { StoreModule } from '@ngrx/store';
+import { storesReducer } from 'src/state/reducers/stores.reducer';
 
 @NgModule({
   declarations: [
@@ -20,7 +22,10 @@ import { ErrorsModule } from './errors/errors.module';
     PagesModule,
     ErrorsModule,
     AppRoutingModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    StoreModule.forRoot({
+      stores: storesReducer
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]
