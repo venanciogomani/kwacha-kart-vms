@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { StoresModel } from "src/state";
 import { loadStoresSuccess } from "src/state/actions/stores.actions";
-import { Stores, Vendors, Plans } from "src/state/dataset";
+import { Stores } from "src/state/dataset";
 import { StoresState } from "src/state/reducers/stores.reducer";
 
 @Injectable(
@@ -21,6 +21,10 @@ export class StoreApiService {
         }
         
         this.store.dispatch(loadStoresSuccess(initialState.stores));
+    }
+
+    getAllStores() {
+        return Stores;
     }
 
     getStoreById(id: string): StoresModel {

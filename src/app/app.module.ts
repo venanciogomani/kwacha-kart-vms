@@ -15,6 +15,7 @@ import { StoreModule } from '@ngrx/store';
 import { storesReducer } from 'src/state/reducers/stores.reducer';
 import { plansReducer } from 'src/state/reducers/plans.reducer';
 import { rolesReducer } from 'src/state/reducers/roles.reducer';
+import { vendorsReducer } from 'src/state/reducers/vendors.reducer';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { rolesReducer } from 'src/state/reducers/roles.reducer';
     StoreModule.forRoot({
       stores: storesReducer,
       plans: plansReducer,
-      roles: rolesReducer
+      roles: rolesReducer,
+      vendors: vendorsReducer,
     })
   ],
   providers: [],

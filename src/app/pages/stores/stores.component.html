@@ -141,18 +141,14 @@
                                 </th>
                                 <td class="px-2 py-4">
                                     <select class="p-2 w-full border-2">
-                                        <option value="1">Venancio</option>
-                                        <option value="2">Wendy</option>
-                                        <option value="3">Jasmine</option>
+                                        <option value="0" disabled>Select a Vendor</option>
+                                        <option *ngFor="let vendor of allVendors" [value]="vendor.id">{{ vendor.name }}</option>
                                     </select>
                                 </td>
                                 <td class="px-2 py-4">
                                     <select class="p-2 w-full border-2">
-                                        <option value="1">Free</option>
-                                        <option value="2">Basic</option>
-                                        <option value="3">Standard</option>
-                                        <option value="4">Premium</option>
-                                        <option value="5">Enterprise</option>
+                                        <option value="0" disabled>Select a Plan</option>
+                                        <option *ngFor="let plan of allPlans" [value]="plan.id">{{ plan.name }}</option>
                                     </select>
                                 </td>
                                 <td class="px-2 py-4">
@@ -230,22 +226,20 @@
                                             {{ getVendorById(store.vendorId)?.phone }}
                                         </span>
                                     </div>
-                                    <select *ngIf="isEditRow(store.id)" class="p-2 w-full border-2">
-                                        <option value="1">Venancio</option>
-                                        <option value="2">Wendy</option>
-                                        <option value="3">Jasmine</option>
+                                    <select class="p-2 w-full border-2" *ngIf="isEditRow(store.id)">
+                                        <option value="0" disabled>Select a Vendor</option>
+                                        <option [value]="getVendorById(store.vendorId)?.id" selected>{{ getVendorById(store.vendorId)?.name }}</option>
+                                        <option *ngFor="let vendor of allVendors" [value]="vendor.id">{{ vendor.name }}</option>
                                     </select>
                                 </td>
                                 <td class="px-2 py-4">
                                     <span *ngIf="!isEditRow(store.id)">
                                         {{ getPlanById(store.planId)?.name }}
                                     </span>
-                                    <select *ngIf="isEditRow(store.id)" class="p-2 w-full border-2">
-                                        <option value="1">Free</option>
-                                        <option value="2">Basic</option>
-                                        <option value="3">Standard</option>
-                                        <option value="4">Premium</option>
-                                        <option value="5">Enterprise</option>
+                                    <select class="p-2 w-full border-2" *ngIf="isEditRow(store.id)">
+                                        <option value="0" disabled>Select a Plan</option>
+                                        <option [value]="getPlanById(store.planId)?.id" selected>{{ getPlanById(store.planId)?.name }}</option>
+                                        <option *ngFor="let plan of allPlans" [value]="plan.id">{{ plan.name }}</option>
                                     </select>
                                 </td>
                                 <td class="px-2 py-4">

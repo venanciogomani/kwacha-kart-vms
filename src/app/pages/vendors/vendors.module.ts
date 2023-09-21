@@ -1,4 +1,7 @@
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { CommonModule } from '@angular/common';
 import { ViewVendorComponent } from './view-vendor/view-vendor.component';
 import { VendorOrdersComponent } from './vendor-orders/vendor-orders.component';
@@ -29,7 +32,10 @@ import { VendorsComponent } from './vendors.component';
     VendorSettingsComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    FormsModule,
+    MatIconModule,
+    MatSlideToggleModule
   ],
   exports: [
     VendorsComponent,

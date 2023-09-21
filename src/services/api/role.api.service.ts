@@ -22,6 +22,10 @@ export class RoleApiService {
         this.store.dispatch(loadRolesSuccess(initialState.roles));
     }
 
+    getAllRoles() {
+        return Roles;
+    }
+
     getRoleById(id: string) {
         const role = Roles.filter(role => role.id === id);
 

@@ -80,8 +80,16 @@ export class StoresComponent {
         return this.vendorApiService.getVendorById(id);
     }
 
+    get allVendors() {
+        return this.vendorApiService.getAllVendors();
+    }
+
     getPlanById(id: string) {
         return this.planApiService.getPlanById(id);
+    }
+
+    get allPlans() {
+        return this.planApiService.getAllPlans();
     }
 
     filterStoresBySearchTerm() {

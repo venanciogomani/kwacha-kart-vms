@@ -22,6 +22,10 @@ export class PlanApiService {
         this.store.dispatch(loadPlansSuccess(initialState.plans));
     }
 
+    getAllPlans() {
+        return Plans;
+    }
+
     getPlanById(id: string) {
         const plan = Plans.filter(plan => plan.id === id);
 
