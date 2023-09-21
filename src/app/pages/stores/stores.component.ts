@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { PlanApiService } from 'src/services/api/plan.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
@@ -44,7 +45,7 @@ export class StoresComponent {
     sortDirection = 'asc';
 
     constructor(
-        private storeApiService: StoreApiService,
+        private router: Router,
         private vendorApiService: VendorApiService,
         private planApiService: PlanApiService,
         private store: Store<{ stores: StoresState[] }>,
@@ -59,7 +60,6 @@ export class StoresComponent {
     }
 
     ngOnInit(): void {
-        this.storeApiService.createInitialStoresState();
         this.filterStoresBySearchTerm();
         this.totalStores = this.stores$.length;
     }
@@ -90,13 +90,12 @@ export class StoresComponent {
 
         if (!this.searchTerm) {
             this.fileterdStores$ = this.stores$.slice(this.startIndex, this.endIndex);
+        } else {
+            this.fileterdStores$ = this.stores$.filter(store => {
+                return store.name.toLowerCase().includes(this.searchTerm.toLowerCase());
+            }).slice(this.startIndex, this.endIndex);
         }
-
-        const storesSearchResult = this.stores$.filter(store => {
-            return store.name.toLowerCase().includes(this.searchTerm.toLowerCase());
-        });
-
-        this.fileterdStores$ = storesSearchResult.slice(this.startIndex, this.endIndex);
+        
         this.calculateTotalPages();
     }
 
@@ -151,5 +150,9 @@ export class StoresComponent {
 
     get pagesArray(): number[] {
         return Array.from({length: this.totalPages}, (_, i) => i + 1);
+    }
+
+    toggleViewStore(id: string) {
+        this.router.navigate([`/store/view/${id}`]);
     }
 }

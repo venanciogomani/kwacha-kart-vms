@@ -8,6 +8,11 @@ export const selectStores = createSelector(
     (state: StoresState) => state.stores
 );
 
+export const selectStoreById = (id: string) => createSelector(
+    selectStoresState,
+    (state: StoresState) => state.stores.find(store => store.id === id)
+);
+
 export const selectLoading = createSelector(
     selectStoresState,
     (state: StoresState) => state.loading

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { UpdateVendorComponent } from './update-vendor.component';
+import { FloatingMenuComponent } from './floating-menu.component';
 
-describe('UpdateVendorComponent', () => {
-  let component: UpdateVendorComponent;
-  let fixture: ComponentFixture<UpdateVendorComponent>;
+describe('FloatingMenuComponent', () => {
+  let component: FloatingMenuComponent;
+  let fixture: ComponentFixture<FloatingMenuComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ UpdateVendorComponent ]
+      declarations: [ FloatingMenuComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(UpdateVendorComponent);
+    fixture = TestBed.createComponent(FloatingMenuComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

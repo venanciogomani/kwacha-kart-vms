@@ -1,1 +1,330 @@
-<p>store-plans works!</p>
+<div class="p-4 flex flex-col">
+    <div class="flex flex-row px-4 items-center">
+        <h1 class="text-gray-700 text-lg md:text-2xl font-black">
+            Subscription Plans
+        </h1>
+        <button class="py-2 px-4 text-sm bg-emerald-700 text-white ml-2 rounded-lg inline-block md:hidden">
+            Add Plan
+        </button>
+    </div>
+    <div class="w-full p-4 flex flex-col">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div class="p-2" *ngFor="let plans of filteredPlans$">
+                <div class="p-3 flex flex-row items-center justify-between bg-white rounded-xl shadow-md">
+                    <div class="flex flex-col">
+                        <span class="text-gray-500 text-sm">
+                            {{ plans.name }} Plan
+                        </span>
+                        <div class="flex flex-row items-center font-semibold">
+                            <span class="text-2xl text-gray-700 font-black">
+                                {{ getStoresByPlanId(plans.id).length }}
+                            </span>
+                            <span class="text-xs text-gray-500 ml-2">
+                                Stores
+                            </span>
+                        </div>
+                    </div>
+                    <div class="bg-gray-100 rounded-full p-4 flex justify-center items-center">
+                        <mat-icon
+                            fontIcon="list_alt"
+                            class="text-gray-500/70"
+                        ></mat-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="w-full flex flex-row items-center justify-between pt-4">
+            <div class="flex flex-row items-center">
+                <input
+                    type="text"
+                    class="
+                        py-3 px-3 text-sm
+                        text-gray-600 focus:outline-none border-2 border-gray-200 mr-2
+                        max-w-full md:max-w-[500px] min-w-[300px] md:min-w-[300px]
+                    "
+                    placeholder="Search for subscription plan"
+                    (input)="filterPlanBySearchTerm()"
+                    [(ngModel)]="searchTerm"
+                />
+                <button
+                    class="
+                        bg-emerald-600 py-3 px-3 rounded-lg text-sm
+                        text-white focus:outline-none"
+                >
+                    Search
+                </button>
+            </div>
+            <button
+                (click)="toggleAddPlanModal()"
+                class="
+                    bg-transparent py-3 px-4 text-sm border-2 border-gray-700
+                    text-gray-700 hover:bg-gray-700 hover:border-gray-700 hover:text-white
+                    transition duration-200 ease-in-out hidden md:flex
+                "
+            >
+                Add Plan
+            </button>
+        </div>
+        <div class="flex flex-col py-2">
+            <!-- Desktop table -->
+            <div class="relative overflow-x-auto shadow-md hidden md:block">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-white text-black dark:text-white border-b dark:bg-gray-700 dark:border-gray-700">
+                        <tr>
+                            <th scope="col" class="p-4">
+                                <div class="flex items-center">
+                                    <input 
+                                        type="checkbox"
+                                        class="w-4 h-4
+                                        text-gray-600
+                                        bg-gray-100
+                                        border-gray-300
+                                        rounded
+                                        focus:ring-gray-500
+                                        dark:focus:ring-gray-600
+                                        dark:ring-offset-gray-800
+                                        dark:focus:ring-offset-gray-800
+                                        focus:ring-2
+                                        dark:bg-gray-700
+                                        dark:border-gray-600"
+                                    />
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3 cursor-pointer" (click)="sortBy('name')">
+                                <div class="flex flex-row items-center w-full">
+                                    NAME
+                                    <mat-icon
+                                        fontIcon="arrow_drop_down"
+                                    ></mat-icon>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                DESCRIPTION
+                            </th>
+                            <th scope="col" class="px-6 py-3 cursor-pointer" (click)="sortBy('price')">
+                                <div class="flex flex-row items-center">
+                                    PRICE
+                                    <mat-icon
+                                        fontIcon="arrow_drop_down"
+                                    ></mat-icon>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3 cursor-pointer" (click)="sortBy('billingCycle')">
+                                <div class="flex flex-row items-center">
+                                    BILLING CYCLE
+                                    <mat-icon
+                                        fontIcon="arrow_drop_down"
+                                    ></mat-icon>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3 cursor-pointer" (click)="sortBy('status')">
+                                <div class="flex flex-row items-center w-full">
+                                    STATUS
+                                    <mat-icon
+                                        fontIcon="arrow_drop_down"
+                                    ></mat-icon>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                ACTIONS
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                        <tr class="border-b" *ngFor="let plan of filteredPlans$">
+                            <td class="w-4 p-4">
+                                <div class="flex items-center">
+                                    <input 
+                                        type="checkbox"
+                                        class="w-4 h-4
+                                        text-gray-600
+                                        bg-gray-100
+                                        border-gray-300
+                                        rounded
+                                        focus:ring-gray-500
+                                        dark:focus:ring-gray-600
+                                        dark:ring-offset-gray-800
+                                        dark:focus:ring-offset-gray-800
+                                        focus:ring-2
+                                        dark:bg-gray-700
+                                        dark:border-gray-600
+                                        font-normal
+                                        "
+                                    />
+                                </div>
+                            </td>
+                            <th scope="row" class="px-6 py-4">
+                                {{ plan.name }}
+                            </th>
+                            <td class="px-6 py-4">
+                                {{ plan.description }}
+                            </td>
+                            <td class="px-6 py-4">
+                                ZK{{ plan.price }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ plan.billingCycle }}
+                            </td>
+                            <td class="px-6 py-4 w-14">
+                                <mat-slide-toggle
+                                    [checked]="plan.status"
+                                >
+                                    {{ plan.status ? 'Active' : 'Inactive' }}
+                                </mat-slide-toggle>
+                            </td>
+                            <td class="px-6 py-4 relative">
+                                <div class="flex flex-row justify-between items-center">
+                                    <mat-icon
+                                        (click)="toggleEditPlanModal(plan)"
+                                        class="cursor-pointer text-yellow-400"
+                                        fontIcon="edit"
+                                    ></mat-icon>
+                                    <mat-icon
+                                        class="cursor-pointer text-rose-600"
+                                        fontIcon="delete"
+                                    ></mat-icon>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr *ngIf="filteredPlans$.length === 0">
+                            <td colspan="8" class="text-center py-4 text-gray-600">
+                                No plans found
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- mobile table -->
+            <div></div>
+            <!-- Pagination -->
+            <div class="flex-row items-center justify-between my-4 flex" *ngIf="totalPlans > pageSize">
+                <div>
+                    <span class="text-sm text-gray-700">{{ startIndex + 1 }} - {{ endIndex }} of {{ totalPlans }}</span>
+                </div>
+                <div class="flex flex-row border-2">
+                    <span 
+                        class="p-2 border-r-2 cursor-pointer bg-transparent hover:bg-gray-100 transition duration-200 ease-in-out"
+                        (click)="goToFirstPage()"
+                    >
+                        First
+                    </span>
+                    <span 
+                        class="p-2 border-r-2 cursor-pointer bg-transparent hover:bg-gray-100 transition duration-200 ease-in-out"
+                        (click)="goToPrevPage()"
+                    >
+                        Prev
+                    </span>
+                    <ng-container *ngFor="let page of pagesArray">
+                        <span
+                            class="py-2 px-4 border-r-2 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out"
+                            [ngClass]="{ 'bg-gray-700 text-white': page === currentPage, 'bg-transparent text-gray-700': page !== currentPage }"
+                            (click)="setPage(page)"
+                        >
+                            {{ page }}
+                        </span>
+                    </ng-container>
+                    <span
+                        class="p-2 border-r-2 cursor-pointer bg-transparent hover:bg-gray-100 transition duration-200 ease-in-out"
+                        (click)="goToNextPage()"
+                    >
+                        Next
+                    </span>
+                    <span 
+                        class="p-2 cursor-pointer bg-transparent hover:bg-gray-100 transition duration-200 ease-in-out"
+                        (click)="goToLastPage()"
+                    >
+                        Last
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Plan Modal -->
+<app-modal>
+    <!-- Modal header -->
+    <div class="flex items-start justify-between px-4 py-3 border-b rounded-t">
+        <h3 class="text-lg font-semibold text-gray-700">
+            {{ planEdit.name ? 'Edit ' + planEdit.name : 'Add Subscription' }} Plan
+        </h3>
+        <button
+            (click)="toggleAddPlanModal()"
+            class="text-gray-400"
+        >
+            <mat-icon
+                fontIcon="close"
+            ></mat-icon>
+        </button>
+    </div>
+    <!-- Modal body -->
+    <div class="p-4 grid grid-cols-2">
+        <div class="flex flex-col p-2">
+            <span class="text-gray-500 text-sm font-semibold mb-2">Name</span>
+            <input
+                type="text"
+                class="
+                    py-2 px-3 text-sm w-full
+                    text-gray-600 focus:outline-none border-2 border-gray-200 mr-2
+                "
+                placeholder="Free"
+                [(ngModel)]="planEdit.name"
+            />
+        </div>
+        <div class="flex flex-col p-2">
+            <span class="text-gray-500 text-sm font-semibold mb-2">Description</span>
+            <input
+                type="text"
+                class="
+                    py-2 px-3 text-sm w-full
+                    text-gray-600 focus:outline-none border-2 border-gray-200 mr-2
+                "
+                placeholder="Free plan for all stores"
+                [(ngModel)]="planEdit.description"
+            />
+        </div>
+        <div class="flex flex-col p-2">
+            <span class="text-gray-500 text-sm font-semibold mb-2">Price</span>
+            <input
+                type="number"
+                class="
+                    py-2 px-3 text-sm w-full
+                    text-gray-600 focus:outline-none border-2 border-gray-200 mr-2
+                "
+                placeholder="0.00"
+                [(ngModel)]="planEdit.price"
+            />
+        </div>
+        <div class="flex flex-col p-2">
+            <span class="text-gray-500 text-sm font-semibold mb-2">Billing Cycle</span>
+            <select class="p-2 w-full border-2" [(ngModel)]="planEdit.billingCycle">
+                <option value="0">None</option>
+                <option value="1">Monthly</option>
+                <option value="3">3 Months</option>
+                <option value="6">6 Months</option>
+                <option value="12">Annually</option>
+                <option value="13">Custom</option>
+            </select>
+        </div>
+        <div class="flex flex-col p-2">
+            <span class="text-gray-500 text-sm font-semibold mb-2">Status</span>
+            <mat-slide-toggle>
+                Inactive
+            </mat-slide-toggle>
+        </div>
+    </div>
+    <!-- Modal footer -->
+    <div class="flex items-center justify-end px-4 py-3 border-t border-gray-200">
+        <button 
+            class="text-gray-600 text-sm mr-2 bg-transparent px-4 py-2 rounded-lg border-2 border-gray-600"
+        >
+            Publish
+        </button>
+        <button
+            (click)="toggleAddPlanModal()"
+            class="text-white text-sm bg-rose-600 px-4 py-2 rounded-lg hover:bg-rose-500 transition duration-200 ease-in-out"
+        >
+            Cancel
+        </button>
+    </div>
+</app-modal>

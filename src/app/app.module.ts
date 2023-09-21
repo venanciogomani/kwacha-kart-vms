@@ -6,11 +6,14 @@ import { AppComponent } from './app.component';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
+import { MatIconModule } from '@angular/material/icon';
+
 import { SharedModule } from './shared/shared.module';
 import { PagesModule } from './pages/pages.module';
 import { ErrorsModule } from './errors/errors.module';
 import { StoreModule } from '@ngrx/store';
 import { storesReducer } from 'src/state/reducers/stores.reducer';
+import { plansReducer } from 'src/state/reducers/plans.reducer';
 
 @NgModule({
   declarations: [
@@ -18,13 +21,15 @@ import { storesReducer } from 'src/state/reducers/stores.reducer';
   ],
   imports: [
     BrowserModule,
+    MatIconModule,
     SharedModule,
     PagesModule,
     ErrorsModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     StoreModule.forRoot({
-      stores: storesReducer
+      stores: storesReducer,
+      plans: plansReducer
     })
   ],
   providers: [],

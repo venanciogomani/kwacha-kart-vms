@@ -1,1 +1,411 @@
-<p>view-store works!</p>
+<div class="p-4 flex flex-col">
+    <div class="flex flex-row px-4 items-center mb-2">
+        <span class="text-gray-700 text-xl font-semibold">
+            {{ singleStore$.name }}
+        </span>
+        <button class="py-2 px-4 text-sm bg-emerald-700 text-white ml-2 rounded-lg inline-block md:hidden">
+            Edit Store
+        </button>
+    </div>
+    <div class="w-full px-4 flex flex-col">
+        <div class="py-2 px-3 bg-white rounded-lg flex flex-col shadow-md">
+            <div class="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div class="p-4 flex flex-row items-center">
+                    <mat-icon
+                        fontIcon="account_balance_wallet"
+                        class="text-gray-600 mr-2"
+                    ></mat-icon>
+                    <div class="flex flex-col">
+                        <span class="text-sm text-gray-600">
+                            Main Balance
+                        </span>
+                        <span class="text-2xl text-gray-700 font-semibold">
+                            ZK673,412.00
+                        </span>
+                    </div>
+                </div>
+                <div class="p-4 flex flex-col">
+                    <span class="text-gray-500 text-sm">
+                        Valid Through
+                    </span>
+                    <span class="font-semibold text-gray-600">
+                        08/23
+                    </span>
+                </div>
+                <div class="p-4 flex flex-col">
+                    <span class="text-gray-500 text-sm">
+                        Account Holder
+                    </span>
+                    <span class="font-semibold text-gray-600">
+                        Venancio Gomani
+                    </span>
+                </div>
+                <div class="p-4 flex flex-col">
+                    <span class="text-gray-500 text-sm">
+                        Payment To
+                    </span>
+                    <span class="font-semibold text-gray-600">
+                        Airtel: 0977 *** ***
+                    </span>
+                </div>
+                <mat-icon
+                    (click)="toggleEdit()"
+                    fontIcon="more_vert"
+                    class="absolute top-2 right-2 text-gray-500 cursor-pointer"
+                ></mat-icon>
+                <div 
+                    [ngClass]="showEdit ? 'block' : 'hidden'"
+                    class="bg-white border-2 border-gray-100 shadow-md absolute top-6 right-6 rounded-lg z-10 flex flex-col"
+                >
+                    <div
+                        class="
+                            flex flex-row items-center justify-between w-[100px] py-2 cursor-pointer border-b border-gray-200
+                            hover:bg-gray-100 transition duration-300 ease-in-out
+                        "
+                    >
+                        <span class="text-gray-700 pl-2">
+                            Edit
+                        </span>
+                        <mat-icon
+                            fontIcon="edit"
+                            class="text-gray-600 mr-2 mt-1 text-sm"
+                        ></mat-icon>
+                    </div>
+                    <div 
+                        class="
+                            flex flex-row items-center justify-between w-[100px] py-2 cursor-pointer
+                            hover:bg-gray-100 transition duration-300 ease-in-out
+                        "
+                    >
+                        <span class="text-rose-600 pl-2">
+                            Delete
+                        </span>
+                        <mat-icon
+                            fontIcon="delete"
+                            class="text-rose-600 mr-2 mt-1 text-sm"
+                        ></mat-icon>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 w-full">
+                <div class="relative w-full h-4 bg-gray-100 rounded-full">
+                    <div
+                        class="absolute top-0 h-4 bg-emerald-400 rounded-full"
+                        style="width: 50%"
+                    ></div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-2">
+                <div class="p-2">
+                    <div 
+                        class="
+                            flex flex-row items-center justify-center bg-rose-50 rounded-xl p-2
+                            hover:bg-rose-100 cursor-pointer transition duration-300 ease-in-out
+                        "
+                    >
+                        <div 
+                            class="
+                                border-4 border-rose-500 text-sm
+                                w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md text-rose-500 font-semibold
+                            "
+                        >
+                            24%
+                        </div>
+                        <div class="flex flex-grow flex-col ml-3">
+                            <span class="text-gray-600 text-sm font-semibold">
+                                Products Sold
+                            </span>
+                            <span class="text-gray-400">
+                                1,200
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-2">
+                    <div 
+                        class="
+                            flex flex-row items-center justify-center bg-green-50 rounded-xl p-2
+                            hover:bg-green-100 cursor-pointer transition duration-300 ease-in-out
+                        "
+                    >
+                        <div 
+                            class="
+                                border-4 border-green-500 text-sm
+                                w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md text-green-500 font-semibold
+                            "
+                        >
+                            24%
+                        </div>
+                        <div class="flex flex-grow flex-col ml-3">
+                            <span class="text-gray-600 text-sm font-semibold">
+                                Orders
+                            </span>
+                            <span class="text-gray-400">
+                                20
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-2">
+                    <div 
+                        class="
+                            flex flex-row items-center justify-center bg-yellow-50 rounded-xl p-2
+                            hover:bg-yellow-100 cursor-pointer transition duration-300 ease-in-out
+                        "
+                    >
+                        <div 
+                            class="
+                                border-4 border-yellow-500 text-sm
+                                w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md text-yellow-500 font-semibold
+                            "
+                        >
+                            24%
+                        </div>
+                        <div class="flex flex-grow flex-col ml-3">
+                            <span class="text-gray-600 text-sm font-semibold">
+                                Available Stock
+                            </span>
+                            <span class="text-gray-400">
+                                200
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-2">
+                    <div 
+                        class="
+                            flex flex-row items-center justify-center bg-purple-50 rounded-xl p-2
+                            hover:bg-purple-100 cursor-pointer transition duration-300 ease-in-out
+                        "
+                    >
+                        <div 
+                            class="
+                                border-4 border-purple-500 text-sm
+                                w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md text-purple-500 font-semibold
+                            "
+                        >
+                            24%
+                        </div>
+                        <div class="flex flex-grow flex-col ml-3">
+                            <span class="text-gray-600 text-sm font-semibold">
+                                Withdrawals
+                            </span>
+                            <span class="text-gray-400">
+                                ZK1,200
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="w-full flex flex-row my-4">
+        <div class="w-full md:w-2/3 px-4 flex flex-col">
+            <div class="py-2 px-3 bg-white rounded-lg flex flex-col">
+                <div class="flex flex-row items-center justify-between px-3 pt-3">
+                    <div class="flex flex-col">
+                        <span class="font-semibold text-gray-600 text-lg">
+                            {{ transactionTitle }}
+                        </span>
+                        <span class="text-xs text-gray-500">
+                            All transactions made in the last 30 days
+                        </span>
+                    </div>
+                    <div class="hidden md:flex flex-row items-center bg-gray-100 rounded-full">
+                        <div
+                            (click)="setTransactionType('all')"
+                            class="py-2 px-3 rounded-full text-xs cursor-pointer transition duration-300 ease-in-out"
+                            [ngClass]="transactionType === 'all' ? 'bg-emerald-500 text-white font-semibold' : 'text-gray-500'"
+                        >
+                            All
+                        </div>
+                        <div
+                            (click)="setTransactionType('orders')"
+                            class="py-2 px-3 rounded-full text-xs cursor-pointer transition duration-300 ease-in-out"
+                            [ngClass]="transactionType === 'orders' ? 'bg-emerald-500 text-white font-semibold' : 'text-gray-500'"
+                        >
+                            Orders
+                        </div>
+                        <div
+                            (click)="setTransactionType('stock')"
+                            class="py-2 px-3 rounded-full text-xs cursor-pointer transition duration-300 ease-in-out"
+                            [ngClass]="transactionType === 'stock' ? 'bg-emerald-500 text-white font-semibold' : 'text-gray-500'"
+                        >
+                            Stock
+                        </div>
+                        <div
+                            (click)="setTransactionType('deductions')"
+                            class="py-2 px-3 rounded-full text-xs cursor-pointer transition duration-300 ease-in-out"
+                            [ngClass]="transactionType === 'deductions' ? 'bg-emerald-500 text-white font-semibold' : 'text-gray-500'"
+                        >
+                            Deductions
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col mt-3">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 items-center first:py-0 py-2">
+                        <img
+                            src="../../../assets/img/female_placeholder.png"
+                            alt="customer placeholder"
+                            class="w-16 h-auto rounded-full hidden lg:inline-flex p-2"
+                        >
+                        <div class="flex flex-col p-2">
+                            <span class="text-gray-600 text-sm font-semibold">
+                                Jane Doe
+                            </span>
+                            <span class="text-gray-600 text-sm">
+                                Sep 23, 2021
+                            </span>
+                        </div>
+                        <div class="flex flex-col p-2">
+                            <span class="text-gray-600 text-sm font-semibold">
+                                Airtel MoMo:
+                            </span>
+                            <span class="text-gray-600 text-sm">
+                                Order# 123456
+                            </span>
+                            <span class="text-green-600 text-sm font-semibold">
+                                +150.00
+                            </span>
+                        </div>
+                        <div class="flex flex-row items-center justify-between">
+                            <div class="text-emerald-500 border-2 rounded-full h-10 flex items-center justify-center border-emerald-500 font-semibold flex-grow">
+                                Completed
+                            </div>
+                            <mat-icon
+                                fontIcon="arrow_right"
+                                class="text-gray-400 cursor-pointer"
+                            ></mat-icon>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 items-center first:py-0 py-2">
+                        <img
+                            src="../../../assets/img/female_placeholder.png"
+                            alt="customer placeholder"
+                            class="w-16 h-auto rounded-full hidden lg:inline-flex p-2"
+                        >
+                        <div class="flex flex-col p-2">
+                            <span class="text-gray-600 text-sm font-semibold">
+                                Jane Doe
+                            </span>
+                            <span class="text-gray-600 text-sm">
+                                Sep 23, 2021
+                            </span>
+                        </div>
+                        <div class="flex flex-col p-2">
+                            <span class="text-gray-600 text-sm font-semibold">
+                                VisaCard:
+                            </span>
+                            <span class="text-gray-600 text-sm">
+                                Stock
+                            </span>
+                            <span class="text-yellow-600 text-sm font-semibold">
+                                +10.00
+                            </span>
+                        </div>
+                        <div class="flex flex-row items-center justify-between">
+                            <div class="text-yellow-500 border-2 rounded-full h-10 flex items-center justify-center border-yellow-500 font-semibold flex-grow">
+                                Pending
+                            </div>
+                            <mat-icon
+                                fontIcon="arrow_right"
+                                class="text-gray-400 cursor-pointer"
+                            ></mat-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hidden w-1/3 px-4 md:flex flex-col">
+            <div class="py-2 px-3 bg-white rounded-lg flex flex-col">
+                <div class="flex flex-col p-2 mt-2">
+                    <span class="font-semibold text-gray-600">
+                        Actions
+                    </span>
+                    <span class="text-xs text-gray-500">
+                        Quick actions to help you manage your store
+                    </span>
+                </div>
+                <div class="flex flex-row bg-gray-700 rounded-xl p-2 items-center cursor-pointer hover:bg-rose-400 transition duration-300 ease-in-out">
+                    <div class="flex items-center justify-center bg-white h-12 w-12 rounded-full">
+                        <mat-icon
+                            fontIcon="swap_vert"
+                            class="text-gray-700"
+                        ></mat-icon>
+                    </div>
+                    <span class="text-white font-semibold ml-3 text-sm">
+                        Withdraw
+                    </span>
+                </div>
+                <div class="flex flex-row bg-emerald-500 rounded-xl p-2 items-center cursor-pointer hover:bg-emerald-400 transition duration-300 ease-in-out mt-4">
+                    <div class="flex items-center justify-center bg-white h-12 w-12 rounded-full">
+                        <mat-icon
+                            fontIcon="list_alt"
+                            class="text-emerald-500"
+                        ></mat-icon>
+                    </div>
+                    <span class="text-white font-semibold ml-3 text-sm">
+                        Send Invoices
+                    </span>
+                </div>
+                <div class="flex flex-col p-2 mt-4">
+                    <span class="font-semibold text-gray-600">
+                        Invoices Sent
+                    </span>
+                    <span class="text-xs text-gray-500 hidden lg:block">
+                        All invoices sent to customers in the last 30 days
+                    </span>
+                    <div class="flex flex-row mt-4 items-center justify-between border-2 border-gray-200 p-1 rounded-lg">
+                        <div class="flex flex-row items-center">
+                            <img
+                                src="../../../assets/img/female_placeholder.png"
+                                alt="customer placeholder"
+                                class="w-16 h-auto rounded-full hidden lg:inline-flex"
+                            >
+                            <div class="flex flex-col ml-2">
+                                <span class="text-xs font-semibold text-gray-700">
+                                    Jane Doe
+                                </span>
+                                <span class="text-xs font-semibold text-gray-400">
+                                    2 days ago
+                                </span>
+                            </div>
+                        </div>
+                        <span class="text-gray-600 text-sm font-semibold pr-2">
+                            ZK150
+                        </span>
+                    </div>
+                    <div class="flex flex-row mt-4 items-center justify-between border-2 border-gray-200 p-1 rounded-lg">
+                        <div class="flex flex-row items-center">
+                            <img
+                                src="../../../assets/img/female_placeholder.png"
+                                alt="customer placeholder"
+                                class="w-16 h-auto rounded-full hidden lg:inline-flex"
+                            >
+                            <div class="flex flex-col ml-2">
+                                <span class="text-xs font-semibold text-gray-700">
+                                    Jane Doe
+                                </span>
+                                <span class="text-xs font-semibold text-gray-400">
+                                    2 days ago
+                                </span>
+                            </div>
+                        </div>
+                        <span class="text-gray-600 text-sm font-semibold pr-2">
+                            ZK150
+                        </span>
+                    </div>
+                    <div class="flex flex-row items-center justify-center mt-2 bg-emerald-500 hover:bg-emerald-600 py-2 cursor-pointer transition duration-200 ease-in-out">
+                        <span class="text-white text-sm">
+                            View All
+                        </span>
+                        <mat-icon
+                            fontIcon="arrow_forward"
+                            class="text-white ml-2"
+                        ></mat-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

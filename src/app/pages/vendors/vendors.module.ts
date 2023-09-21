@@ -1,7 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AddVendorComponent } from './add-vendor/add-vendor.component';
-import { UpdateVendorComponent } from './update-vendor/update-vendor.component';
 import { ViewVendorComponent } from './view-vendor/view-vendor.component';
 import { VendorOrdersComponent } from './vendor-orders/vendor-orders.component';
 import { VendorCustomersComponent } from './vendor-customers/vendor-customers.component';
@@ -19,8 +17,6 @@ import { VendorsComponent } from './vendors.component';
 @NgModule({
   declarations: [
     VendorsComponent,
-    AddVendorComponent,
-    UpdateVendorComponent,
     ViewVendorComponent,
     VendorOrdersComponent,
     VendorCustomersComponent,
@@ -37,8 +33,6 @@ import { VendorsComponent } from './vendors.component';
   ],
   exports: [
     VendorsComponent,
-    AddVendorComponent,
-    UpdateVendorComponent,
     ViewVendorComponent,
     VendorOrdersComponent,
     VendorCustomersComponent,
