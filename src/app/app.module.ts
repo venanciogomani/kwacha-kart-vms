@@ -14,6 +14,7 @@ import { ErrorsModule } from './errors/errors.module';
 import { StoreModule } from '@ngrx/store';
 import { storesReducer } from 'src/state/reducers/stores.reducer';
 import { plansReducer } from 'src/state/reducers/plans.reducer';
+import { rolesReducer } from 'src/state/reducers/roles.reducer';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { plansReducer } from 'src/state/reducers/plans.reducer';
     BrowserAnimationsModule,
     StoreModule.forRoot({
       stores: storesReducer,
-      plans: plansReducer
+      plans: plansReducer,
+      roles: rolesReducer
     })
   ],
   providers: [],

@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { VendorModel } from "src/state";
 import { Vendors } from "src/state/dataset";
 
 @Injectable (
@@ -16,5 +17,15 @@ export class VendorApiService {
         }
 
         return vendor[0];
+    }
+
+    getVendorsByRoleId(roleId: string): VendorModel[] {
+        const vendor = Vendors.filter(vendor => vendor.roleId === roleId);
+
+        if (vendor.length === 0) {
+            return [];
+        }
+        
+        return vendor;
     }
 }
