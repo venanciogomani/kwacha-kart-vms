@@ -31,6 +31,9 @@ import { UserRolesComponent } from './pages/users/user-roles/user-roles.componen
 import { UserProfileComponent } from './pages/users/user-profile/user-profile.component';
 import { UserSettingsComponent } from './pages/users/user-settings/user-settings.component';
 import { StoreRolesComponent } from './pages/stores/store-roles/store-roles.component';
+import { VendorTransactionsComponent } from './pages/vendors/vendor-transactions/vendor-transactions.component';
+import { VendorViewOrderComponent } from './pages/vendors/vendor-view-order/vendor-view-order.component';
+import { VendorViewTransactionComponent } from './pages/vendors/vendor-view-transaction/vendor-view-transaction.component';
 
 const routes: Routes = [
     {
@@ -69,6 +72,18 @@ const routes: Routes = [
     {
         path: 'vendors/orders',
         component: VendorOrdersComponent
+    },
+    {
+        path: 'vendors/orders/:id',
+        component: VendorViewOrderComponent
+    },
+    {
+        path: 'vendors/transactions',
+        component: VendorTransactionsComponent
+    },
+    {
+        path: 'vendors/transactions/:id',
+        component: VendorViewTransactionComponent
     },
     {
         path: 'vendors/customers',

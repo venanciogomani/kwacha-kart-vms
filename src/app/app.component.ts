@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { PlanApiService } from 'src/services/api/plan.api.service';
+import { ProductApiService } from 'src/services/api/products.api.service';
 import { RoleApiService } from 'src/services/api/role.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
@@ -16,6 +17,7 @@ export class AppComponent {
         private plansApiService: PlanApiService,
         private roleApiService: RoleApiService,
         private vendorApiService: VendorApiService,
+        private productApiService: ProductApiService
     ) { }
 
     ngOnInit() {
@@ -23,5 +25,6 @@ export class AppComponent {
         this.plansApiService.createInitialPlansState();
         this.roleApiService.createInitialRolesState();
         this.vendorApiService.createInitialVendorsState();
+        this.productApiService.createInitialProductsState();
     }
 }

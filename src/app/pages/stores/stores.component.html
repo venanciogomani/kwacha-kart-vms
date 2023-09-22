@@ -45,7 +45,7 @@
                 <!-- desktop table -->
                 <div class="relative overflow-x-auto shadow-md hidden md:block">
                     <table class="w-full text-sm text-left">
-                        <thead class="bg-white text-black dark:text-white border-b dark:bg-gray-700 dark:border-gray-700">
+                        <thead class="text-white border-b bg-gray-700 border-gray-700">
                             <tr>
                                 <th scope="col" class="p-4">
                                     <div class="flex items-center">
@@ -220,15 +220,15 @@
                                 <td class="px-2 py-4">
                                     <div *ngIf="!isEditRow(store.id)" class="flex flex-col">
                                         <span>
-                                            {{ getVendorById(store.vendorId)?.name }}
+                                            {{ getVendorById(store.vendorId).name }}
                                         </span>
                                         <span>
-                                            {{ getVendorById(store.vendorId)?.phone }}
+                                            {{ getVendorById(store.vendorId).phone }}
                                         </span>
                                     </div>
                                     <select class="p-2 w-full border-2" *ngIf="isEditRow(store.id)">
                                         <option value="0" disabled>Select a Vendor</option>
-                                        <option [value]="getVendorById(store.vendorId)?.id" selected>{{ getVendorById(store.vendorId)?.name }}</option>
+                                        <option [value]="getVendorById(store.vendorId).id" selected>{{ getVendorById(store.vendorId).name }}</option>
                                         <option *ngFor="let vendor of allVendors" [value]="vendor.id">{{ vendor.name }}</option>
                                     </select>
                                 </td>

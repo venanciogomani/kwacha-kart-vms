@@ -27,11 +27,11 @@ export class VendorApiService {
         return Vendors;
     }
 
-    getVendorById(id: string) {
+    getVendorById(id: string): VendorModel {
         const vendor = Vendors.filter(vendor => vendor.id === id);
 
         if (vendor.length === 0) {
-            return null;
+            return {} as VendorModel;
         }
 
         return vendor[0];
@@ -39,6 +39,16 @@ export class VendorApiService {
 
     getVendorsByRoleId(roleId: string): VendorModel[] {
         const vendor = Vendors.filter(vendor => vendor.roleId === roleId);
+
+        if (vendor.length === 0) {
+            return [];
+        }
+        
+        return vendor;
+    }
+
+    getVendorsByStoreId(storeId: string): VendorModel[] {
+        const vendor = Vendors.filter(vendor => vendor.storeId === storeId);
 
         if (vendor.length === 0) {
             return [];

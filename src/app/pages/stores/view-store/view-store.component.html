@@ -165,8 +165,8 @@
                             <span class="text-gray-600 text-sm font-semibold">
                                 Available Stock
                             </span>
-                            <span class="text-gray-400">
-                                200
+                            <span class="text-gray-400 text-sm">
+                                {{ calculateProductQuantities }} items
                             </span>
                         </div>
                     </div>
@@ -412,7 +412,10 @@
                         Quick actions to help you manage your store
                     </span>
                 </div>
-                <div class="flex flex-row bg-gray-700 rounded-xl p-2 items-center cursor-pointer hover:bg-rose-400 transition duration-300 ease-in-out">
+                <div
+                    (click)="toggleWithdrawPaymentModal()"
+                    class="flex flex-row bg-gray-700 rounded-xl p-2 items-center cursor-pointer hover:bg-gray-600 transition duration-300 ease-in-out"
+                >
                     <div class="flex items-center justify-center bg-white h-12 w-12 rounded-full">
                         <mat-icon
                             fontIcon="swap_vert"
@@ -501,10 +504,10 @@
     <!-- Modal header -->
     <div class="flex items-start justify-between px-4 py-3 border-b rounded-t">
         <h3 class="text-lg font-semibold text-gray-700">
-            Add Payment Method
+            {{ isWidthdrawModal ? 'Withdraw' : 'Add Payment Method' }}
         </h3>
         <button
-            (click)="toggleAddPaymentModal()"
+        (click)="!isWidthdrawModal ? toggleAddPaymentModal() : toggleWithdrawPaymentModal()"
             class="text-gray-400"
         >
             <mat-icon
@@ -513,7 +516,7 @@
         </button>
     </div>
     <!-- Modal body -->
-    <div class="p-4 grid grid-cols-2">
+    <div class="p-4 grid grid-cols-2" *ngIf="!isWidthdrawModal">
         <div class="flex flex-col p-2">
             <span class="text-gray-500 text-sm font-semibold mb-2">Account Type</span>
             <select class="p-2 w-full border-2">
@@ -561,15 +564,46 @@
             </mat-slide-toggle>
         </div>
     </div>
+    <div class="p-4 grid grid-cols-2" *ngIf="isWidthdrawModal">
+        <div class="flex flex-col p-2">
+            <span class="text-gray-500 text-sm font-semibold mb-2">Choose Payment Method*</span>
+            <select class="p-2 w-full border-2">
+                <option value="0" disabled>Select a Payment Method</option>
+                <option *ngFor="let method of getAllPaymentMethods" [value]="method.id">{{ method.name }}</option>
+            </select>
+        </div>
+        <div class="flex flex-col p-2">
+            <span class="text-gray-500 text-sm font-semibold mb-2">Amount*</span>
+            <input
+                type="number"
+                class="
+                    py-2 px-3 text-sm w-full
+                    text-gray-600 focus:outline-none border-2 border-gray-200 mr-2
+                "
+                placeholder="0.00"
+            />
+        </div>
+        <div class="flex flex-col p-2">
+            <span class="text-gray-500 text-sm font-semibold mb-2">Description</span>
+            <input
+                type="text"
+                class="
+                    py-2 px-3 text-sm w-full
+                    text-gray-600 focus:outline-none border-2 border-gray-200 mr-2
+                "
+                placeholder="e.g. Stock Purchase"
+            />
+        </div>
+    </div>
     <!-- Modal footer -->
     <div class="flex items-center justify-end px-4 py-3 border-t border-gray-200">
         <button 
             class="text-gray-600 text-sm mr-2 bg-transparent px-4 py-2 rounded-lg border-2 border-gray-600"
         >
-            Publish
+            {{ !isWidthdrawModal ? 'Add Payment' : 'Withdraw' }}
         </button>
         <button
-            (click)="toggleAddPaymentModal()"
+            (click)="!isWidthdrawModal ? toggleAddPaymentModal() : toggleWithdrawPaymentModal()"
             class="text-white text-sm bg-rose-600 px-4 py-2 rounded-lg hover:bg-rose-500 transition duration-200 ease-in-out"
         >
             Cancel

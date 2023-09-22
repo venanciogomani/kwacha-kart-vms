@@ -4,6 +4,8 @@ import { StoreApiService } from 'src/services/api/store.api.service';
 import { StorePaymentDetailsModel, StoresModel } from 'src/state';
 import { capitalizeFirstLetter, maskString } from 'src/services/helpers';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
+import { VendorApiService } from 'src/services/api/vendor.api.service';
+import { ProductApiService } from 'src/services/api/products.api.service';
 
 @Component({
   selector: 'app-view-store',
@@ -20,8 +22,12 @@ export class ViewStoreComponent {
     hideAccountNumber: boolean = true;
     isShowAccountNumber: string[] = [];
 
+    isWidthdrawModal: boolean = false;
+
     constructor(
         private router: ActivatedRoute,
+        private vendorApiService: VendorApiService,
+        private productApiService: ProductApiService,
         private storeApiService: StoreApiService
     ) { 
         this.singleStore$ = this.storeApiService.getStoreById(this.router.snapshot.paramMap.get('id') || '')
@@ -81,8 +87,28 @@ export class ViewStoreComponent {
     }
 
     toggleAddPaymentModal() {
+        this.isWidthdrawModal = false;
         if (this.modal) {
             this.modal.isOpen = !this.modal.isOpen;
         }
+    }
+
+    toggleWithdrawPaymentModal() {
+        this.isWidthdrawModal = !this.isWidthdrawModal;
+        if (this.modal) {
+            this.modal.isOpen = !this.modal.isOpen;
+        }
+    }
+
+    get getAllProductsByVendorIdOfStoreId() {
+        const vendorIds = this.vendorApiService.getVendorsByStoreId(this.singleStore$.id).map(vendor => vendor.id);
+        const products = vendorIds.map(vendorId => this.productApiService.getProductsByVendorId(vendorId));
+        return products.flat();
+    }
+
+    get calculateProductQuantities() {
+        const products = this.getAllProductsByVendorIdOfStoreId;
+        const quantities = products.map(product => product.quantity);
+        return quantities.reduce((a, b) => a + b, 0);
     }
 }

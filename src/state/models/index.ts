@@ -184,8 +184,8 @@ export interface ProductModel {
     dateCreated: string;
     locationId?: string[];
     tagId?: string[];
-    categoryId?: string;
-    brandId?: string;
+    categoryId: string;
+    brandId: string;
     colors?: string[];
     promotionId?: string[];
     vendorId: string;

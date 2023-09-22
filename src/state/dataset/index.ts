@@ -1383,7 +1383,57 @@ export const ProductCategories = [
 
 export const ProductTags = [];
 
-export const ProductBrands = [];
+export const ProductBrands = [
+    {
+        id: '123e4567-e89b-12d3-a456-426614174117',
+        name: 'Acer',
+        slug: 'acer',
+        status: true,
+        createdAt: '2023-09-09T00:00:00.000Z'
+    },
+    {
+        id: '123e4567-e89b-12d3-a456-426614174118',
+        name: 'Lenovo',
+        slug: 'lenovo',
+        status: true,
+        createdAt: '2023-09-09T00:00:00.000Z'
+    },
+    {
+        id: '123e4567-e89b-12d3-a456-426614174119',
+        name: 'Samsung',
+        slug: 'samsung',
+        status: true,
+        createdAt: '2023-09-09T00:00:00.000Z'
+    },
+    {
+        id: '123e4567-e89b-12d3-a456-426614174120',
+        name: 'Apple',
+        slug: 'apple',
+        status: true,
+        createdAt: '2023-09-09T00:00:00.000Z'
+    },
+    {
+        id: '123e4567-e89b-12d3-a456-426614174121',
+        name: 'HP',
+        slug: 'hp',
+        status: true,
+        createdAt: '2023-09-09T00:00:00.000Z'
+    },
+    {
+        id: '123e4567-e89b-12d3-a456-426614174122',
+        name: 'Volkano',
+        slug: 'volkano',
+        status: true,
+        createdAt: '2023-09-09T00:00:00.000Z'
+    },
+    {
+        id: '123e4567-e89b-12d3-a456-426614174123',
+        name: 'Polko',
+        slug: 'polko',
+        status: true,
+        createdAt: '2023-09-09T00:00:00.000Z'
+    }
+]
 
 export const ProductReviews = [];
 

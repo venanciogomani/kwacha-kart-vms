@@ -18,7 +18,7 @@
                             text-gray-600 focus:outline-none border-2 border-gray-200 mr-2
                             max-w-full md:max-w-[500px] min-w-[300px] md:min-w-[300px]
                         "
-                        placeholder="Search for stores"
+                        placeholder="Search for vendors"
                         (input)="filterVendorsBySearchTerm()"
                         [(ngModel)]="searchTerm"
                     />
@@ -38,7 +38,7 @@
                         transition duration-200 ease-in-out hidden md:flex
                     "
                 >
-                    {{ addRow ? 'Cancel' : 'Add Store' }}
+                    {{ addRow ? 'Cancel' : 'Add Vendor' }}
                 </button>
             </div>
             <div class="flex flex-col py-2">
@@ -209,16 +209,19 @@
                                             *ngIf="isEditRow(vendor.id)"
                                             type="text"
                                             class="w-full p-2 border-2 font-normal"
+                                            [(ngModel)]="vendorEdit$.name"
                                         />
                                         <input
                                             *ngIf="isEditRow(vendor.id)"
                                             type="text"
                                             class="w-full p-2 border-2 font-normal mt-1"
+                                            [(ngModel)]="vendorEdit$.email"
                                         />
                                         <input
                                             *ngIf="isEditRow(vendor.id)"
                                             type="text"
                                             class="w-full p-2 border-2 font-normal mt-1"
+                                            [(ngModel)]="vendorEdit$.phone"
                                         />
                                     </div>
                                 </th>
@@ -232,7 +235,7 @@
                                         </span>
                                     </div>
                                     <div class="flex flex-col" *ngIf="isEditRow(vendor.id)">
-                                        <input type="text" placeholder="Update address" class="w-full p-2 border-2 font-normal text-xs">
+                                        <input type="text" placeholder="Update address" class="w-full p-2 border-2 font-normal text-xs" [(ngModel)]="vendorEdit$.address">
                                         <select class="p-2 w-full border-2 mt-2 font-normal text-xs">
                                             <option value="1">Lusaka</option>
                                             <option value="2">Ndola</option>
@@ -284,13 +287,13 @@
                                         ></mat-icon>
                                         <mat-icon
                                             *ngIf="isEditRow(vendor.id)"
-                                            (click)="toggleEditVendor(vendor.id)"
+                                            (click)="toggleEditVendor(vendor)"
                                             class="cursor-pointer text-yellow-600"
                                             fontIcon="clear"
                                         ></mat-icon>
                                         <mat-icon
                                             *ngIf="!isEditRow(vendor.id)"
-                                            (click)="toggleEditVendor(vendor.id)"
+                                            (click)="toggleEditVendor(vendor)"
                                             class="cursor-pointer text-yellow-400"
                                             fontIcon="edit"
                                         ></mat-icon>

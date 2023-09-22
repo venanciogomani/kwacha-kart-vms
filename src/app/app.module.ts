@@ -16,6 +16,7 @@ import { storesReducer } from 'src/state/reducers/stores.reducer';
 import { plansReducer } from 'src/state/reducers/plans.reducer';
 import { rolesReducer } from 'src/state/reducers/roles.reducer';
 import { vendorsReducer } from 'src/state/reducers/vendors.reducer';
+import { productsReducer } from 'src/state/reducers/products.reducer';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { vendorsReducer } from 'src/state/reducers/vendors.reducer';
       plans: plansReducer,
       roles: rolesReducer,
       vendors: vendorsReducer,
+      products: productsReducer
     })
   ],
   providers: [],

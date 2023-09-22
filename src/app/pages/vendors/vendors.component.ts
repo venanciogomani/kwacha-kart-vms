@@ -26,6 +26,22 @@ export class VendorsComponent {
     fileteredVendors$: VendorModel[] = [];
     isVendorsLoading$ = false;
 
+    vendorEdit$: VendorModel = {
+        id: '',
+        name: '',
+        address: '',
+        city: '',
+        province: '',
+        country: '',
+        phone: '',
+        email: '',
+        status: false,
+        isVerified: false,
+        storeId: '',
+        roleId: '',
+        createdAt: ''
+    }
+
     availableStores$: StoresModel = {
         id: '',
         name: '',
@@ -83,8 +99,9 @@ export class VendorsComponent {
         return this.editRow[id];
     }
 
-    toggleEditVendor(id: string): void {
-        this.editRow[id] = !this.editRow[id];
+    toggleEditVendor(vendorToEdit: VendorModel): void {
+        this.editRow[vendorToEdit.id] = !this.editRow[vendorToEdit.id];
+        this.vendorEdit$ = this.editRow[vendorToEdit.id] == true ? vendorToEdit : {} as VendorModel;
     }
 
     toggleAddVendor(): void {

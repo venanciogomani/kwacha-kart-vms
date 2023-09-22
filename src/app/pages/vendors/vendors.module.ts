@@ -14,6 +14,9 @@ import { VendorRevenueComponent } from './vendor-revenue/vendor-revenue.componen
 import { VendorStatusComponent } from './vendor-status/vendor-status.component';
 import { VendorSettingsComponent } from './vendor-settings/vendor-settings.component';
 import { VendorsComponent } from './vendors.component';
+import { VendorTransactionsComponent } from './vendor-transactions/vendor-transactions.component';
+import { VendorViewOrderComponent } from './vendor-view-order/vendor-view-order.component';
+import { VendorViewTransactionComponent } from './vendor-view-transaction/vendor-view-transaction.component';
 
 
 
@@ -29,7 +32,10 @@ import { VendorsComponent } from './vendors.component';
     VendorAnalyticsComponent,
     VendorRevenueComponent,
     VendorStatusComponent,
-    VendorSettingsComponent
+    VendorSettingsComponent,
+    VendorTransactionsComponent,
+    VendorViewOrderComponent,
+    VendorViewTransactionComponent
   ],
   imports: [
     CommonModule,
@@ -48,7 +54,10 @@ import { VendorsComponent } from './vendors.component';
     VendorAnalyticsComponent,
     VendorRevenueComponent,
     VendorStatusComponent,
-    VendorSettingsComponent
+    VendorSettingsComponent,
+    VendorTransactionsComponent,
+    VendorViewOrderComponent,
+    VendorViewTransactionComponent
   ]
 })
 export class VendorsModule { }
