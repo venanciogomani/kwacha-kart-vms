@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
-import { StoresModel } from "src/state";
+import { PaymentAccountTypeModel, PaymentMethodModel, StorePaymentDetailsModel, StoresModel } from "src/state";
 import { loadStoresSuccess } from "src/state/actions/stores.actions";
-import { Stores } from "src/state/dataset";
+import { Stores, StorePaymentDetails, PaymentMethods, PaymentAccountTypes } from "src/state/dataset";
 import { StoresState } from "src/state/reducers/stores.reducer";
 
 @Injectable(
@@ -41,5 +41,29 @@ export class StoreApiService {
 
     getStores(): StoresModel[] {
         return Stores;
+    }
+
+    getPaymentMethodById(id: string): PaymentMethodModel {
+        return PaymentMethods.find(paymentMethod => paymentMethod.id === id && paymentMethod.status === true) || {} as PaymentMethodModel;
+    }
+
+    getStorePaymentDetailsByStoreId(storeId: string): StorePaymentDetailsModel[] {
+        return StorePaymentDetails.filter(storePaymentDetail => storePaymentDetail.storeId === storeId);
+    }
+
+    getStorePrimaryPaymentDetailsByStoreId(storeId: string): StorePaymentDetailsModel {
+        return StorePaymentDetails.find(storePaymentDetail => storePaymentDetail.storeId === storeId && storePaymentDetail.isPrimary === true) || {} as StorePaymentDetailsModel;
+    }
+
+    getAllPaymentMethods(): PaymentMethodModel[] {
+        return PaymentMethods.filter(paymentMethod => paymentMethod.status === true);
+    }
+
+    getAllPaymentMethodTypes(): PaymentAccountTypeModel[] {
+        return PaymentAccountTypes.filter(paymentAccountType => paymentAccountType.status === true);
+    }
+
+    getPaymentMethodTypeById(id: string): PaymentAccountTypeModel {
+        return PaymentAccountTypes.find(paymentAccountType => paymentAccountType.id === id && paymentAccountType.status === true) || {} as PaymentAccountTypeModel;
     }
 }

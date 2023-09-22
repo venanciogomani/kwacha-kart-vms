@@ -47,6 +47,38 @@ export interface StoresModel {
     updatedAt?: string;
 }
 
+export interface StorePaymentDetailsModel {
+    id: string;
+    storeId: string;
+    paymentMethodId: string;
+    accountNumber: string;
+    accountName: string;
+    accountType: string;
+    isPrimary: boolean;
+    createdAt: string;
+    updatedAt?: string;
+}
+
+export interface PaymentAccountTypeModel {
+    id: string;
+    name: string;
+    status: boolean;
+    createdAt: string;
+    updatedAt?: string;
+}
+
+export interface PaymentMethodModel {
+    id: string;
+    name: string;
+    description?: string;
+    fee: number;
+    img?: string;
+    status: boolean;
+    accountTypeId: string;
+    createdAt: string;
+    updatedAt?: string;
+}
+
 export interface MarketingModel {
     id: string;
     name: string;

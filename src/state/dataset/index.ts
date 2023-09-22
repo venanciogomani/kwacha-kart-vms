@@ -654,6 +654,86 @@ export const Plans = [
     }
 ];
 
+export const PaymentAccountTypes = [
+    {
+        id: 'bank_account_type_1234_2766',
+        name: 'Bank Account',
+        status: true,
+        createdAt: '2020-01-01T00:00:00.000Z'
+    },
+    {
+        id: 'mobile_money_account_type_1234_2766',
+        name: 'Mobile Money Account',
+        status: true,
+        createdAt: '2020-01-01T00:00:00.000Z'
+    },
+    {
+        id: 'card_account_type_1234_2766',
+        name: 'Card Account',
+        status: true,
+        createdAt: '2020-01-01T00:00:00.000Z'
+    },
+    {
+        id: 'wallet_account_type_1234_2766',
+        name: 'Wallet Account',
+        status: false,
+        createdAt: '2020-01-01T00:00:00.000Z'
+    }
+];
+
+export const PaymentMethods = [
+    {
+        id: 'airtel_mobile_money_payment_method_1234_2766',
+        name: 'Airtel MoMo',
+        description: 'Airtel Mobile Money',
+        fee: 10.00,
+        img: 'airtel.png',
+        accountTypeId: 'mobile_money_account_type_1234_2766',
+        status: true,
+        createdAt: '2020-01-01T00:00:00.000Z'
+    },
+    {
+        id: 'mtn_mobile_money_payment_method_1234_2766',
+        name: 'MTN MoMo',
+        description: 'MTN Mobile Money',
+        fee: 10.00,
+        img: 'mtn.png',
+        accountTypeId: 'mobile_money_account_type_1234_2766',
+        status: true,
+        createdAt: '2020-01-01T00:00:00.000Z'
+    },
+    {
+        id: 'zampay_payment_method_1234_2766',
+        name: 'ZamPay',
+        description: 'Pay with ZamPay',
+        fee: 10.00,
+        img: 'zamtel.png',
+        accountTypeId: 'mobile_money_account_type_1234_2766',
+        status: true,
+        createdAt: '2020-01-01T00:00:00.000Z'
+    },
+    {
+        id: 'visa_payment_method_1234_2766',
+        name: 'Visa',
+        description: 'Pay with Visa',
+        fee: 25.00,
+        img: 'visa.png',
+        accountTypeId: 'card_account_type_1234_2766',
+        status: true,
+        createdAt: '2020-01-01T00:00:00.000Z'
+    },
+    {
+        id: 'bank_transfer_payment_method_1234_2766',
+        name: 'Bank Transfer',
+        description: 'Pay with Bank Transfer',
+        fee: 50.00,
+        img: 'bank.png',
+        accountTypeId: 'bank_account_type_1234_2766',
+        status: true,
+        createdAt: '2020-01-01T00:00:00.000Z'
+    }
+];
+
 export const Stores = [
     {
         id: 'john_tembo_store_123e4567-e89b-12d3-a456-426614174121',
@@ -772,6 +852,89 @@ export const Stores = [
         vendorId: 'tech_solutions_ltd_store_vendor_123e4567-e89b-12d3-a456-426614174121',
         planId: 'basic_plan_1234_2766',
         roleId: 'vendor_admin_role_1234_2766',
+        createdAt: '2020-01-01T00:00:00.000Z'
+    }
+];
+
+export const StorePaymentDetails = [
+    {
+        id: 'john_tembo_store_payment_details_123e4567-e89b-12d3-a456-426614174121',
+        storeId: 'john_tembo_store_123e4567-e89b-12d3-a456-426614174121',
+        paymentMethodId: 'airtel_mobile_money_payment_method_1234_2766',
+        accountNumber: '0977 123 456',
+        accountName: 'John Tembo',
+        accountType: 'Mobile Money',
+        isPrimary: true,
+        createdAt: '2020-01-01T00:00:00.000Z'
+    },
+    {
+        id: 'john_tembo_store_payment_details_123e4567-e89b-12d3-a456-426614174122',
+        storeId: 'john_tembo_store_123e4567-e89b-12d3-a456-426614174121',
+        paymentMethodId: 'mtn_mobile_money_payment_method_1234_2766',
+        accountNumber: '0955 123 456',
+        accountName: 'John Tembo',
+        accountType: 'Mobile Money',
+        isPrimary: false,
+        createdAt: '2020-01-01T00:00:00.000Z'
+    },
+    {
+        id: 'jane_siwale_store_payment_details_123e4567-e89b-12d3-a456-426614174121',
+        storeId: 'jane_siwale_store_123e4567-e89b-12d3-a456-426614174121',
+        paymentMethodId: 'mtn_mobile_money_payment_method_1234_2766',
+        accountNumber: '0966 123 456',
+        accountName: 'Jane Siwale',
+        accountType: 'Mobile Money',
+        isPrimary: true,
+        createdAt: '2020-01-01T00:00:00.000Z'
+    },
+    {
+        id: 'james_mwansa_store_payment_details_123e4567-e89b-12d3-a456-426614174121',
+        storeId: 'james_mwansa_store_123e4567-e89b-12d3-a456-426614174121',
+        paymentMethodId: 'zampay_payment_method_1234_2766',
+        accountNumber: '0955 123 456',
+        accountName: 'James Mwansa',
+        accountType: 'Mobile Money',
+        isPrimary: true,
+        createdAt: '2020-01-01T00:00:00.000Z'
+    },
+    {
+        id: 'jacob_mwansa_store_payment_details_123e4567-e89b-12d3-a456-426614174121',
+        storeId: 'jacob_mwansa_store_123e4567-e89b-12d3-a456-426614174121',
+        paymentMethodId: 'visa_payment_method_1234_2766',
+        accountNumber: '1234 5678 9012 3456',
+        accountName: 'Jacob Mwansa',
+        accountType: 'Bank Account',
+        isPrimary: true,
+        createdAt: '2020-01-01T00:00:00.000Z'
+    },
+    {
+        id: 'kafue_general_dealers_store_payment_details_123e4567-e89b-12d3-a456-426614174121',
+        storeId: 'kafue_general_dealers_store_123e4567-e89b-12d3-a456-426614174121',
+        paymentMethodId: 'bank_transfer_payment_method_1234_2766',
+        accountNumber: '1234 5678 9012 3456',
+        accountName: 'Kafue General Dealers',
+        accountType: 'Bank Account',
+        isPrimary: true,
+        createdAt: '2020-01-01T00:00:00.000Z'
+    },
+    {
+        id: 'best_buy_solutions_store_payment_details_123e4567-e89b-12d3-a456-426614174121',
+        storeId: 'best_buy_solutions_store_123e4567-e89b-12d3-a456-426614174121',
+        paymentMethodId: 'airtel_mobile_money_payment_method_1234_2766',
+        accountNumber: '0977 123 456',
+        accountName: 'Best Buy Solutions',
+        accountType: 'Mobile Money',
+        isPrimary: true,
+        createdAt: '2020-01-01T00:00:00.000Z'
+    },
+    {
+        id: 'tech_solutions_ltd_store_payment_details_123e4567-e89b-12d3-a456-426614174121',
+        storeId: 'tech_solutions_ltd_store_123e4567-e89b-12d3-a456-426614174121',
+        paymentMethodId: 'mtn_mobile_money_payment_method_1234_2766',
+        accountNumber: '0955 123 456',
+        accountName: 'Tech Solutions Ltd',
+        accountType: 'Mobile Money',
+        isPrimary: true,
         createdAt: '2020-01-01T00:00:00.000Z'
     }
 ];

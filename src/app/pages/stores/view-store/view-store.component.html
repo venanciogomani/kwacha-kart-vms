@@ -37,7 +37,7 @@
                         Account Holder
                     </span>
                     <span class="font-semibold text-gray-600">
-                        Venancio Gomani
+                        {{ getStorePrimaryPaymentDetails.accountName }}
                     </span>
                 </div>
                 <div class="p-4 flex flex-col">
@@ -45,7 +45,7 @@
                         Payment To
                     </span>
                     <span class="font-semibold text-gray-600">
-                        Airtel: 0977 *** ***
+                        {{ getPaymentMethodById(getStorePrimaryPaymentDetails.paymentMethodId).name }}: {{ sanitizeAccountNumber(getStorePrimaryPaymentDetails) }}
                     </span>
                 </div>
                 <mat-icon
@@ -95,7 +95,7 @@
                     ></div>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-2 pb-3">
                 <div class="p-2">
                     <div 
                         class="
@@ -193,6 +193,92 @@
                             <span class="text-gray-400">
                                 ZK1,200
                             </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-row items-center justify-between px-4 pt-3 border-t-2 border-gray-100">
+                <div class="flex flex-col">
+                    <span class="font-semibold text-gray-600 text-lg">
+                        Payment Center
+                    </span>
+                    <span class="text-xs text-gray-500">
+                        Where you receive payouts from your sales
+                    </span>
+                </div>
+                <div 
+                    (click)="toggleAddPaymentModal()"
+                    class="flex flex-row items-center p-2 rounded-full bg-emerald-500 cursor-pointer hover:bg-emerald-600 transition duration-300 ease-in-out"
+                >
+                    <div class="bg-white rounded-full shadow-md text-emerald-500 font-black text-xl text-center px-2">
+                        +
+                    </div>
+                    <span class="text-white text-sm font-semibold ml-2">
+                        Add Payment Method
+                    </span>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-2 pb-3">
+                <div class="p-2" *ngFor="let storePaymentDets of getStorePaymentDetails">
+                    <div class="flex flex-col bg-gradient-to-r from-cyan-800 to-emerald-500 rounded-xl px-3 py-6 shadow-lg">
+                        <div class="flex flex-row items-center flex-grow justify-between">
+                            <div class="flex flex-col">
+                                <span class="text-white text-xs">
+                                    {{ storePaymentDets.isPrimary ? 'Primary' : 'Secondary' }}
+                                </span>
+                                <span class="text-white font-semibold text-sm">
+                                    {{ getPaymentMethodById(storePaymentDets.paymentMethodId).name }}
+                                </span>
+                            </div>
+                            <div class="flex flex-row items-center">
+                                <mat-icon
+                                    (click)="toggleOnHideAccountNumber(storePaymentDets)"
+                                    fontIcon="visibility_off"
+                                    class="text-white text-sm cursor-pointer mr-2"
+                                    *ngIf="!isShowAccountNumberToggle(storePaymentDets)"
+                                ></mat-icon>
+                                <mat-icon
+                                    (click)="toggleOnHideAccountNumber(storePaymentDets)"
+                                    fontIcon="visibility"
+                                    class="text-white text-sm cursor-pointer mr-2"
+                                    *ngIf="isShowAccountNumberToggle(storePaymentDets)"
+                                ></mat-icon>
+                                <mat-icon
+                                    fontIcon="edit"
+                                    class="text-white text-sm cursor-pointer"
+                                ></mat-icon>
+                            </div>
+                        </div>
+                        <div class="flex flex-row items-center flex-grow justify-between mt-4 bg-gradient-to-l from-gray-100/20 py-2 rounded-md">
+                            <img
+                                [src]="'../../../assets/img/logos/' + getPaymentMethodById(storePaymentDets.paymentMethodId).img"
+                                alt="customer placeholder"
+                                class="w-auto h-12"
+                            >
+                            <span class="text-white text-sm pr-4" *ngIf="!isShowAccountNumberToggle(storePaymentDets)">
+                                {{ sanitizeAccountNumber(storePaymentDets) }}
+                            </span>
+                            <span class="text-white text-sm pr-4" *ngIf="isShowAccountNumberToggle(storePaymentDets)">
+                                {{ storePaymentDets.accountNumber }}
+                            </span>
+                        </div>
+                        <div class="flex flex-row items-center flex-grow ml-3 mt-4">
+                            <div class="flex flex-col">
+                                <span class="text-white text-xs">
+                                    Acc. Name
+                                </span>
+                                <span class="text-white text-sm">
+                                    {{ storePaymentDets.accountName }}
+                                </span>
+                            </div>
+                            <div class="flex flex-col pl-4">
+                                <span class="text-white text-xs">
+                                    Type
+                                </span>
+                                <span class="text-white text-sm">
+                                    {{ getPaymentMethodTypeById(getPaymentMethodById(storePaymentDets.paymentMethodId).accountTypeId).name}}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -409,3 +495,84 @@
         </div>
     </div>
 </div>
+
+<!-- Payment Modal -->
+<app-modal>
+    <!-- Modal header -->
+    <div class="flex items-start justify-between px-4 py-3 border-b rounded-t">
+        <h3 class="text-lg font-semibold text-gray-700">
+            Add Payment Method
+        </h3>
+        <button
+            (click)="toggleAddPaymentModal()"
+            class="text-gray-400"
+        >
+            <mat-icon
+                fontIcon="close"
+            ></mat-icon>
+        </button>
+    </div>
+    <!-- Modal body -->
+    <div class="p-4 grid grid-cols-2">
+        <div class="flex flex-col p-2">
+            <span class="text-gray-500 text-sm font-semibold mb-2">Account Type</span>
+            <select class="p-2 w-full border-2">
+                <option *ngFor="let payType of getAllPaymentMethodTypes" [value]="payType.id">{{ payType.name }}</option>
+            </select>
+        </div>
+        <div class="flex flex-col p-2">
+            <span class="text-gray-500 text-sm font-semibold mb-2">Payment Method</span>
+            <select class="p-2 w-full border-2">
+                <option value="0" disabled>Select a Payment Method</option>
+                <option *ngFor="let method of getAllPaymentMethods" [value]="method.id">{{ method.name }}</option>
+            </select>
+        </div>
+        <div class="flex flex-col p-2">
+            <span class="text-gray-500 text-sm font-semibold mb-2">Account Name</span>
+            <input
+                type="text"
+                class="
+                    py-2 px-3 text-sm w-full
+                    text-gray-600 focus:outline-none border-2 border-gray-200 mr-2
+                "
+                placeholder="Jane Tembo"
+            />
+        </div>
+        <div class="flex flex-col p-2">
+            <span class="text-gray-500 text-sm font-semibold mb-2">Account Number</span>
+            <input
+                type="text"
+                class="
+                    py-2 px-3 text-sm w-full
+                    text-gray-600 focus:outline-none border-2 border-gray-200 mr-2
+                "
+                placeholder="0977 *** *** or 1234 5678 9012 3456"
+            />
+        </div>
+        <div class="flex flex-col p-2">
+            <span class="text-gray-500 text-sm font-semibold mb-2">Status</span>
+            <mat-slide-toggle>
+                Inactive
+            </mat-slide-toggle>
+            <mat-slide-toggle
+                class="mt-4"
+            >
+                Set as Primary
+            </mat-slide-toggle>
+        </div>
+    </div>
+    <!-- Modal footer -->
+    <div class="flex items-center justify-end px-4 py-3 border-t border-gray-200">
+        <button 
+            class="text-gray-600 text-sm mr-2 bg-transparent px-4 py-2 rounded-lg border-2 border-gray-600"
+        >
+            Publish
+        </button>
+        <button
+            (click)="toggleAddPaymentModal()"
+            class="text-white text-sm bg-rose-600 px-4 py-2 rounded-lg hover:bg-rose-500 transition duration-200 ease-in-out"
+        >
+            Cancel
+        </button>
+    </div>
+</app-modal>
