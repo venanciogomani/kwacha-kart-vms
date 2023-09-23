@@ -144,7 +144,7 @@
                                 <th scope="row" class="px-4 py-4">
                                     <select class="p-2 w-full border-2 mt-2 font-normal text-xs">
                                         <option value="" disabled>Select a Role</option>
-                                        <option *ngFor="let role of getAllRoles" [value]="role.id">{{ role.name }}</option>
+                                        <option *ngFor="let role of availableRoles$" [value]="role.id">{{ role.name }}</option>
                                     </select>
                                 </th>
                                 <td class="px-4 py-4 w-14">
@@ -258,7 +258,7 @@
                                     </span>
                                     <select class="p-2 w-full border-2 mt-2 font-normal text-xs" *ngIf="isEditRow(vendor.id)">
                                         <option value="" disabled>Select a Role</option>
-                                        <option *ngFor="let role of getAllRoles" [value]="role.id">{{ role.name }}</option>
+                                        <option *ngFor="let role of availableRoles$" [value]="role.id">{{ role.name }}</option>
                                     </select>
                                 </th>
                                 <td class="px-4 py-4 w-14">

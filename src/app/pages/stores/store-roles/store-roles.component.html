@@ -142,7 +142,7 @@
                                 {{ role.description }}
                             </td>
                             <td class="px-6 py-4">
-                                {{ getAllPermissionsIdsByRole(role.id).length }} Permissions
+                                {{ role.permissionsId.length }}
                             </td>
                             <td class="px-6 py-4 w-14">
                                 <mat-slide-toggle
@@ -246,7 +246,7 @@
         <div class="flex flex-col md:flex-row">
             <div class="flex flex-col w-full md:w-1/2">
                 <div class="flex flex-col p-2">
-                    <span class="text-gray-500 text-sm font-semibold mb-2">Name</span>
+                    <span class="text-gray-500 text-sm font-semibold mb-2">Name*</span>
                     <span class="text-gray-700 text-lg font-semibold mb-2" *ngIf="isViewingRole$">
                         {{ roleEdit.name }}
                     </span>
@@ -258,7 +258,8 @@
                             text-gray-600 focus:outline-none border-2 border-gray-200 mr-2
                         "
                         placeholder="Contributor"
-                        [ngModel]="roleEdit.name"
+                        [(ngModel)]="roleEdit.name"
+                        [innerHTML]="sanitizedDescription"
                     />
                 </div>
                 <div class="flex flex-col p-2">
@@ -274,13 +275,15 @@
                             text-gray-600 focus:outline-none border-2 border-gray-200 mr-2
                         "
                         placeholder="Control over viewing and editing of products"
-                        [ngModel]="roleEdit.description"
+                        [(ngModel)]="roleEdit.description"
+                        [innerHTML]="sanitizedDescription"
                     />
                 </div>
                 <div class="flex flex-col p-2">
                     <span class="text-gray-500 text-sm font-semibold mb-2">Status</span>
                     <mat-slide-toggle
                         [checked]="roleEdit.status"
+                        (change)="toggleRoleStatus()"
                     >
                         Inactive
                     </mat-slide-toggle>
@@ -289,7 +292,7 @@
             <div class="flex flex-col p-2 w-full md:w-1/2">
                 <span class="text-gray-500 text-sm font-semibold pb-2 border-b">Permissions List</span>
                 <div class="flex flex-col overflow-y-auto bg-gray-100 max-h-[300px]" *ngIf="!isViewingRole$">
-                    <div class="flex flex-row p-2" *ngFor="let permission of allPermissions">
+                    <div class="flex flex-row p-2" *ngFor="let permission of availablePermissions$">
                         <input 
                             type="checkbox"
                             class="w-4 h-4
@@ -301,6 +304,8 @@
                                 focus:ring-2
                                 font-normal
                             "
+                            (change)="toggleAddPermissionToRole(permission.id)"
+                            [innerHTML]="sanitizedDescription"
                         />
                         <span class="text-gray-500 px-2 text-sm">
                             {{ permission.name }}
@@ -308,7 +313,7 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-2 overflow-y-auto max-h-[300px]" *ngIf="isViewingRole$">
-                    <div class="p-1" *ngFor="let permission of allPermissions">
+                    <div class="p-1" *ngFor="let permission of availablePermissions$">
                         <div class="flex items-center justify-center p-1 bg-gray-100 rounded-full">
                             <span class="text-gray-500 text-xs p-1">
                                 {{ permission.name }}
@@ -325,7 +330,9 @@
     </div>
     <!-- Modal footer -->
     <div class="flex items-center justify-end px-4 py-3 border-t border-gray-200">
-        <button 
+        <button
+            type="submit"
+            (click)="publishRole()"
             class="text-gray-600 text-sm mr-2 bg-transparent px-4 py-2 rounded-lg border-2 border-gray-600"
         >
             Publish
@@ -338,3 +345,18 @@
         </button>
     </div>
 </app-modal>
+
+<app-toaster>
+    <div class="flex flex-row w-full h-full">
+        <span 
+            [ngClass]="{ 'text-green-500': toasterType === 'success', 'text-red-500': toasterType === 'error' }"
+        >
+            {{ toasterMessage }}
+        </span>
+        <mat-icon
+            (click)="closeToaster()"
+            fontIcon="close"
+            class="text-gray-500 ml-2 cursor-pointer"
+        ></mat-icon>
+    </div>
+</app-toaster>

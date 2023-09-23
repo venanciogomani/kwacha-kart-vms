@@ -9,6 +9,8 @@ import { StoresComponent } from './stores.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
+import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
+import { HttpClientModule } from '@angular/common/http';
 
 
 
@@ -19,12 +21,14 @@ import { ModalComponent } from 'src/app/shared/modal/modal.component';
     StoreRolesComponent,
     StorePlansComponent,
     ViewStoreComponent,
-    ModalComponent
+    ModalComponent,
+    ToasterComponent
   ],
   imports: [
     CommonModule,
     MatIconModule,
     FormsModule,
+    HttpClientModule,
     MatSlideToggleModule
   ],
   exports: [

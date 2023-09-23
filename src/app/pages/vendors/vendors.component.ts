@@ -51,13 +51,7 @@ export class VendorsComponent {
         createdAt: ''
     };
 
-    availableRoles$: StoreRoleModel = {
-        id: '',
-        name: '',
-        permissionsId: [],
-        status: false,
-        createdAt: ''
-    };
+    availableRoles$: StoreRoleModel[] = [];
 
     editRow: { [key: string]: boolean } = {};
 
@@ -93,6 +87,7 @@ export class VendorsComponent {
     ngOnInit(): void {
         this.filterVendorsBySearchTerm();
         this.totalVendors = this.vendors$.length;
+        this.getAllRoles();
     }
 
     isEditRow(id: string): boolean {
@@ -192,7 +187,9 @@ export class VendorsComponent {
         return this.roleApiService.getRoleById(id);
     }
 
-    get getAllRoles() {
-        return this.roleApiService.getAllRoles();
+    async getAllRoles() {
+        return (await this.roleApiService.getAllRoles()).subscribe((roles: StoreRoleModel[]) => {
+            this.availableRoles$ = roles;
+        });
     }
 }

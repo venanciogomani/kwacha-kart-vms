@@ -7,7 +7,6 @@ import { SpinnerComponent } from './spinner/spinner.component';
 import { MatIconModule } from '@angular/material/icon';
 import { ChatBotComponent } from './chat-bot/chat-bot.component';
 import { FloatingMenuComponent } from './floating-menu/floating-menu.component';
-import { ModalComponent } from './modal/modal.component';
 
 
 

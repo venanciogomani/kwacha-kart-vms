@@ -1,5 +1,8 @@
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
+import { BehaviorSubject, Observable, catchError, throwError } from "rxjs";
+import { StoreRoleModel } from "src/state";
 import { loadRolesSuccess } from "src/state/actions/roles.actions";
 import { Roles, Permissions } from "src/state/dataset";
 import { RolesState } from "src/state/reducers/roles.reducer";
@@ -9,21 +12,32 @@ import { RolesState } from "src/state/reducers/roles.reducer";
 )
 
 export class RoleApiService {
+    private apiUrl = 'http://localhost:3000/api/';
+
+    private isDataLoaded$ = new BehaviorSubject<boolean>(false);
+
     constructor(
-        private store: Store<RolesState>
+        private store: Store<RolesState>,
+        private http: HttpClient
     ) { }
 
-    createInitialRolesState() {
-        const initialState: RolesState = {
-            roles: Roles,
-            loading: false
-        }
-        
-        this.store.dispatch(loadRolesSuccess(initialState.roles));
+    async createInitialRolesState() {
+        (await this.getAllRoles()).subscribe((allRoles: StoreRoleModel[]) => {
+            const initialState: RolesState = {
+                roles: allRoles,
+                loading: false
+            }
+            
+            this.store.dispatch(loadRolesSuccess(initialState.roles));
+            this.isDataLoaded$.next(true);
+        });
+
     }
 
-    getAllRoles() {
-        return Roles;
+    async getAllRoles(): Promise<Observable<StoreRoleModel[]>> {
+        const headers = { 'content-type': 'application/json' }
+
+        return await this.http.get<StoreRoleModel[]>(this.apiUrl + 'roles', { headers })
     }
 
     getRoleById(id: string) {
@@ -36,21 +50,73 @@ export class RoleApiService {
         return role[0];
     }
 
-    getAllPermissions() {
-        return Permissions;
+    getAllPermissions(): Observable<StoreRoleModel[]> {
+        const headers = { 'content-type': 'application/json' }
+
+        return this.http.get<StoreRoleModel[]>(this.apiUrl + 'permissions', { headers })
     }
 
     getAllPermissionIdsByRole(roleId: string) {
-        const role = Roles.filter(role => role.id === roleId);
-        const permissionIds = role[0].permissionsId.map(permissionId => {
-            const permission = Permissions.find(permission => permission.id === permissionId);
-            return permission ? permission.id : null;
-        });
+        const headers = { 'content-type': 'application/json' }
 
-        if (permissionIds.length === 0) {
-            return [];
+        return this.http.get<StoreRoleModel[]>(this.apiUrl + 'permissions/role/' + roleId, { headers })
+    }
+
+    saveRole(role: StoreRoleModel): Observable<StoreRoleModel> {
+        const roleIndex = Roles.findIndex(item => item.id === role.id);
+
+        if (roleIndex !== -1) {
+            return throwError('Role already exists.');
         }
 
-        return permissionIds;
+        const headers = { 'content-type': 'application/json' }
+
+        return this.http
+            .post<StoreRoleModel>(this.apiUrl, role, { headers })
+            .pipe(
+                catchError((error: HttpErrorResponse) => {
+                    return throwError('Something bad happened; please try again later.');
+                })
+            )
+    }
+
+    updateRole(role: StoreRoleModel): Observable<StoreRoleModel> {
+        const roleIndex = Roles.findIndex(item => item.id === role.id);
+
+        if (roleIndex === -1) {
+            return throwError('Role does not exist.');
+        }
+
+        const headers = { 'content-type': 'application/json' }
+
+        return this.http
+            .put<StoreRoleModel>(this.apiUrl, role, { headers })
+            .pipe(
+                catchError((error: HttpErrorResponse) => {
+                    return throwError('Something bad happened; please try again later.');
+                })
+            )
+    }
+
+    deleteRole(roleId: string): Observable<StoreRoleModel> {
+        const roleIndex = Roles.findIndex(item => item.id === roleId);
+
+        if (roleIndex === -1) {
+            return throwError('Role does not exist.');
+        }
+
+        const headers = { 'content-type': 'application/json' }
+
+        return this.http
+            .delete<StoreRoleModel>(this.apiUrl + roleId, { headers })
+            .pipe(
+                catchError((error: HttpErrorResponse) => {
+                    return throwError('Something bad happened; please try again later.');
+                })
+            )
+    }
+
+    isDataLoaded(): Observable<boolean> {
+        return this.isDataLoaded$.asObservable();
     }
 }

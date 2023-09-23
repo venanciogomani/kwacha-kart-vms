@@ -1,6 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Store } from '@ngrx/store';
+import { Subject, filter, switchMap, takeUntil } from 'rxjs';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
+import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
 import { RoleApiService } from 'src/services/api/role.api.service';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
 import { StorePermissionsModel, StoreRoleModel, VendorModel } from 'src/state/models';
@@ -13,6 +16,13 @@ import { selectLoading, selectRoles } from 'src/state/selectors/roles.selectors'
 })
 export class StoreRolesComponent {
     @ViewChild(ModalComponent) modal!: ModalComponent;
+    @ViewChild(ToasterComponent) toaster!: ToasterComponent;
+
+    userDescription: string = '<script>alert("XSS Attack")</script>';
+    sanitizedDescription!: SafeHtml;
+
+    toasterMessage = 'Something went wrong!';
+    toasterType = 'error';
 
     roles$: StoreRoleModel[] = [];
     filteredRoles$: StoreRoleModel[] = [];
@@ -27,11 +37,14 @@ export class StoreRolesComponent {
         permissionsId: []
     }
 
+    allPermissions$: StorePermissionsModel[] = [];
+    availablePermissions$: StorePermissionsModel[] = [];
+
     isAddingRole$ = false;
     isEditingRole$ = false;
     isViewingRole$ = false;
 
-    isRolesLoading$ = false;
+    isRolesLoading$ = true;
 
     searchTerm: string = '';
 
@@ -44,24 +57,40 @@ export class StoreRolesComponent {
     endIndex = 0;
 
     sortDirection = 'asc';
+
+    private destroy$: Subject<void> = new Subject<void>();
     
     constructor(
         private vendorApiService: VendorApiService,
         private roleApiService: RoleApiService,
         private store: Store<{ roles: StoreRoleModel[] }>,
+        private sanitizer: DomSanitizer
     ) {
         this.store.select(selectRoles).subscribe((roles: StoreRoleModel[]) => {
             this.roles$ = roles;
         });
-
-        this.store.select(selectLoading).subscribe((isLoading: boolean) => {
-            this.isRolesLoading$ = isLoading; // use this for loading screen or lazyloading
-        });
     }
 
     ngOnInit() {
-        this.filterRoleBySearchTerm();
-        this.totalPlans = this.roles$.length;
+        if (this.roles$.length === 0) {
+            this.roleApiService
+                .isDataLoaded()
+                .pipe(takeUntil(this.destroy$),
+                    filter((isLoaded: boolean) => isLoaded),
+                    switchMap(() => this.store.select(selectLoading))
+                )
+                .subscribe((isLoading: boolean) => {
+                    this.isRolesLoading$ = isLoading;
+                    this.filterRoleBySearchTerm();
+                    this.getAllPermissions();
+                    this.totalPlans = this.roles$.length;
+                });
+        } else {
+            this.isRolesLoading$ = false;
+            this.filterRoleBySearchTerm();
+            this.getAllPermissions();
+            this.totalPlans = this.roles$.length;
+        }
     }
 
     filterRoleBySearchTerm() {
@@ -148,6 +177,73 @@ export class StoreRolesComponent {
         }
     }
 
+    publishRole() {
+        if (this.roleEdit.name === '') {
+            this.toaster.isOpen = true;
+            this.toasterMessage = 'Role name is required!';
+            this.toasterType = 'error';
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 5000);
+            return;
+        }
+
+        if (this.roleEdit.permissionsId.length === 0) {
+            this.toaster.isOpen = true;
+            this.toasterMessage = 'At least one permission is required!';
+            this.toasterType = 'error';
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 5000);
+            return;
+        }
+
+        this.roleEdit.createdAt = new Date().toISOString();
+        this.roleEdit.updatedAt = new Date().toISOString();
+
+        const modifiedRoleName = this.roleEdit.name.toLocaleLowerCase().replace(/\s/g, '_');
+        const timestamp = new Date().getTime();
+        const id = modifiedRoleName + '_role_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + '_' + timestamp;
+        
+        this.roleEdit.id = id;
+
+        this.roleApiService.saveRole(this.roleEdit).subscribe((response) => {
+                this.toaster.isOpen = true;
+                this.toasterMessage = 'Role has been added successfully!';
+                this.toasterType = 'success';
+                console.log(response);
+                setTimeout(() => {
+                    this.toaster.isOpen = false;
+                }, 5000);
+                this.toggleAddRoleModal();
+            },
+            (error) => {
+                this.toaster.isOpen = true;
+                this.toasterMessage = 'Something went wrong!';
+                this.toasterType = 'error';
+                setTimeout(() => {
+                    this.toaster.isOpen = false;
+                }, 5000);
+            }
+        );
+    }
+
+    sanitizeUserInput() {
+        this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(this.userDescription);
+    }
+
+    toggleRoleStatus() {
+        this.roleEdit.status = !this.roleEdit.status;
+    }
+
+    toggleAddPermissionToRole(permissionId: string) {
+        if (this.roleEdit.permissionsId.includes(permissionId)) {
+            this.roleEdit.permissionsId = this.roleEdit.permissionsId.filter((id: string) => id !== permissionId);
+        } else {
+            this.roleEdit.permissionsId.push(permissionId);
+        }
+    }
+
     toggleEditRoleModal(role: StoreRoleModel) {
         this.isAddingRole$ = false;
         this.isEditingRole$ = !this.isEditingRole$;
@@ -188,11 +284,20 @@ export class StoreRolesComponent {
         };
     }
 
-    get allPermissions(): StorePermissionsModel[] {
-        return this.roleApiService.getAllPermissions();
+    closeToaster() {
+        this.toaster.isOpen = false;
     }
 
-    getAllPermissionsIdsByRole(roleId: string) {
-        return this.roleApiService.getAllPermissionIdsByRole(roleId);
+    getAllPermissions() {
+        this.roleApiService.getAllPermissions().subscribe((permissions: StorePermissionsModel[]) => {
+            this.allPermissions$ = permissions;
+        });
+    }
+
+    getAllPermissionsIdsByRole(roleId: string) {}
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 }
