@@ -12,7 +12,7 @@ import { RolesState } from "src/state/reducers/roles.reducer";
 )
 
 export class RoleApiService {
-    private apiUrl = 'http://localhost:3000/api/';
+    private apiUrl = 'http://localhost:2200/api/';
 
     private isDataLoaded$ = new BehaviorSubject<boolean>(false);
 
@@ -72,7 +72,7 @@ export class RoleApiService {
         const headers = { 'content-type': 'application/json' }
 
         return this.http
-            .post<StoreRoleModel>(this.apiUrl, role, { headers })
+            .post<StoreRoleModel>(this.apiUrl + 'roles', role, { headers })
             .pipe(
                 catchError((error: HttpErrorResponse) => {
                     return throwError('Something bad happened; please try again later.');

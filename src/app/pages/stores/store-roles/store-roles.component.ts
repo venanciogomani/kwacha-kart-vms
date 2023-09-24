@@ -211,10 +211,10 @@ export class StoreRolesComponent {
                 this.toaster.isOpen = true;
                 this.toasterMessage = 'Role has been added successfully!';
                 this.toasterType = 'success';
-                console.log(response);
                 setTimeout(() => {
                     this.toaster.isOpen = false;
                 }, 5000);
+                this.getAllRoles();
                 this.toggleAddRoleModal();
             },
             (error) => {
@@ -295,6 +295,13 @@ export class StoreRolesComponent {
     }
 
     getAllPermissionsIdsByRole(roleId: string) {}
+
+    async getAllRoles() {
+        (await this.roleApiService.getAllRoles()).subscribe((roles: StoreRoleModel[]) => {
+            this.roles$ = roles;
+            this.filterRoleBySearchTerm();
+        });
+    }
 
     ngOnDestroy() {
         this.destroy$.next();
