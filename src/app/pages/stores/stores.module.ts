@@ -11,6 +11,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
 import { HttpClientModule } from '@angular/common/http';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 
@@ -21,15 +22,15 @@ import { HttpClientModule } from '@angular/common/http';
     StoreRolesComponent,
     StorePlansComponent,
     ViewStoreComponent,
-    ModalComponent,
-    ToasterComponent
+    ModalComponent
   ],
   imports: [
     CommonModule,
     MatIconModule,
     FormsModule,
     HttpClientModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    SharedModule
   ],
   exports: [
     StoresComponent,

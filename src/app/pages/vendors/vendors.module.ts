@@ -17,6 +17,7 @@ import { VendorsComponent } from './vendors.component';
 import { VendorTransactionsComponent } from './vendor-transactions/vendor-transactions.component';
 import { VendorViewOrderComponent } from './vendor-view-order/vendor-view-order.component';
 import { VendorViewTransactionComponent } from './vendor-view-transaction/vendor-view-transaction.component';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 
@@ -41,7 +42,8 @@ import { VendorViewTransactionComponent } from './vendor-view-transaction/vendor
     CommonModule,
     FormsModule,
     MatIconModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    SharedModule
   ],
   exports: [
     VendorsComponent,

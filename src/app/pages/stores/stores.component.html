@@ -131,7 +131,7 @@
                                 </th>
                                 <th scope="row" class="px-2 py-4">
                                     <div class="flex flex-col">
-                                        <input type="text" placeholder="Address" class="w-full p-2 border-2">
+                                        <input type="text" placeholder="Address" class="w-full p-2 border-2" [(ngModel)]="editStore.address">
                                         <select class="p-2 w-full border-2 mt-2" [(ngModel)]="editStore.city">
                                             <option value="Lusaka">Lusaka</option>
                                             <option value="Ndola">Ndola</option>
@@ -142,7 +142,7 @@
                                 <td class="px-2 py-4">
                                     <select class="p-2 w-full border-2" [(ngModel)]="editStore.vendorId">
                                         <option value="0" disabled>Select a Vendor</option>
-                                        <option *ngFor="let vendor of allVendors" [value]="vendor.id">{{ vendor.name }}</option>
+                                        <option *ngFor="let vendor of vendors$" [value]="vendor.id">{{ vendor.name }}</option>
                                     </select>
                                 </td>
                                 <td class="px-2 py-4">
@@ -233,7 +233,7 @@
                                     <select class="p-2 w-full border-2" *ngIf="isEditRow(store.id)">
                                         <option value="0" disabled>Select a Vendor</option>
                                         <option [value]="getVendorById(store.vendorId).id" selected>{{ getVendorById(store.vendorId).name }}</option>
-                                        <option *ngFor="let vendor of allVendors" [value]="vendor.id">{{ vendor.name }}</option>
+                                        <option *ngFor="let vendor of vendors$" [value]="vendor.id">{{ vendor.name }}</option>
                                     </select>
                                 </td>
                                 <td class="px-2 py-4">

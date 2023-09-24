@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Subject, filter, switchMap, takeUntil } from 'rxjs';
+import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
 import { RoleApiService } from 'src/services/api/role.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
+import { VendorApiService } from 'src/services/api/vendor.api.service';
 import { StoreRoleModel, StoresModel, VendorModel } from 'src/state';
 import { selectLoading, selectVendors } from 'src/state/selectors/vendors.selectors';
 
@@ -17,6 +20,14 @@ type SortStatus = {
   styleUrls: ['./vendors.component.scss']
 })
 export class VendorsComponent {
+    @ViewChild(ToasterComponent) toaster!: ToasterComponent;
+
+    userDescription: string = '<script>alert("XSS Attack")</script>';
+    sanitizedDescription!: SafeHtml;
+
+    toasterMessage = 'Something went wrong!';
+    toasterType = 'error';
+    
     sortStatus: SortStatus = {
         name: false,
         city: false,
@@ -77,7 +88,9 @@ export class VendorsComponent {
         private router: Router,
         private storeApiService: StoreApiService,
         private roleApiService: RoleApiService,
+        private vendorApiService: VendorApiService,
         private store: Store<{ vendors: VendorModel[] }>,
+        private sanitizer: DomSanitizer
     ) {
         this.store.select(selectVendors).subscribe((vendor: VendorModel[]) => {
             this.vendors$ = vendor;
@@ -104,8 +117,24 @@ export class VendorsComponent {
         } else {
             this.getAllStores();
         }
-        this.filterVendorsBySearchTerm();
-        this.totalVendors = this.vendors$.length;
+
+        if (this.vendors$.length === 0) {
+            this.vendorApiService
+                .isDataLoaded()
+                .pipe(takeUntil(this.destroy$),
+                    filter((isLoaded: boolean) => isLoaded),
+                    switchMap(() => this.store.select(selectLoading))
+                )
+                .subscribe((isLoading: boolean) => {
+                    if (!isLoading) {
+                        this.getAllVendors();
+                    }
+                });
+        } else {
+            this.filterVendorsBySearchTerm();
+            this.totalVendors = this.vendors$.length;
+        }
+        
         this.getAllRoles();
     }
 
@@ -114,11 +143,13 @@ export class VendorsComponent {
     }
 
     toggleEditVendor(vendorToEdit: VendorModel): void {
+        this.resetVendorEdit();
         this.editRow[vendorToEdit.id] = !this.editRow[vendorToEdit.id];
         this.vendorEdit$ = this.editRow[vendorToEdit.id] == true ? vendorToEdit : {} as VendorModel;
     }
 
     toggleAddVendor(): void {
+        this.resetVendorEdit();
         this.addRow = !this.addRow;
     }
 
@@ -195,7 +226,7 @@ export class VendorsComponent {
     }
 
     getStoreById(id: string) {
-        return this.storeApiService.getStoreById(id);
+        return this.allStores$.filter(store => store.id === id)[0];
     }
 
     async getAllStores() {
@@ -205,13 +236,104 @@ export class VendorsComponent {
     }
 
     getRoleById(id: string) {
-        return this.roleApiService.getRoleById(id);
+        return this.availableRoles$.filter(role => role.id === id)[0];
     }
 
     async getAllRoles() {
         return (await this.roleApiService.getAllRoles()).subscribe((roles: StoreRoleModel[]) => {
             this.availableRoles$ = roles;
         });
+    }
+
+    async getAllVendors() {
+        return (await this.vendorApiService.getAllVendors()).subscribe((vendors: VendorModel[]) => {
+            this.vendors$ = vendors;
+            this.filterVendorsBySearchTerm();
+        });
+    }
+
+    publishVendor() {
+        if (this.vendorEdit$.name === '' 
+            || this.vendorEdit$.address === '' 
+            || this.vendorEdit$.city === '' 
+            || this.vendorEdit$.phone === '' 
+            || this.vendorEdit$.email === '' 
+            || this.vendorEdit$.storeId === '' 
+            || this.vendorEdit$.roleId === ''
+        ) {
+            this.toasterMessage = 'Please fill all the fields!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+
+            return;
+        }
+
+        const modifiedVendorName = this.vendorEdit$.name.replace(/\s/g, '_').toLowerCase();
+        const timestamp = new Date().getTime();
+        const vendorId = `${modifiedVendorName}_vendor_${Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)}_${timestamp}`;
+
+        this.vendorEdit$.id = vendorId;
+
+        this.vendorEdit$.createdAt = new Date().toISOString();
+        this.vendorEdit$.country = 'Zambia';
+        this.vendorEdit$.province = this.vendorEdit$.city;
+        this.vendorEdit$.updatedAt = new Date().toISOString();
+
+        this.vendorApiService.saveVendor(this.vendorEdit$).subscribe((vendor: VendorModel) => {
+            this.toasterMessage = 'Vendor saved successfully!';
+            this.toasterType = 'success';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+            this.getAllVendors();
+            this.resetVendorEdit();
+            this.toggleAddVendor();
+        }, (error: any) => {
+            this.toasterMessage = 'Something went wrong!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+        });
+    }
+
+    sanitizeUserInput() {
+        this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(this.userDescription);
+    }
+
+    closeToaster() {
+        this.toaster.isOpen = false;
+    }
+
+    toggleVendorStatus() {
+        this.vendorEdit$.status = !this.vendorEdit$.status;
+    }
+
+    toggleVendorVerification() {
+        this.vendorEdit$.isVerified = !this.vendorEdit$.isVerified;
+    }
+
+    resetVendorEdit() {
+        this.vendorEdit$ = {
+            id: '',
+            name: '',
+            address: '',
+            city: '',
+            province: '',
+            country: '',
+            phone: '',
+            email: '',
+            status: false,
+            isVerified: false,
+            storeId: '',
+            roleId: '',
+            createdAt: ''
+        };
     }
 
     ngOnDestroy() {

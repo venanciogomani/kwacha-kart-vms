@@ -7,6 +7,7 @@ import { SpinnerComponent } from './spinner/spinner.component';
 import { MatIconModule } from '@angular/material/icon';
 import { ChatBotComponent } from './chat-bot/chat-bot.component';
 import { FloatingMenuComponent } from './floating-menu/floating-menu.component';
+import { ToasterComponent } from './toaster/toaster.component';
 
 
 
@@ -17,7 +18,8 @@ import { FloatingMenuComponent } from './floating-menu/floating-menu.component';
         FooterComponent,
         SpinnerComponent,
         ChatBotComponent,
-        FloatingMenuComponent
+        FloatingMenuComponent,
+        ToasterComponent
     ],
     imports: [
         CommonModule,
@@ -29,7 +31,8 @@ import { FloatingMenuComponent } from './floating-menu/floating-menu.component';
         FooterComponent,
         SpinnerComponent,
         ChatBotComponent,
-        FloatingMenuComponent
+        FloatingMenuComponent,
+        ToasterComponent
     ]
 })
 export class SharedModule { }

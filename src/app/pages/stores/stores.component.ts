@@ -7,7 +7,7 @@ import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
 import { PlanApiService } from 'src/services/api/plan.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
-import { StorePlansModel, StoresModel } from 'src/state';
+import { StorePlansModel, StoresModel, VendorModel } from 'src/state';
 import { StoresState } from 'src/state/reducers/stores.reducer';
 import { selectLoading, selectStores } from 'src/state/selectors/stores.selectors';
 
@@ -49,6 +49,7 @@ export class StoresComponent {
     };
 
     allPlans$: StorePlansModel[] = [];
+    vendors$: VendorModel[] = [];
 
     editRow: { [key: string]: boolean } = {};
 
@@ -110,12 +111,27 @@ export class StoresComponent {
                     switchMap(() => this.store.select(selectStores))
                 )
                 .subscribe((stores: StoresModel[]) => {
-                    this.stores$ = stores;
-                    this.filterStoresBySearchTerm();
+                    this.getAllStores();
                 });
         } else {
             this.filterStoresBySearchTerm();
             this.totalStores = this.stores$.length;
+        }
+
+        if (this.vendors$.length === 0) {
+            this.vendorApiService
+                .isDataLoaded()
+                .pipe(takeUntil(this.destroy$),
+                    filter((isLoaded: boolean) => isLoaded),
+                    switchMap(() => this.store.select(selectLoading))
+                )
+                .subscribe((isLoading: boolean) => {
+                    if (!isLoading) {
+                        this.getAllVendors();
+                    }
+                });
+        } else {
+            this.getAllVendors();
         }
     }
 
@@ -136,8 +152,10 @@ export class StoresComponent {
         return this.vendorApiService.getVendorById(id);
     }
 
-    get allVendors() {
-        return this.vendorApiService.getAllVendors();
+    async getAllVendors() {
+        return (await this.vendorApiService.getAllVendors()).subscribe((vendors: VendorModel[]) => {
+            this.vendors$ = vendors;
+        });
     }
 
     getPlanById(id: string) {
@@ -147,6 +165,13 @@ export class StoresComponent {
     getAllPlans() {
         this.planApiService.getAllPlans().subscribe((plans: StorePlansModel[]) => {
             this.allPlans$ = plans;
+        });
+    }
+
+    async getAllStores() {
+        return (await this.storeApiService.getAllStores()).subscribe((stores: StoresModel[]) => {
+            this.stores$ = stores;
+            this.filterStoresBySearchTerm();
         });
     }
 
@@ -235,14 +260,47 @@ export class StoresComponent {
         this.editStore = {
             id: '',
             name: '',
+            description: '',
+            address: '',
             status: false,
             vendorId: '',
             planId: '',
-            createdAt: ''
+            roleId: '',
+            country: '',
+            province: '',
+            city: '',
+            createdAt: '',
+            updatedAt: '',
         };
     }
 
     publishStore() {
+        if (this.editStore.name === '' 
+            || this.editStore.vendorId === '' 
+            || this.editStore.planId === '' 
+            || this.editStore.address === ''
+            || this.editStore.city === ''
+        ) {
+            this.toasterMessage = 'Please fill all the fields!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 3000);
+            return;
+        }
+
+        this.editStore.createdAt = new Date().toISOString();
+        this.editStore.updatedAt = new Date().toISOString();
+        this.editStore.country = 'Zambia';
+        this.editStore.province = this.editStore.city;
+        this.editStore.roleId = 'store';
+
+        const modifiedStoreName = this.editStore.name.toLocaleLowerCase().replace(/\s/g, '_');
+        const timestamp = new Date().getTime();
+        const storeId = modifiedStoreName + '_store_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + '_' + timestamp;
+        this.editStore.id = storeId;
+
         this.storeApiService.saveStore(this.editStore).subscribe((store: StoresModel) => {
             this.toasterMessage = 'Store published successfully!';
             this.toasterType = 'success';
@@ -250,7 +308,7 @@ export class StoresComponent {
             setTimeout(() => {
                 this.toaster.isOpen = false;
             }, 3000);
-            this.getAllPlans();
+            this.getAllStores();
             this.toggleAddStore();
         }, (error: any) => {
             this.toasterMessage = 'Something went wrong!';

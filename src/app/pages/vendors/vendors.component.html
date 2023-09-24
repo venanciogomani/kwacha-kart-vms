@@ -120,15 +120,39 @@
                                 </td>
                                 <th scope="row" class="px-4 py-4">
                                     <div class="flex flex-col">
-                                        <input type="text" placeholder="Vendor name" class="w-full p-2 border-2 text-xs font-normal">
-                                        <input type="text" placeholder="Email" class="w-full p-2 border-2 mt-1 text-xs font-normal">
-                                        <input type="text" placeholder="Phone" class="w-full p-2 border-2 mt-1 text-xs font-normal">
+                                        <input 
+                                            type="text" 
+                                            placeholder="Vendor name" 
+                                            class="w-full p-2 border-2 text-xs font-normal" 
+                                            [(ngModel)]="vendorEdit$.name"
+                                            [innerHTML]="sanitizeUserInput()"
+                                        >
+                                        <input 
+                                            type="text" 
+                                            placeholder="Email" 
+                                            class="w-full p-2 border-2 mt-1 text-xs font-normal" 
+                                            [(ngModel)]="vendorEdit$.email"
+                                            [innerHTML]="sanitizeUserInput()"
+                                        >
+                                        <input 
+                                            type="text" 
+                                            placeholder="Phone" 
+                                            class="w-full p-2 border-2 mt-1 text-xs font-normal" 
+                                            [(ngModel)]="vendorEdit$.phone"
+                                            [innerHTML]="sanitizeUserInput()"
+                                        >
                                     </div>
                                 </th>
                                 <th scope="row" class="px-4 py-4">
                                     <div class="flex flex-col">
-                                        <input type="text" placeholder="Address" class="w-full p-2 border-2 text-xs font-normal">
-                                        <select class="p-2 w-full border-2 mt-2 text-xs font-normal">
+                                        <input 
+                                            type="text" 
+                                            placeholder="Address" 
+                                            class="w-full p-2 border-2 text-xs font-normal" 
+                                            [(ngModel)]="vendorEdit$.address"
+                                            [innerHTML]="sanitizeUserInput()"
+                                        >
+                                        <select class="p-2 w-full border-2 mt-2 text-xs font-normal" [(ngModel)]="vendorEdit$.city">
                                             <option value="1">Lusaka</option>
                                             <option value="2">Ndola</option>
                                             <option value="3">Kabwe</option>
@@ -136,36 +160,40 @@
                                     </div>
                                 </th>
                                 <th scope="row" class="px-4 py-4">
-                                    <select class="p-2 w-full border-2 mt-2 font-normal text-xs">
+                                    <select class="p-2 w-full border-2 mt-2 font-normal text-xs" [(ngModel)]="vendorEdit$.storeId">
                                         <option value="" disabled>Select a Store</option>
                                         <option *ngFor="let store of allStores$" [value]="store.id">{{ store.name }}</option>
                                     </select>
                                 </th>
                                 <th scope="row" class="px-4 py-4">
-                                    <select class="p-2 w-full border-2 mt-2 font-normal text-xs">
+                                    <select class="p-2 w-full border-2 mt-2 font-normal text-xs" [(ngModel)]="vendorEdit$.roleId">
                                         <option value="" disabled>Select a Role</option>
                                         <option *ngFor="let role of availableRoles$" [value]="role.id">{{ role.name }}</option>
                                     </select>
                                 </th>
                                 <td class="px-4 py-4 w-14">
                                     <mat-slide-toggle
+                                        (click)="toggleVendorStatus()"
                                         class="text-xs"
                                     >
-                                        Inactive
+                                        {{ vendorEdit$.status ? 'Active' : 'Inactive' }}
                                     </mat-slide-toggle>
                                     <mat-slide-toggle
+                                        (click)="toggleVendorVerification()"
                                         class="text-xs mt-2"
                                     >
-                                        Unverified
+                                        {{ vendorEdit$.isVerified ? 'Verified' : 'Unverified' }}
                                     </mat-slide-toggle>
                                 </td>
                                 <td class="px-4 py-4 relative">
                                     <div class="flex flex-row justify-between items-center">
                                         <mat-icon
+                                            (click)="publishVendor()"
                                             class="cursor-pointer text-emerald-400"
                                             fontIcon="check_circle"
                                         ></mat-icon>
                                         <mat-icon
+                                            (click)="toggleAddVendor()"
                                             class="cursor-pointer text-rose-600"
                                             fontIcon="delete"
                                         ></mat-icon>
@@ -210,18 +238,21 @@
                                             type="text"
                                             class="w-full p-2 border-2 font-normal"
                                             [(ngModel)]="vendorEdit$.name"
+                                            [innerHTML]="sanitizeUserInput()"
                                         />
                                         <input
                                             *ngIf="isEditRow(vendor.id)"
                                             type="text"
                                             class="w-full p-2 border-2 font-normal mt-1"
                                             [(ngModel)]="vendorEdit$.email"
+                                            [innerHTML]="sanitizeUserInput()"
                                         />
                                         <input
                                             *ngIf="isEditRow(vendor.id)"
                                             type="text"
                                             class="w-full p-2 border-2 font-normal mt-1"
                                             [(ngModel)]="vendorEdit$.phone"
+                                            [innerHTML]="sanitizeUserInput()"
                                         />
                                     </div>
                                 </th>
@@ -235,7 +266,13 @@
                                         </span>
                                     </div>
                                     <div class="flex flex-col" *ngIf="isEditRow(vendor.id)">
-                                        <input type="text" placeholder="Update address" class="w-full p-2 border-2 font-normal text-xs" [(ngModel)]="vendorEdit$.address">
+                                        <input 
+                                            type="text" 
+                                            placeholder="Update address" 
+                                            class="w-full p-2 border-2 font-normal text-xs" 
+                                            [(ngModel)]="vendorEdit$.address"
+                                            [innerHTML]="sanitizeUserInput()"
+                                        >
                                         <select class="p-2 w-full border-2 mt-2 font-normal text-xs">
                                             <option value="1">Lusaka</option>
                                             <option value="2">Ndola</option>
@@ -254,7 +291,7 @@
                                 </th>
                                 <th scope="row" class="px-4 py-4">
                                     <span *ngIf="!isEditRow(vendor.id)" class="font-regular">
-                                        {{ getRoleById(vendor.roleId)?.name }}
+                                        {{ getRoleById(vendor.roleId).name }}
                                     </span>
                                     <select class="p-2 w-full border-2 mt-2 font-normal text-xs" *ngIf="isEditRow(vendor.id)">
                                         <option value="" disabled>Select a Role</option>
@@ -270,7 +307,7 @@
                                             {{ vendor.status ? 'Active' : 'Inactive' }}
                                         </mat-slide-toggle>
                                         <mat-slide-toggle
-                                            [checked]="vendor.status"
+                                            [checked]="vendor.isVerified"
                                             class="mt-2 text-xs"
                                         >
                                             {{ vendor.isVerified ? 'Verified' : 'Unverified' }}
@@ -440,3 +477,18 @@
         </div>
     </div>
 </div>
+
+<app-toaster>
+    <div class="flex flex-row w-full h-full">
+        <span 
+            [ngClass]="{ 'text-green-500': toasterType === 'success', 'text-red-500': toasterType === 'error' }"
+        >
+            {{ toasterMessage }}
+        </span>
+        <mat-icon
+            (click)="closeToaster()"
+            fontIcon="close"
+            class="text-gray-500 ml-2 cursor-pointer"
+        ></mat-icon>
+    </div>
+</app-toaster>

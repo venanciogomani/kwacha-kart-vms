@@ -7,6 +7,7 @@ import { StoresModule } from './stores/stores.module';
 import { VendorsModule } from './vendors/vendors.module';
 import { ProductsModule } from './products/products.module';
 import { UsersModule } from './users/users.module';
+import { ToasterComponent } from '../shared/toaster/toaster.component';
 
 
 
