@@ -269,6 +269,7 @@
                 "
                 placeholder="Free"
                 [(ngModel)]="planEdit.name"
+                [innerHTML]="sanitizeUserInput()"
             />
         </div>
         <div class="flex flex-col p-2">
@@ -281,6 +282,7 @@
                 "
                 placeholder="Free plan for all stores"
                 [(ngModel)]="planEdit.description"
+                [innerHTML]="sanitizeUserInput()"
             />
         </div>
         <div class="flex flex-col p-2">
@@ -293,17 +295,18 @@
                 "
                 placeholder="0.00"
                 [(ngModel)]="planEdit.price"
+                [innerHTML]="sanitizeUserInput()"
             />
         </div>
         <div class="flex flex-col p-2">
             <span class="text-gray-500 text-sm font-semibold mb-2">Billing Cycle</span>
             <select class="p-2 w-full border-2" [(ngModel)]="planEdit.billingCycle">
                 <option value="0">None</option>
-                <option value="1">Monthly</option>
-                <option value="3">3 Months</option>
-                <option value="6">6 Months</option>
-                <option value="12">Annually</option>
-                <option value="13">Custom</option>
+                <option value="30">Monthly</option>
+                <option value="90">3 Months</option>
+                <option value="120">6 Months</option>
+                <option value="360">Annually</option>
+                <option value="1">Custom</option>
             </select>
         </div>
         <div class="flex flex-col p-2">
@@ -315,7 +318,8 @@
     </div>
     <!-- Modal footer -->
     <div class="flex items-center justify-end px-4 py-3 border-t border-gray-200">
-        <button 
+        <button
+            (click)="publishPlan()"
             class="text-gray-600 text-sm mr-2 bg-transparent px-4 py-2 rounded-lg border-2 border-gray-600"
         >
             Publish
@@ -328,3 +332,18 @@
         </button>
     </div>
 </app-modal>
+
+<app-toaster>
+    <div class="flex flex-row w-full h-full">
+        <span 
+            [ngClass]="{ 'text-green-500': toasterType === 'success', 'text-red-500': toasterType === 'error' }"
+        >
+            {{ toasterMessage }}
+        </span>
+        <mat-icon
+            (click)="closeToaster()"
+            fontIcon="close"
+            class="text-gray-500 ml-2 cursor-pointer"
+        ></mat-icon>
+    </div>
+</app-toaster>

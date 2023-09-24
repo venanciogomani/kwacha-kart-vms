@@ -165,18 +165,6 @@ export class StoreRolesComponent {
         return this.vendorApiService.getVendorsByRoleId(id);
     }
 
-    toggleAddRoleModal() {
-        this.isAddingRole$ = !this.isAddingRole$;
-        this.isEditingRole$ = false;
-        this.isViewingRole$ = false;
-        
-        this.resetRoleEdit();
-
-        if (this.modal) {
-            this.modal.isOpen = !this.modal.isOpen;
-        }
-    }
-
     publishRole() {
         if (this.roleEdit.name === '') {
             this.toaster.isOpen = true;
@@ -215,7 +203,7 @@ export class StoreRolesComponent {
                     this.toaster.isOpen = false;
                 }, 5000);
                 this.getAllRoles();
-                this.toggleAddRoleModal();
+                this.closeRoleModal();
             },
             (error) => {
                 this.toaster.isOpen = true;
@@ -244,10 +232,23 @@ export class StoreRolesComponent {
         }
     }
 
+    toggleAddRoleModal() {
+        this.isAddingRole$ = true;
+        this.isEditingRole$ = false;
+        this.isViewingRole$ = false;
+        
+        this.resetRoleEdit();
+
+        if (this.modal) {
+            this.modal.isOpen = !this.modal.isOpen;
+        }
+    }
+
     toggleEditRoleModal(role: StoreRoleModel) {
         this.isAddingRole$ = false;
-        this.isEditingRole$ = !this.isEditingRole$;
+        this.isEditingRole$ = true;
         this.isViewingRole$ = false;
+        this.availablePermissions$ = this.getAllPermissionsIdsByRole(role.id);
 
         this.resetRoleEdit();
         
@@ -261,7 +262,8 @@ export class StoreRolesComponent {
     toggleViewRoleModal(role: StoreRoleModel) {
         this.isAddingRole$ = false;
         this.isEditingRole$ = false;
-        this.isViewingRole$ = !this.isViewingRole$;
+        this.isViewingRole$ = true;
+        this.availablePermissions$ = this.getAllPermissionsIdsByRole(role.id);
 
         this.resetRoleEdit();
         
@@ -269,6 +271,17 @@ export class StoreRolesComponent {
         
         if (this.modal) {
             this.modal.isOpen = !this.modal.isOpen;
+        }
+    }
+
+    closeRoleModal() {
+        this.isAddingRole$ = false;
+        this.isEditingRole$ = false;
+        this.isViewingRole$ = false;
+        this.resetRoleEdit();
+        
+        if (this.modal) {
+            this.modal.isOpen = false;
         }
     }
 
@@ -294,7 +307,19 @@ export class StoreRolesComponent {
         });
     }
 
-    getAllPermissionsIdsByRole(roleId: string) {}
+    getAllPermissionsIdsByRole(roleId: string): StorePermissionsModel[] {
+        // get all permissionIds from role
+        const permissionIds = this.roles$.find((role: StoreRoleModel) => role.id === roleId)?.permissionsId;
+
+        // get all permissions from allPermissions$ by permissionIds
+        return this.allPermissions$.filter((permission: StorePermissionsModel) => {
+            return permissionIds?.includes(permission.id);
+        });
+    }
+
+    isPermissionChecked(permissionId: string): boolean {
+        return this.roleEdit.permissionsId.includes(permissionId);
+    }
 
     async getAllRoles() {
         (await this.roleApiService.getAllRoles()).subscribe((roles: StoreRoleModel[]) => {

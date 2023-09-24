@@ -138,7 +138,7 @@
                                 <th scope="row" class="px-4 py-4">
                                     <select class="p-2 w-full border-2 mt-2 font-normal text-xs">
                                         <option value="" disabled>Select a Store</option>
-                                        <option *ngFor="let store of getAllStores" [value]="store.id">{{ store.name }}</option>
+                                        <option *ngFor="let store of allStores$" [value]="store.id">{{ store.name }}</option>
                                     </select>
                                 </th>
                                 <th scope="row" class="px-4 py-4">
@@ -249,7 +249,7 @@
                                     </span>
                                     <select class="p-2 w-full border-2 mt-2 font-normal text-xs" *ngIf="isEditRow(vendor.id)">
                                         <option value="" disabled>Select a Store</option>
-                                        <option *ngFor="let store of getAllStores" [value]="store.id">{{ store.name }}</option>
+                                        <option *ngFor="let store of allStores$" [value]="store.id">{{ store.name }}</option>
                                     </select>
                                 </th>
                                 <th scope="row" class="px-4 py-4">

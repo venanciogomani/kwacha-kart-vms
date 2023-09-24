@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { Subject, filter, switchMap, takeUntil } from 'rxjs';
 import { RoleApiService } from 'src/services/api/role.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
 import { StoreRoleModel, StoresModel, VendorModel } from 'src/state';
@@ -52,6 +53,7 @@ export class VendorsComponent {
     };
 
     availableRoles$: StoreRoleModel[] = [];
+    allStores$: StoresModel[] = [];
 
     editRow: { [key: string]: boolean } = {};
 
@@ -69,6 +71,8 @@ export class VendorsComponent {
 
     sortDirection = 'asc';
 
+    private destroy$: Subject<void> = new Subject<void>();
+
     constructor(
         private router: Router,
         private storeApiService: StoreApiService,
@@ -85,6 +89,21 @@ export class VendorsComponent {
     }
 
     ngOnInit(): void {
+        if (this.allStores$.length === 0) {
+            this.storeApiService
+                .isDataLoaded()
+                .pipe(takeUntil(this.destroy$),
+                    filter((isLoaded: boolean) => isLoaded),
+                    switchMap(() => this.store.select(selectLoading))
+                )
+                .subscribe((isLoading: boolean) => {
+                    if (!isLoading) {
+                        this.getAllStores();
+                    }
+                });
+        } else {
+            this.getAllStores();
+        }
         this.filterVendorsBySearchTerm();
         this.totalVendors = this.vendors$.length;
         this.getAllRoles();
@@ -179,8 +198,10 @@ export class VendorsComponent {
         return this.storeApiService.getStoreById(id);
     }
 
-    get getAllStores() {
-        return this.storeApiService.getAllStores();
+    async getAllStores() {
+        return (await this.storeApiService.getAllStores()).subscribe((stores: StoresModel[]) => {
+            this.allStores$ = stores;
+        });
     }
 
     getRoleById(id: string) {
@@ -191,5 +212,10 @@ export class VendorsComponent {
         return (await this.roleApiService.getAllRoles()).subscribe((roles: StoreRoleModel[]) => {
             this.availableRoles$ = roles;
         });
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 }

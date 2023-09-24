@@ -142,7 +142,7 @@
                                 {{ role.description }}
                             </td>
                             <td class="px-6 py-4">
-                                {{ role.permissionsId.length }}
+                                {{ getAllPermissionsIdsByRole(role.id).length }} permissions
                             </td>
                             <td class="px-6 py-4 w-14">
                                 <mat-slide-toggle
@@ -236,7 +236,7 @@
             class="text-gray-400"
         >
             <mat-icon
-                (click)="toggleAddRoleModal()"
+                (click)="closeRoleModal()"
                 fontIcon="close"
             ></mat-icon>
         </button>
@@ -284,6 +284,7 @@
                     <mat-slide-toggle
                         [checked]="roleEdit.status"
                         (change)="toggleRoleStatus()"
+                        [disabled]="isViewingRole$"
                     >
                         Inactive
                     </mat-slide-toggle>
@@ -291,7 +292,7 @@
             </div>
             <div class="flex flex-col p-2 w-full md:w-1/2">
                 <span class="text-gray-500 text-sm font-semibold pb-2 border-b">Permissions List</span>
-                <div class="flex flex-col overflow-y-auto bg-gray-100 max-h-[300px]" *ngIf="!isViewingRole$">
+                <div class="flex flex-col overflow-y-auto bg-gray-100 max-h-[300px]" *ngIf="isAddingRole$">
                     <div class="flex flex-row p-2" *ngFor="let permission of allPermissions$">
                         <input 
                             type="checkbox"
@@ -306,6 +307,27 @@
                             "
                             (change)="toggleAddPermissionToRole(permission.id)"
                             [innerHTML]="sanitizedDescription"
+                        />
+                        <span class="text-gray-500 px-2 text-sm">
+                            {{ permission.name }}
+                        </span>
+                    </div>
+                </div>
+                <div class="flex flex-col overflow-y-auto bg-gray-100 max-h-[300px]" *ngIf="isEditingRole$">
+                    <div class="flex flex-row p-2" *ngFor="let permission of allPermissions$">
+                        <input 
+                            type="checkbox"
+                            class="w-4 h-4
+                                text-gray-600
+                                bg-gray-100
+                                border-gray-300
+                                rounded
+                                focus:ring-gray-500
+                                focus:ring-2
+                                font-normal
+                            "
+                            (change)="toggleAddPermissionToRole(permission.id)"
+                            [checked]="isPermissionChecked(permission.id)"
                         />
                         <span class="text-gray-500 px-2 text-sm">
                             {{ permission.name }}
@@ -334,11 +356,12 @@
             type="submit"
             (click)="publishRole()"
             class="text-gray-600 text-sm mr-2 bg-transparent px-4 py-2 rounded-lg border-2 border-gray-600"
+            *ngIf="!isViewingRole$"
         >
             Publish
         </button>
         <button
-            (click)="toggleAddRoleModal()"
+            (click)="closeRoleModal()"
             class="text-white text-sm bg-rose-600 px-4 py-2 rounded-lg hover:bg-rose-500 transition duration-200 ease-in-out"
         >
             Cancel

@@ -1,5 +1,7 @@
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
+import { BehaviorSubject, Observable } from "rxjs";
 import { PaymentAccountTypeModel, PaymentMethodModel, StorePaymentDetailsModel, StoresModel } from "src/state";
 import { loadStoresSuccess } from "src/state/actions/stores.actions";
 import { Stores, StorePaymentDetails, PaymentMethods, PaymentAccountTypes } from "src/state/dataset";
@@ -10,21 +12,31 @@ import { StoresState } from "src/state/reducers/stores.reducer";
 )
 
 export class StoreApiService {
+    private apiUrl = 'http://localhost:2200/api/';
+
+    private isDataLoaded$ = new BehaviorSubject<boolean>(false);
+
     constructor(
-        private store: Store<StoresState>
+        private store: Store<StoresState>,
+        private http: HttpClient
     ) { }
 
-    createInitialStoresState() {
-        const initialState: StoresState = {
-            stores: Stores,
-            loading: false
-        }
-        
-        this.store.dispatch(loadStoresSuccess(initialState.stores));
+    async createInitialStoresState() {
+        (await this.getAllStores()).subscribe((allStores: StoresModel[]) => {
+            const initialState: StoresState = {
+                stores: allStores,
+                loading: false
+            }
+            
+            this.store.dispatch(loadStoresSuccess(initialState.stores));
+            this.isDataLoaded$.next(true);
+        });
     }
 
-    getAllStores() {
-        return Stores;
+    async getAllStores(): Promise<Observable<StoresModel[]>> {
+        const headers = { 'content-type': 'application/json' }
+
+        return this.http.get<StoresModel[]>(this.apiUrl + 'stores', { headers })
     }
 
     getStoreById(id: string): StoresModel {
@@ -39,8 +51,15 @@ export class StoreApiService {
         return Stores.filter(store => store.planId === planId);
     }
 
+    // TODO: Remove this method
     getStores(): StoresModel[] {
         return Stores;
+    }
+
+    saveStore(store: StoresModel): Observable<StoresModel> {
+        const headers = { 'content-type': 'application/json' }
+
+        return this.http.post<StoresModel>(this.apiUrl + 'stores', store, { headers })
     }
 
     getPaymentMethodById(id: string): PaymentMethodModel {
@@ -65,5 +84,9 @@ export class StoreApiService {
 
     getPaymentMethodTypeById(id: string): PaymentAccountTypeModel {
         return PaymentAccountTypes.find(paymentAccountType => paymentAccountType.id === id && paymentAccountType.status === true) || {} as PaymentAccountTypeModel;
+    }
+
+    isDataLoaded(): Observable<boolean> {
+        return this.isDataLoaded$.asObservable();
     }
 }

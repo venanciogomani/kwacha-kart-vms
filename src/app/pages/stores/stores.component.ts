@@ -1,10 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { Subject, filter, switchMap, takeUntil } from 'rxjs';
+import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
 import { PlanApiService } from 'src/services/api/plan.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
-import { StoresModel } from 'src/state';
+import { StorePlansModel, StoresModel } from 'src/state';
 import { StoresState } from 'src/state/reducers/stores.reducer';
 import { selectLoading, selectStores } from 'src/state/selectors/stores.selectors';
 
@@ -18,6 +21,14 @@ type SortStatus = {
   styleUrls: ['./stores.component.scss']
 })
 export class StoresComponent {
+    @ViewChild(ToasterComponent) toaster!: ToasterComponent;
+
+    userDescription: string = '<script>alert("XSS Attack")</script>';
+    sanitizedDescription!: SafeHtml;
+
+    toasterMessage = 'Something went wrong!';
+    toasterType = 'error';
+    
     sortStatus: SortStatus = {
         name: false,
         city: false,
@@ -27,6 +38,17 @@ export class StoresComponent {
     stores$: StoresModel[] = [];
     fileterdStores$: StoresModel[] = [];
     isStoresLoading$ = false;
+
+    editStore: StoresModel = {
+        id: '',
+        name: '',
+        status: false,
+        vendorId: '',
+        planId: '',
+        createdAt: ''
+    };
+
+    allPlans$: StorePlansModel[] = [];
 
     editRow: { [key: string]: boolean } = {};
 
@@ -44,11 +66,15 @@ export class StoresComponent {
 
     sortDirection = 'asc';
 
+    private destroy$: Subject<void> = new Subject<void>();
+
     constructor(
         private router: Router,
+        private storeApiService: StoreApiService,
         private vendorApiService: VendorApiService,
         private planApiService: PlanApiService,
         private store: Store<{ stores: StoresState[] }>,
+        private sanitizer: DomSanitizer
     ) {
         this.store.select(selectStores).subscribe((stores: StoresModel[]) => {
             this.stores$ = stores;
@@ -60,8 +86,37 @@ export class StoresComponent {
     }
 
     ngOnInit(): void {
-        this.filterStoresBySearchTerm();
-        this.totalStores = this.stores$.length;
+        if (this.allPlans$.length === 0) {
+            this.planApiService
+                .isDataLoaded()
+                .pipe(takeUntil(this.destroy$),
+                    filter((isLoaded: boolean) => isLoaded),
+                    switchMap(() => this.store.select(selectLoading))
+                )
+                .subscribe((isLoading: boolean) => {
+                    if (!isLoading) {
+                        this.getAllPlans();
+                    }
+                });
+        } else {
+            this.getAllPlans();
+        }
+
+        if (this.stores$.length === 0) {
+            this.storeApiService
+                .isDataLoaded()
+                .pipe(takeUntil(this.destroy$),
+                    filter((isLoaded: boolean) => isLoaded),
+                    switchMap(() => this.store.select(selectStores))
+                )
+                .subscribe((stores: StoresModel[]) => {
+                    this.stores$ = stores;
+                    this.filterStoresBySearchTerm();
+                });
+        } else {
+            this.filterStoresBySearchTerm();
+            this.totalStores = this.stores$.length;
+        }
     }
 
     isEditRow(id: string): boolean {
@@ -73,6 +128,7 @@ export class StoresComponent {
     }
 
     toggleAddStore(): void {
+        this.resetEditStore();
         this.addRow = !this.addRow;
     }
 
@@ -88,8 +144,10 @@ export class StoresComponent {
         return this.planApiService.getPlanById(id);
     }
 
-    get allPlans() {
-        return this.planApiService.getAllPlans();
+    getAllPlans() {
+        this.planApiService.getAllPlans().subscribe((plans: StorePlansModel[]) => {
+            this.allPlans$ = plans;
+        });
     }
 
     filterStoresBySearchTerm() {
@@ -162,5 +220,53 @@ export class StoresComponent {
 
     toggleViewStore(id: string) {
         this.router.navigate([`/store/view/${id}`]);
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
+    toggleStoreStatus() {
+        this.editStore.status = !this.editStore.status;
+    }
+
+    resetEditStore() {
+        this.editStore = {
+            id: '',
+            name: '',
+            status: false,
+            vendorId: '',
+            planId: '',
+            createdAt: ''
+        };
+    }
+
+    publishStore() {
+        this.storeApiService.saveStore(this.editStore).subscribe((store: StoresModel) => {
+            this.toasterMessage = 'Store published successfully!';
+            this.toasterType = 'success';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 3000);
+            this.getAllPlans();
+            this.toggleAddStore();
+        }, (error: any) => {
+            this.toasterMessage = 'Something went wrong!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 3000);
+        });
+    }
+
+    sanitizeUserInput() {
+        this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(this.userDescription);
+    }
+
+    closeToaster() {
+        this.toaster.isOpen = false;
     }
 }

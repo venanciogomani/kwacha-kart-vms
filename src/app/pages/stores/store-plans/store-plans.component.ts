@@ -1,6 +1,10 @@
 import { Component, ViewChild } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Store } from '@ngrx/store';
+import { Subject, filter, switchMap, takeUntil } from 'rxjs';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
+import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
+import { PlanApiService } from 'src/services/api/plan.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
 import { StorePlansModel, StoresModel } from 'src/state';
 import { selectLoading, selectPlans } from 'src/state/selectors/plans.selectors';
@@ -16,6 +20,14 @@ type SortStatus = {
 })
 export class StorePlansComponent {
     @ViewChild(ModalComponent) modal!: ModalComponent;
+    @ViewChild(ToasterComponent) toaster!: ToasterComponent;
+
+    userDescription: string = '<script>alert("XSS Attack")</script>';
+    sanitizedDescription!: SafeHtml;
+
+    toasterMessage = 'Something went wrong!';
+    toasterType = 'error';
+    
     sortStatus: SortStatus = {
         name: false,
         status: false,
@@ -52,10 +64,14 @@ export class StorePlansComponent {
     endIndex = 0;
 
     sortDirection = 'asc';
+
+    private destroy$: Subject<void> = new Subject<void>();
     
     constructor(
         private storeApiService: StoreApiService,
+        private planApiService: PlanApiService,
         private store: Store<{ plans: StorePlansModel[] }>,
+        private sanitizer: DomSanitizer
     ) {
         this.store.select(selectPlans).subscribe((plans: StorePlansModel[]) => {
             this.plans$ = plans;
@@ -67,8 +83,25 @@ export class StorePlansComponent {
     }
 
     ngOnInit() {
-        this.filterPlanBySearchTerm();
-        this.totalPlans = this.plans$.length;
+        if (this.plans$.length === 0) {
+            this.planApiService
+                .isDataLoaded()
+                .pipe(takeUntil(this.destroy$),
+                    filter((isLoaded: boolean) => isLoaded),
+                    switchMap(() => this.store.select(selectLoading))
+                )
+                .subscribe((isLoading: boolean) => {
+                    if (!isLoading) {
+                        this.getAllPlans();
+                        this.filterPlanBySearchTerm();
+                        this.totalPlans = this.plans$.length;
+                    }
+                });
+        } else {
+            this.filterPlanBySearchTerm();
+            this.getAllPlans();
+            this.totalPlans = this.plans$.length;
+        }
     }
 
     filterPlanBySearchTerm() {
@@ -112,6 +145,58 @@ export class StorePlansComponent {
             updatedAt: '',
             billingCycle: ''
         };
+    }
+
+    publishPlan() {
+        if (this.planEdit.name === '' || this.planEdit.description === '' || this.planEdit.price === 0) {
+            this.toasterMessage = 'Please fill all the required fields';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 3000);
+            return;
+        }
+
+        this.planEdit.createdAt = new Date().toISOString();
+        this.planEdit.updatedAt = new Date().toISOString();
+
+        const modifiedRoleName = this.planEdit.name.toLowerCase().replace(/\s/g, '-');
+        const timestamp = new Date().getTime();
+        const newPlanId = modifiedRoleName + '_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + '_' + timestamp;
+
+        this.planEdit.id = newPlanId;
+        
+        this.planApiService.savePlan(this.planEdit).subscribe((plan: StorePlansModel) => {
+            this.toasterMessage = 'Plan published successfully!';
+            this.toasterType = 'success';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 3000);
+            this.getAllPlans();
+            this.toggleAddPlanModal();
+        },
+        (error) => {
+            this.toasterMessage = 'Something went wrong!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 3000);
+        });
+    }
+
+    closeToaster() {
+        this.toaster.isOpen = false;
+    }
+
+    sanitizeUserInput() {
+        this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(this.userDescription);
+    }
+
+    togglePlanStatus() {
+        this.planEdit.status = !this.planEdit.status;
     }
 
     goToPrevPage() {
@@ -169,5 +254,12 @@ export class StorePlansComponent {
 
     getStoresByPlanId(planId: string): StoresModel[] {
         return this.storeApiService.getStoreByPlanId(planId);
+    }
+
+    getAllPlans() {
+        return this.planApiService.getAllPlans().subscribe((plans: StorePlansModel[]) => {
+            this.plans$ = plans;
+            this.filterPlanBySearchTerm();
+        });
     }
 }

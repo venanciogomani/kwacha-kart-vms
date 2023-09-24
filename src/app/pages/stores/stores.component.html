@@ -127,41 +127,45 @@
                                     </div>
                                 </td>
                                 <th scope="row" class="px-2 py-4">
-                                    <input type="text" placeholder="Store name" class="w-full p-2 border-2">
+                                    <input type="text" placeholder="Store name" class="w-full p-2 border-2" [(ngModel)]="editStore.name">
                                 </th>
                                 <th scope="row" class="px-2 py-4">
                                     <div class="flex flex-col">
                                         <input type="text" placeholder="Address" class="w-full p-2 border-2">
-                                        <select class="p-2 w-full border-2 mt-2">
-                                            <option value="1">Lusaka</option>
-                                            <option value="2">Ndola</option>
-                                            <option value="3">Kabwe</option>
+                                        <select class="p-2 w-full border-2 mt-2" [(ngModel)]="editStore.city">
+                                            <option value="Lusaka">Lusaka</option>
+                                            <option value="Ndola">Ndola</option>
+                                            <option value="Kabwe">Kabwe</option>
                                         </select>
                                     </div>
                                 </th>
                                 <td class="px-2 py-4">
-                                    <select class="p-2 w-full border-2">
+                                    <select class="p-2 w-full border-2" [(ngModel)]="editStore.vendorId">
                                         <option value="0" disabled>Select a Vendor</option>
                                         <option *ngFor="let vendor of allVendors" [value]="vendor.id">{{ vendor.name }}</option>
                                     </select>
                                 </td>
                                 <td class="px-2 py-4">
-                                    <select class="p-2 w-full border-2">
+                                    <select class="p-2 w-full border-2" [(ngModel)]="editStore.planId">
                                         <option value="0" disabled>Select a Plan</option>
-                                        <option *ngFor="let plan of allPlans" [value]="plan.id">{{ plan.name }}</option>
+                                        <option *ngFor="let plan of allPlans$" [value]="plan.id">{{ plan.name }}</option>
                                     </select>
                                 </td>
                                 <td class="px-2 py-4">
                                     ZK0.00
                                 </td>
                                 <td class="px-2 py-4 w-14">
-                                    <mat-slide-toggle>
-                                        Inactive
+                                    <mat-slide-toggle
+                                        [checked]="editStore.status"
+                                        (change)="toggleStoreStatus()"
+                                    >
+                                        {{ editStore.status ? 'Active' : 'Inactive' }}
                                     </mat-slide-toggle>
                                 </td>
                                 <td class="px-2 py-4 relative">
                                     <div class="flex flex-row justify-between items-center">
                                         <mat-icon
+                                            (click)="publishStore()"
                                             class="cursor-pointer text-emerald-400"
                                             fontIcon="check_circle"
                                         ></mat-icon>
@@ -239,7 +243,7 @@
                                     <select class="p-2 w-full border-2" *ngIf="isEditRow(store.id)">
                                         <option value="0" disabled>Select a Plan</option>
                                         <option [value]="getPlanById(store.planId)?.id" selected>{{ getPlanById(store.planId)?.name }}</option>
-                                        <option *ngFor="let plan of allPlans" [value]="plan.id">{{ plan.name }}</option>
+                                        <option *ngFor="let plan of allPlans$" [value]="plan.id">{{ plan.name }}</option>
                                     </select>
                                 </td>
                                 <td class="px-2 py-4">
@@ -415,3 +419,18 @@
         </div>
     </div>
 </div>
+
+<app-toaster>
+    <div class="flex flex-row w-full h-full">
+        <span 
+            [ngClass]="{ 'text-green-500': toasterType === 'success', 'text-red-500': toasterType === 'error' }"
+        >
+            {{ toasterMessage }}
+        </span>
+        <mat-icon
+            (click)="closeToaster()"
+            fontIcon="close"
+            class="text-gray-500 ml-2 cursor-pointer"
+        ></mat-icon>
+    </div>
+</app-toaster>
