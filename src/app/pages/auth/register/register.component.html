@@ -1,0 +1,51 @@
+<div class="flex flex-col justify-center items-center w-full h-full relative">
+    <span class="text-2xl font-black text-gray-600">
+        Create an account
+    </span>
+    <div class="w-4/5 h-14 border-2 border-gray-400 rounded-full mt-5 px-5 flex flex-row items-center">
+        <mat-icon
+            fontIcon="account_circle"
+            class="text-gray-500 mr-3"
+        ></mat-icon>
+        <input
+            type="email"
+            class="w-full h-full outline-none"
+            placeholder="Name"
+        >
+    </div>
+    <div class="w-4/5 h-14 border-2 border-gray-400 rounded-full mt-5 px-5 flex flex-row items-center">
+        <mat-icon
+            fontIcon="email"
+            class="text-gray-500 mr-3"
+        ></mat-icon>
+        <input
+            type="email"
+            class="w-full h-full outline-none"
+            placeholder="Email"
+        >
+    </div>
+    <div class="w-4/5 h-14 border-2 border-gray-400 rounded-full mt-5 px-5 flex flex-row items-center">
+        <mat-icon
+            fontIcon="lock"
+            class="text-gray-500 mr-3"
+        ></mat-icon>
+        <input
+            type="password"
+            class="w-full h-full outline-none"   
+            placeholder="Password"
+        >
+    </div>
+    <button
+        (click)="register()"
+        class="w-4/5 h-14 bg-gradient-to-r from-pink-500 to-yellow-500 text-white rounded-full mt-5 font-semibold"
+    >
+        Rgister
+    </button>
+    <div class="absolute bottom-0 mb-4">
+        <span
+            (click)="login()"
+            class="cursor-pointer text-pink-500">
+            Already have an account? Login
+        </span>
+    </div>
+</div>

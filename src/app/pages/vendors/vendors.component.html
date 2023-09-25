@@ -96,7 +96,7 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="text-gray-700">
+                        <tbody class="text-gray-700" *ngIf="!isVendorsLoading$">
                             <!-- Add New Role -->
                             <tr class="border-b" *ngIf="addRow">
                                 <td class="w-4 p-4">
@@ -349,6 +349,13 @@
                             <tr *ngIf="fileteredVendors$.length === 0">
                                 <td colspan="8" class="text-center py-4 text-gray-600">
                                     No vendors found
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody class="text-gray-700" *ngIf="isVendorsLoading$">
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-gray-600">
+                                    Loading...
                                 </td>
                             </tr>
                         </tbody>

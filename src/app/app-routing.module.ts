@@ -34,156 +34,188 @@ import { StoreRolesComponent } from './pages/stores/store-roles/store-roles.comp
 import { VendorTransactionsComponent } from './pages/vendors/vendor-transactions/vendor-transactions.component';
 import { VendorViewOrderComponent } from './pages/vendors/vendor-view-order/vendor-view-order.component';
 import { VendorViewTransactionComponent } from './pages/vendors/vendor-view-transaction/vendor-view-transaction.component';
+import { LoginComponent } from './pages/auth/login/login.component';
+import { RegisterComponent } from './pages/auth/register/register.component';
+import { OnboardingComponent } from './templates/onboarding/onboarding.component';
+import { DashboardComponent } from './templates/dashboard/dashboard.component';
 
 const routes: Routes = [
     {
         path: '',
-        redirectTo: '/dashboard',
-        pathMatch: 'full'
+        component: OnboardingComponent,
+        children: [
+            {
+                path: '',
+                component: LoginComponent
+            },
+            {
+                path: 'auth/login',
+                component: LoginComponent
+            },
+            {
+                path: 'auth/register',
+                component: RegisterComponent
+            }
+        ]
     },
     {
         path: 'dashboard',
-        component: HomeComponent,
+        component: DashboardComponent,
+        children: [
+            {
+                path: '',
+                component: HomeComponent,
+            },
+            {
+                path: 'store',
+                component: StoresComponent
+            },
+            {
+                path: 'store/view/:id',
+                component: ViewStoreComponent
+            },
+            {
+                path: 'store/plans',
+                component: StorePlansComponent
+            },
+            {
+                path: 'store/roles',
+                component: StoreRolesComponent
+            },
+            {
+                path: 'vendors',
+                component: VendorsComponent
+            },
+            {
+                path: 'vendors/view/:id',
+                component: ViewVendorComponent
+            },
+            {
+                path: 'vendors/orders',
+                component: VendorOrdersComponent
+            },
+            {
+                path: 'vendors/orders/:id',
+                component: VendorViewOrderComponent
+            },
+            {
+                path: 'vendors/transactions',
+                component: VendorTransactionsComponent
+            },
+            {
+                path: 'vendors/transactions/:id',
+                component: VendorViewTransactionComponent
+            },
+            {
+                path: 'vendors/customers',
+                component: VendorCustomersComponent
+            },
+            {
+                path: 'vendors/chat',
+                component: VendorChatComponent
+            },
+            {
+                path: 'vendors/deals',
+                component: VendorDealsComponent
+            },
+            {
+                path: 'vendors/marketing',
+                component: VendorMarketingComponent
+            },
+            {
+                path: 'vendors/analytics',
+                component: VendorAnalyticsComponent
+            },
+            {
+                path: 'vendors/revenue',
+                component: VendorRevenueComponent
+            },
+            {
+                path: 'vendors/status',
+                component: VendorStatusComponent
+            },
+            {
+                path: 'vendors/settings',
+                component: VendorSettingsComponent
+            },
+            {
+                path: 'users',
+                component: UsersComponent
+            },
+            {
+                path: 'users/view/:id',
+                component: ViewUserComponent
+            },
+            {
+                path: 'users/roles',
+                component: UserRolesComponent
+            },
+            {
+                path: 'users/status',
+                component: UserRolesComponent
+            },
+            {
+                path: 'users/profile',
+                component: UserProfileComponent
+            },
+            {
+                path: 'users/settings',
+                component: UserSettingsComponent
+            },
+            {
+                path: 'products',
+                component: ProductsComponent
+            },
+            {
+                path: 'products/view/:id',
+                component: ViewProductComponent
+            },
+            {
+                path: 'products/categories',
+                component: ProductCategoriesComponent
+            },
+            {
+                path: 'products/tags',
+                component: ProductTagsComponent
+            },
+            {
+                path: 'products/brands',
+                component: ProductBrandsComponent
+            },
+            {
+                path: 'products/attributes',
+                component: ProductAttributesComponent
+            },
+            {
+                path: 'products/reviews',
+                component: ProductReviewsComponent
+            },
+            {
+                path: 'not-found',
+                component: NotFoundComponent
+            },
+            {
+                path: 'something-went-wrong',
+                component: SomethingWentWrongComponent
+            },
+            {
+                path: 'dashboard/forbidden',
+                component: AccessUnavailableComponent
+            },
+            {
+                path: '**',
+                redirectTo: 'not-found'
+            }
+        ]
     },
     {
-        path: 'store',
-        component: StoresComponent
-    },
-    {
-        path: 'store/view/:id',
-        component: ViewStoreComponent
-    },
-    {
-        path: 'store/plans',
-        component: StorePlansComponent
-    },
-    {
-        path: 'store/roles',
-        component: StoreRolesComponent
-    },
-    {
-        path: 'vendors',
-        component: VendorsComponent
-    },
-    {
-        path: 'vendors/view/:id',
-        component: ViewVendorComponent
-    },
-    {
-        path: 'vendors/orders',
-        component: VendorOrdersComponent
-    },
-    {
-        path: 'vendors/orders/:id',
-        component: VendorViewOrderComponent
-    },
-    {
-        path: 'vendors/transactions',
-        component: VendorTransactionsComponent
-    },
-    {
-        path: 'vendors/transactions/:id',
-        component: VendorViewTransactionComponent
-    },
-    {
-        path: 'vendors/customers',
-        component: VendorCustomersComponent
-    },
-    {
-        path: 'vendors/chat',
-        component: VendorChatComponent
-    },
-    {
-        path: 'vendors/deals',
-        component: VendorDealsComponent
-    },
-    {
-        path: 'vendors/marketing',
-        component: VendorMarketingComponent
-    },
-    {
-        path: 'vendors/analytics',
-        component: VendorAnalyticsComponent
-    },
-    {
-        path: 'vendors/revenue',
-        component: VendorRevenueComponent
-    },
-    {
-        path: 'vendors/status',
-        component: VendorStatusComponent
-    },
-    {
-        path: 'vendors/settings',
-        component: VendorSettingsComponent
-    },
-    {
-        path: 'users',
-        component: UsersComponent
-    },
-    {
-        path: 'users/view/:id',
-        component: ViewUserComponent
-    },
-    {
-        path: 'users/roles',
-        component: UserRolesComponent
-    },
-    {
-        path: 'users/status',
-        component: UserRolesComponent
-    },
-    {
-        path: 'users/profile',
-        component: UserProfileComponent
-    },
-    {
-        path: 'users/settings',
-        component: UserSettingsComponent
-    },
-    {
-        path: 'products',
-        component: ProductsComponent
-    },
-    {
-        path: 'products/view/:id',
-        component: ViewProductComponent
-    },
-    {
-        path: 'products/categories',
-        component: ProductCategoriesComponent
-    },
-    {
-        path: 'products/tags',
-        component: ProductTagsComponent
-    },
-    {
-        path: 'products/brands',
-        component: ProductBrandsComponent
-    },
-    {
-        path: 'products/attributes',
-        component: ProductAttributesComponent
-    },
-    {
-        path: 'products/reviews',
-        component: ProductReviewsComponent
-    },
-    {
-        path: 'dashboard/not-found',
-        component: NotFoundComponent
-    },
-    {
-        path: 'dashboard/something-went-wrong',
-        component: SomethingWentWrongComponent
-    },
-    {
-        path: 'dashboard/forbidden',
-        component: AccessUnavailableComponent
+        path: '',
+        redirectTo: 'auth/login',
+        pathMatch: 'full'
     },
     {
         path: '**',
-        redirectTo: 'dashboard/not-found'
+        redirectTo: 'auth/login',
     }
 ];
 

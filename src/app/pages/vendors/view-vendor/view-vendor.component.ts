@@ -6,7 +6,7 @@ import { CategoryApiService } from 'src/services/api/category.api.service';
 import { ProductApiService } from 'src/services/api/products.api.service';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
 import { ProductBrandModel, ProductCategoryModel, ProductModel, VendorModel } from 'src/state';
-import { selectLoading } from 'src/state/selectors/vendors.selectors';
+import { selectLoading, selectVendorById } from 'src/state/selectors/vendors.selectors';
 
 type SortStatus = {
     [key in 'title' | 'price' | 'salePrice' | 'quantity']: boolean;
@@ -40,7 +40,7 @@ export class ViewVendorComponent {
     isProductLoading$: boolean = false;
     isOrderTab$: boolean = true;
 
-    singleVendor$: VendorModel;
+    singleVendor$!: VendorModel;
 
     productEdit$: ProductModel = {} as ProductModel;
 
@@ -69,26 +69,40 @@ export class ViewVendorComponent {
         private vendorApiService: VendorApiService,
         private categoryApiService: CategoryApiService,
         private brandApiService: BrandApiService,
-        private store: Store<{ products: ProductModel[] }>,
+        private store: Store,
     ) {
         // Use this when auth functionality is enabled
         // this.store.select(selectProducts).subscribe((product: ProductModel[]) => {
         //     this.products$ = product;
         // });
+        const vendorId = this.router.snapshot.paramMap.get('id') || '';
+
+        this.store.select(selectVendorById(vendorId)).subscribe((vendor: any) => {
+            this.singleVendor$ = vendor;
+        });
 
         this.products$ = this.productApiService.getProductsByVendorId(this.router.snapshot.paramMap.get('id') || '');
 
         this.store.select(selectLoading).subscribe((isLoading: boolean) => {
             this.isProductLoading$ = isLoading; // use this for loading screen or lazyloading
         });
-
-        this.singleVendor$ = this.vendorApiService.getVendorById(this.router.snapshot.paramMap.get('id') || '')
-        this.vendorTitle = this.singleVendor$.name || 'Vendor';
     }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
+        if (!this.singleVendor$) {
+            (await this.vendorApiService.getVendorById(this.router.snapshot.paramMap.get('id') || '')).subscribe((vendor: VendorModel) => {
+                this.singleVendor$ = vendor;
+                this.vendorTitle = vendor.name;
+            });
+        } else {
+            this.vendorTitle = this.singleVendor$.name;
+        }
         this.filterProductsBySearchTerm();
         this.totalProducts = this.products$.length;
+    }
+
+    async getCurrentVendor() {
+        return this.vendorApiService.getVendorById(this.router.snapshot.paramMap.get('id') || '');
     }
 
     isEditRow(id: string): boolean {

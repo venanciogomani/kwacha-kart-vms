@@ -149,7 +149,7 @@ export class StoresComponent {
     }
 
     getVendorById(id: string) {
-        return this.vendorApiService.getVendorById(id);
+        return this.vendors$.find(vendor => vendor.id === id);
     }
 
     async getAllVendors() {
@@ -244,7 +244,7 @@ export class StoresComponent {
     }
 
     toggleViewStore(id: string) {
-        this.router.navigate([`/store/view/${id}`]);
+        this.router.navigate([`dashboard/store/view/${id}`]);
     }
 
     ngOnDestroy(): void {

@@ -38,6 +38,8 @@ export class VendorsComponent {
     fileteredVendors$: VendorModel[] = [];
     isVendorsLoading$ = false;
 
+    showSpinner: boolean = true;
+
     vendorEdit$: VendorModel = {
         id: '',
         name: '',
@@ -95,10 +97,6 @@ export class VendorsComponent {
         this.store.select(selectVendors).subscribe((vendor: VendorModel[]) => {
             this.vendors$ = vendor;
         });
-
-        this.store.select(selectLoading).subscribe((isLoading: boolean) => {
-            this.isVendorsLoading$ = isLoading; // use this for loading screen or lazyloading
-        });
     }
 
     ngOnInit(): void {
@@ -128,11 +126,13 @@ export class VendorsComponent {
                 .subscribe((isLoading: boolean) => {
                     if (!isLoading) {
                         this.getAllVendors();
+                        this.isVendorsLoading$ = false;
                     }
                 });
         } else {
             this.filterVendorsBySearchTerm();
             this.totalVendors = this.vendors$.length;
+            this.isVendorsLoading$ = false;
         }
         
         this.getAllRoles();
@@ -222,11 +222,11 @@ export class VendorsComponent {
     }
 
     toggleViewVendor(id: string) {
-        this.router.navigate([`/vendors/view/${id}`]);
+        this.router.navigate([`dashboard/vendors/view/${id}`]);
     }
 
-    getStoreById(id: string) {
-        return this.allStores$.filter(store => store.id === id)[0];
+    getStoreById(id: string): StoresModel {
+        return this.allStores$.filter(store => store.id === id)[0] || {} as StoresModel;
     }
 
     async getAllStores() {
@@ -235,8 +235,8 @@ export class VendorsComponent {
         });
     }
 
-    getRoleById(id: string) {
-        return this.availableRoles$.filter(role => role.id === id)[0];
+    getRoleById(id: string): StoreRoleModel {
+        return this.availableRoles$.filter(role => role.id === id)[0] || {} as StoreRoleModel;
     }
 
     async getAllRoles() {

@@ -1,0 +1,17 @@
+<div class="flex flex-row h-[100vh] relative w-full bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% justify-center items-center">
+    <div class="h-3/4 md:h-3/4 w-full md:w-1/2 bg-white rounded-xl flex flex-row">
+        <div class="hidden lg:flex w-1/2 h-full border-r-2 relative flex-col justify-center">
+            <img 
+                src="../../../assets/img/logins/banner.jpg" 
+                alt="Kwacha Kart Logo"
+                class="w-full h-full object-cover rounded-l-xl"
+            >
+            <span class="absolute bottom-0 text-black bg-white/60 p-2">
+                Photo by <a href="https://unsplash.com/@pauljmilley?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Paul Milley</a> on <a href="https://unsplash.com/photos/fS_UGUadwbA?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
+            </span>
+        </div>
+        <div class="w-full lg:w-1/2 h-full">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

@@ -39,14 +39,10 @@ export class VendorApiService {
         return (this.http.get<VendorModel[]>(this.apiUrl + "vendors", { headers }));
     }
 
-    getVendorById(id: string): VendorModel {
-        const vendor = Vendors.filter(vendor => vendor.id === id);
+    async getVendorById(id: string): Promise<Observable<VendorModel>> {
+        const headers = { 'content-type': 'application/json' }
 
-        if (vendor.length === 0) {
-            return {} as VendorModel;
-        }
-
-        return vendor[0];
+        return this.http.get<VendorModel>(this.apiUrl + "vendors/" + id, { headers });
     }
 
     getVendorsByRoleId(roleId: string): VendorModel[] {

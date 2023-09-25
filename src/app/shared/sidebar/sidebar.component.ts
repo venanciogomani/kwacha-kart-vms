@@ -31,6 +31,7 @@ export class SidebarComponent {
     }
 
     navigateTo(path: string): void {
-        this.router.navigate([path]);
+        const fullPath = `dashboard/${path}`
+        this.router.navigate([fullPath]);
     }
 }

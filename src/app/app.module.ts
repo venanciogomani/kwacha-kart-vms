@@ -17,6 +17,8 @@ import { plansReducer } from 'src/state/reducers/plans.reducer';
 import { rolesReducer } from 'src/state/reducers/roles.reducer';
 import { vendorsReducer } from 'src/state/reducers/vendors.reducer';
 import { productsReducer } from 'src/state/reducers/products.reducer';
+import { AuthModule } from './pages/auth/auth.module';
+import { TemplatesModule } from './templates/templates.module';
 
 @NgModule({
   declarations: [
@@ -30,6 +32,8 @@ import { productsReducer } from 'src/state/reducers/products.reducer';
     ErrorsModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    AuthModule,
+    TemplatesModule,
     StoreModule.forRoot({
       stores: storesReducer,
       plans: plansReducer,
