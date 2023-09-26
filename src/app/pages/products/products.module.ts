@@ -7,30 +7,38 @@ import { ProductBrandsComponent } from './product-brands/product-brands.componen
 import { ProductAttributesComponent } from './product-attributes/product-attributes.component';
 import { ProductReviewsComponent } from './product-reviews/product-reviews.component';
 import { ProductsComponent } from './products.component';
+import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { SharedModule } from "../../shared/shared.module";
 
 
 
 @NgModule({
-  declarations: [
-    ProductsComponent,
-    ViewProductComponent,
-    ProductCategoriesComponent,
-    ProductTagsComponent,
-    ProductBrandsComponent,
-    ProductAttributesComponent,
-    ProductReviewsComponent
-  ],
-  imports: [
-    CommonModule
-  ],
-  exports: [
-    ProductsComponent,
-    ViewProductComponent,
-    ProductCategoriesComponent,
-    ProductTagsComponent,
-    ProductBrandsComponent,
-    ProductAttributesComponent,
-    ProductReviewsComponent
-  ]
+    declarations: [
+        ProductsComponent,
+        ViewProductComponent,
+        ProductCategoriesComponent,
+        ProductTagsComponent,
+        ProductBrandsComponent,
+        ProductAttributesComponent,
+        ProductReviewsComponent
+    ],
+    exports: [
+        ProductsComponent,
+        ViewProductComponent,
+        ProductCategoriesComponent,
+        ProductTagsComponent,
+        ProductBrandsComponent,
+        ProductAttributesComponent,
+        ProductReviewsComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        MatIconModule,
+        MatSlideToggleModule,
+        SharedModule
+    ]
 })
 export class ProductsModule { }

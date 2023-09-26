@@ -39,6 +39,8 @@ export class ViewVendorComponent {
     fileteredProducts$: ProductModel[] = [];
     isProductLoading$: boolean = false;
     isOrderTab$: boolean = true;
+    allProductCategories$: ProductCategoryModel[] = [];
+    allProductBrands$: ProductBrandModel[] = [];
 
     singleVendor$!: VendorModel;
 
@@ -97,8 +99,34 @@ export class ViewVendorComponent {
         } else {
             this.vendorTitle = this.singleVendor$.name;
         }
-        this.filterProductsBySearchTerm();
-        this.totalProducts = this.products$.length;
+
+        if (this.products$.length === 0) {
+            this.productApiService
+                .isDataLoaded()
+                .subscribe((isDataLoaded: boolean) => {
+                    if (isDataLoaded) {
+                        this.getAllProducts();
+                    }
+                });
+        } else {
+            this.filterProductsBySearchTerm();
+            this.totalProducts = this.products$.length;
+        }
+
+        if (this.allProductCategories$.length === 0) {
+            this.productCategories();
+        }
+
+        if (this.allProductBrands$.length === 0) {
+            this.getProductBrands();
+        }
+    }
+
+    async getAllProducts() {
+        (await this.productApiService.getAllProducts()).subscribe((allProducts: ProductModel[]) => {
+            this.products$ = allProducts;
+            this.filterProductsBySearchTerm();
+        });
     }
 
     async getCurrentVendor() {
@@ -203,27 +231,31 @@ export class ViewVendorComponent {
         return this.tabStatus[tab];
     }
 
-    get productCategories() {
-        return this.categoryApiService.getAllCategories();
+    async productCategories() {
+        return (await this.categoryApiService.getAllCategories()).subscribe((categories: ProductCategoryModel[]) => {
+            this.allProductCategories$ = categories;
+        });
     }
 
     getProductCategoryById(categoryId: string): ProductCategoryModel {
-        return this.categoryApiService.getCategoryById(categoryId);
+        return this.allProductCategories$.find(category => category.id === categoryId) || {} as ProductCategoryModel;
     }
 
-    get productBrands() {
-        return this.brandApiService.getAllBrands();
+    async getProductBrands() {
+        return (await this.brandApiService.getAllBrands()).subscribe((brands: ProductBrandModel[]) => {
+            this.allProductBrands$ = brands;
+        });
     }
 
     getProductBrandById(brandId: string): ProductBrandModel {
-        return this.brandApiService.getBrandById(brandId);
+        return this.allProductBrands$.find(brand => brand.id === brandId) || {} as ProductBrandModel;
     }
 
     toggleViewOrder(id: string) {
-        this.route.navigate([`/vendors/orders/${id}`]);
+        this.route.navigate([`dashboard/vendors/orders/${id}`]);
     }
 
     toggleViewTransaction(id: string) {
-        this.route.navigate([`/vendors/transactions/${id}`]);
+        this.route.navigate([`dashboard/vendors/transactions/${id}`]);
     }
 }

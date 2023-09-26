@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { AuthApiService } from 'src/services/api/auth.api.service';
+import { UserModel } from 'src/state';
+import { selectUser } from 'src/state/selectors/user.selectors';
 
 @Component({
   selector: 'app-login',
@@ -15,19 +18,26 @@ export class LoginComponent {
     
     constructor(
         private router: Router,
-        private authApiService: AuthApiService
+        private authApiService: AuthApiService,
+        private store: Store<UserModel>
     ) { }
 
-    async performLogin() {
-        (await this.authApiService.login(this.user.email, this.user.password)).subscribe(
-            (data) => {
-                console.log(data); // we get back a token
+    ngOnInit(): void {
+        this.store.select(selectUser).subscribe((user: UserModel) => {
+            if (Object.keys(user).length !== 0) {
                 this.login();
-            },
-            (error) => {
-                console.log(error);
             }
-        );
+        });
+    }
+
+    async performLogin() {
+        (await this.authApiService.login(this.user.email, this.user.password));
+
+        this.authApiService.isUserLoggedIn().subscribe((isUserLoggedIn: boolean) => {
+            if (isUserLoggedIn) {
+                this.login();
+            }
+        });
     }
 
     login() {

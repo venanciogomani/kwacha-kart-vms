@@ -115,8 +115,9 @@ export interface VendorOrderModel {
     orderDate: string;
     orderStatus: string;
     orderTotal: number;
-    orderProductId: string[];
+    orderProductId?: string[];
     vendorId: string;
+    userId: string;
     deliveryMethodId: string;
     paymentMethodId: string;
     createdAt: string;
@@ -241,7 +242,6 @@ export interface UserModel {
     country: string;
     phone: string;
     email: string;
-    password: string;
     profileImg?: string;
     status: boolean;
     isVerified: boolean;

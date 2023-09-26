@@ -18,3 +18,13 @@ export const maskString = (text: string) => {
     const masked = lastFour.padStart(text.length, '*');
     return masked;
 }
+
+export const formatDateString = (dateString: string) => {
+    if (!dateString) {
+        return null;
+    }
+
+    const date = new Date(dateString);
+    const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    return formattedDate;
+}

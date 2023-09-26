@@ -512,13 +512,13 @@
                                     <td class="px-4 py-4 w-14">
                                         <select class="p-2 w-full border-2 mt-2 font-normal text-xs">
                                             <option value="0" disabled>Select a Category</option>
-                                            <option *ngFor="let category of productCategories" [value]="category.id">{{ category.name }}</option>
+                                            <option *ngFor="let category of allProductCategories$" [value]="category.id">{{ category.name }}</option>
                                         </select>
                                     </td>
                                     <td class="px-4 py-4 w-14">
                                         <select class="p-2 w-full border-2 mt-2 font-normal text-xs">
                                             <option value="" disabled>Select a Brand</option>
-                                            <option *ngFor="let brand of productBrands" [value]="brand.id">{{ brand.name }}</option>
+                                            <option *ngFor="let brand of allProductBrands$" [value]="brand.id">{{ brand.name }}</option>
                                         </select>
                                     </td>
                                     <td class="px-4 py-4 w-14">
@@ -629,7 +629,7 @@
                                         </span>
                                         <select class="p-2 w-full border-2 mt-2 font-normal text-xs" *ngIf="isEditRow(product.id)">
                                             <option value="" disabled>Select a Category</option>
-                                            <option *ngFor="let category of productCategories" [value]="category.id">{{ category.name }}</option>
+                                            <option *ngFor="let category of allProductCategories$" [value]="category.id">{{ category.name }}</option>
                                         </select>
                                     </th>
                                     <th scope="row" class="px-4 py-4">
@@ -638,12 +638,12 @@
                                         </span>
                                         <select class="p-2 w-full border-2 mt-2 font-normal text-xs" *ngIf="isEditRow(product.id)">
                                             <option value="" disabled>Select a Brand</option>
-                                            <option *ngFor="let brand of productBrands" [value]="brand.id">{{ brand.name }}</option>
+                                            <option *ngFor="let brand of allProductBrands$" [value]="brand.id">{{ brand.name }}</option>
                                         </select>
                                     </th>
                                     <th scope="row" class="px-4 py-4">
                                         <span *ngIf="!isEditRow(product.id)" class="font-normal">
-                                            {{ product.colors![0] }}
+                                            Colors
                                         </span>
                                         <select class="p-2 w-full border-2 mt-2 font-normal text-xs" *ngIf="isEditRow(product.id)">
                                             <option value="" disabled>Select a Colors</option>

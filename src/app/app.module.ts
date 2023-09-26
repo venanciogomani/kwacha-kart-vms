@@ -19,6 +19,11 @@ import { vendorsReducer } from 'src/state/reducers/vendors.reducer';
 import { productsReducer } from 'src/state/reducers/products.reducer';
 import { AuthModule } from './pages/auth/auth.module';
 import { TemplatesModule } from './templates/templates.module';
+import { userReducer } from 'src/state/reducers/user.reducer';
+import { ordersReducer } from 'src/state/reducers/orders.reducer';
+import { categoriesReducer } from 'src/state/reducers/categories.reducer';
+import { brandsReducer } from 'src/state/reducers/brands.reducer';
+import { tagsReducer } from 'src/state/reducers/tags.reducer';
 
 @NgModule({
   declarations: [
@@ -39,7 +44,12 @@ import { TemplatesModule } from './templates/templates.module';
       plans: plansReducer,
       roles: rolesReducer,
       vendors: vendorsReducer,
-      products: productsReducer
+      products: productsReducer,
+      user: userReducer,
+      orders: ordersReducer,
+      categories: categoriesReducer,
+      brands: brandsReducer,
+      tags: tagsReducer,
     })
   ],
   providers: [],
