@@ -174,18 +174,18 @@ const routes: Routes = [
                 path: 'products/categories',
                 component: ProductCategoriesComponent
             },
-            {
-                path: 'products/tags',
-                component: ProductTagsComponent
-            },
+            // {
+            //     path: 'products/tags',
+            //     component: ProductTagsComponent
+            // },
             {
                 path: 'products/brands',
                 component: ProductBrandsComponent
             },
-            {
-                path: 'products/attributes',
-                component: ProductAttributesComponent
-            },
+            // {
+            //     path: 'products/attributes',
+            //     component: ProductAttributesComponent
+            // },
             {
                 path: 'products/reviews',
                 component: ProductReviewsComponent

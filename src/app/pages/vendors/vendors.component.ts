@@ -4,11 +4,15 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Subject, filter, switchMap, takeUntil } from 'rxjs';
 import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
+import { AuthApiService } from 'src/services/api/auth.api.service';
 import { RoleApiService } from 'src/services/api/role.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
 import { StoreRoleModel, StoresModel, VendorModel } from 'src/state';
 import { selectLoading, selectVendors } from 'src/state/selectors/vendors.selectors';
+import { selectLoading as selectUsersLoading, selectUser } from 'src/state/selectors/user.selectors';
+import { loadStoresSuccess } from 'src/state/actions/stores.actions';
+import { selectStores } from 'src/state/selectors/stores.selectors';
 
 type SortStatus = {
     [key in 'name' | 'city' | 'status']: boolean;
@@ -52,6 +56,7 @@ export class VendorsComponent {
         status: false,
         isVerified: false,
         storeId: '',
+        userId: '',
         roleId: '',
         createdAt: ''
     }
@@ -69,6 +74,8 @@ export class VendorsComponent {
     allStores$: StoresModel[] = [];
 
     editRow: { [key: string]: boolean } = {};
+
+    allUsers$: any[] = [];
 
     addRow = false;
 
@@ -91,31 +98,20 @@ export class VendorsComponent {
         private storeApiService: StoreApiService,
         private roleApiService: RoleApiService,
         private vendorApiService: VendorApiService,
-        private store: Store<{ vendors: VendorModel[] }>,
+        private authApiService: AuthApiService,
+        private store: Store<any>,
         private sanitizer: DomSanitizer
     ) {
         this.store.select(selectVendors).subscribe((vendor: VendorModel[]) => {
             this.vendors$ = vendor;
         });
+
+        this.store.select(selectStores).subscribe((stores: StoresModel[]) => {
+            this.allStores$ = stores;
+        });
     }
 
     ngOnInit(): void {
-        if (this.allStores$.length === 0) {
-            this.storeApiService
-                .isDataLoaded()
-                .pipe(takeUntil(this.destroy$),
-                    filter((isLoaded: boolean) => isLoaded),
-                    switchMap(() => this.store.select(selectLoading))
-                )
-                .subscribe((isLoading: boolean) => {
-                    if (!isLoading) {
-                        this.getAllStores();
-                    }
-                });
-        } else {
-            this.getAllStores();
-        }
-
         if (this.vendors$.length === 0) {
             this.vendorApiService
                 .isDataLoaded()
@@ -126,7 +122,6 @@ export class VendorsComponent {
                 .subscribe((isLoading: boolean) => {
                     if (!isLoading) {
                         this.getAllVendors();
-                        this.isVendorsLoading$ = false;
                     }
                 });
         } else {
@@ -134,8 +129,6 @@ export class VendorsComponent {
             this.totalVendors = this.vendors$.length;
             this.isVendorsLoading$ = false;
         }
-        
-        this.getAllRoles();
     }
 
     isEditRow(id: string): boolean {
@@ -249,6 +242,16 @@ export class VendorsComponent {
         return (await this.vendorApiService.getAllVendors()).subscribe((vendors: VendorModel[]) => {
             this.vendors$ = vendors;
             this.filterVendorsBySearchTerm();
+
+            if (this.allStores$.length === 0) {
+                this.getAllStores();
+            }
+    
+            if (this.allUsers$.length === 0) {
+                this.getAllUsers();   
+            }
+            
+            this.getAllRoles();
         });
     }
 
@@ -259,6 +262,7 @@ export class VendorsComponent {
             || this.vendorEdit$.phone === '' 
             || this.vendorEdit$.email === '' 
             || this.vendorEdit$.storeId === '' 
+            || this.vendorEdit$.userId === ''
             || this.vendorEdit$.roleId === ''
         ) {
             this.toasterMessage = 'Please fill all the fields!';
@@ -331,6 +335,7 @@ export class VendorsComponent {
             status: false,
             isVerified: false,
             storeId: '',
+            userId: '',
             roleId: '',
             createdAt: ''
         };
@@ -339,5 +344,19 @@ export class VendorsComponent {
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
+    }
+
+    getAllUsers() {
+        return this.authApiService.getAllUsers().subscribe((users: any) => {
+            if (users) {
+                this.allUsers$ = users;
+                this.isVendorsLoading$ = false;
+            }
+        });
+    }
+
+    getUserById(id: string) {
+        const user = this.allUsers$.filter(user => user.id === id)[0];
+        return user || {} as any;
     }
 }

@@ -1,1 +1,186 @@
-<p>view-product works!</p>
+<div class="p-4 flex flex-col" *ngIf="isProductLoaded$">
+    <div class="flex flex-col px-4">
+        <h1 class="text-gray-700 text-2xl font-black">
+            {{ product$.title }}
+        </h1>
+        <p class="text-gray-500 text-sm md:text-base">
+            <span class="text-emerald-600 font-semibold cursor-pointer text-sm pr-2">
+                Products
+            </span>
+            /
+            <span class="text-sm font-semibold pl-2">
+                SKU: {{ product$.sku }}
+            </span>
+        </p>
+    </div>
+    <div class="w-full p-4 flex flex-col">
+        <div class="py-2 px-3 bg-white rounded-lg flex flex-col">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-3">
+                <div class="flex flex-col">
+                    <span class="text-xs text-gray-600 font-normal">
+                        Status
+                    </span>
+                    <span class="text-gray-700 text-xl font-semibold" *ngIf="!isEditing$">
+                        {{ product$.status ? 'Published' : 'Unpublished' }}
+                    </span>
+                    <select class="p-2 w-full border-2 mt-2 font-normal text-xs" *ngIf="isEditing$">
+                        <option value="" disabled>Choose Status</option>
+                        <option value="unpublished">Unpublished</option>
+                        <option value="published">Published</option>
+                    </select>
+                </div>
+                <div class="flex flex-row items-center mt-4 md:mt-0">
+                    <div 
+                        (click)="toggleEdit()"
+                        class="px-3 py-1 rounded-full border-2 border-emerald-500 flex flex-row items-center text-emerald-500 cursor-pointer"
+                    >
+                        <mat-icon
+                            fontIcon="edit"
+                            class="text-sm mt-1"
+                        ></mat-icon>
+                        <span>
+                            {{ isEditing$? 'Cancel' : 'Edit'}}
+                        </span>
+                    </div>
+                    <div 
+                        *ngIf="isEditing$"
+                        class="px-3 py-1 rounded-full border-2 bg-emerald-500 border-emerald-500 flex flex-row items-center text-white ml-3"
+                    >
+                        <mat-icon
+                            fontIcon="save"
+                            class="text-sm mt-1"
+                        ></mat-icon>
+                        <span>Save</span>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 lg:grid-cols-4 items-center justify-between px-4 py-4">
+                <div class="flex flex-col py-3 px-2">
+                    <span class="text-xs text-gray-600 font-normal">Listing Price</span>
+                    <span class="text-gray-700 font-semibold" *ngIf="!isEditing$">
+                        ZK{{ product$.price }}
+                    </span>
+                    <input
+                        *ngIf="isEditing$"
+                        type="number"
+                        class="w-full p-2 border-2 font-normal mt-1"
+                        [(ngModel)]="product$.price"
+                        [innerHTML]="sanitizeUserInput()"
+                    />
+                </div>
+                <div class="flex flex-col py-3 px-2">
+                    <span class="text-xs text-gray-600 font-normal">Sale Price</span>
+                    <span class="text-gray-700 font-semibold" *ngIf="!isEditing$">
+                        {{ product$.salePrice }}
+                    </span>
+                    <input
+                        *ngIf="isEditing$"
+                        type="number"
+                        class="w-full p-2 border-2 font-normal mt-1"
+                        [(ngModel)]="product$.salePrice"
+                        [innerHTML]="sanitizeUserInput()"
+                    />
+                </div>
+                <div class="flex flex-col py-3 px-2">
+                    <span class="text-xs text-gray-600 font-normal">Available Stock</span>
+                    <span class="text-gray-700 font-semibold" *ngIf="!isEditing$">
+                        {{ product$.quantity }}
+                    </span>
+                    <input
+                        *ngIf="isEditing$"
+                        type="number"
+                        class="w-full p-2 border-2 font-normal mt-1"
+                        [(ngModel)]="product$.quantity"
+                        [innerHTML]="sanitizeUserInput()"
+                    />
+                </div>
+                <div class="flex flex-col py-3 px-2">
+                    <span class="text-xs text-gray-600 font-normal">Date Created</span>
+                    <span class="text-gray-700 font-semibold">{{ formatDateString(product$.dateCreated) }}</span>
+                </div>
+                <div class="flex flex-col py-3 px-2">
+                    <span class="text-xs text-gray-600 font-normal">Category</span>
+                    <span class="text-gray-700 font-semibold" *ngIf="!isEditing$">
+                        {{ getProductCategoryById(product$.categoryId)?.name }}
+                    </span>
+                    <select class="p-2 w-full border-2 mt-2 font-normal text-xs" *ngIf="isEditing$">
+                        <option value="" disabled>Select a Category</option>
+                        <option *ngFor="let category of categories$" [value]="category.id">{{ category.name }}</option>
+                    </select>
+                </div>
+                <div class="flex flex-col py-3 px-2">
+                    <span class="text-xs text-gray-600 font-normal">Brand</span>
+                    <span class="text-gray-700 font-semibold" *ngIf="!isEditing$">
+                        {{ getProductBrandById(product$.brandId)?.name }}
+                    </span>
+                    <select class="p-2 w-full border-2 mt-2 font-normal text-xs" *ngIf="isEditing$">
+                        <option value="" disabled>Select a Brand</option>
+                        <option *ngFor="let brand of brands$" [value]="brand.id">{{ brand.name }}</option>
+                    </select>
+                </div>
+                <div class="flex flex-col py-3 px-2">
+                    <span class="text-xs text-gray-600 font-normal">Tags</span>
+                    <span class="text-gray-700 font-semibold">Tag 1, Tag 2, Tag 3</span>
+                </div>
+                <div class="flex flex-col py-3 px-2">
+                    <span class="text-xs text-gray-600 font-normal">Colors</span>
+                    <span class="text-gray-700 font-semibold">Red, Green, Blue</span>
+                </div>
+            </div>
+            <div class="p-3">
+                <div class="bg-gray-100 rounded-xl text-gray-600 text-sm p-4" *ngIf="!isEditing$">
+                    {{ product$.detailedDescription }}
+                </div>
+                <div class="p-4" *ngIf="isEditing$">
+                    <textarea 
+                        rows="4" 
+                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
+                        placeholder="Detailed product description..."></textarea>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between p-4 border-t-2 border-gray-100 mt-6">
+                <div class="flex flex-col">
+                    <span class="text-gray-600 font-semibold">
+                        Vendor
+                    </span>
+                    <div class="flex flex-row items-center mt-2" *ngIf="!isEditing$">
+                        <img
+                            src="../../../assets/img/female_placeholder.png"
+                            alt="customer placeholder"
+                            class="w-16 h-auto rounded-full inline-flex"
+                        >
+                        <div class="flex flex-col ml-3">
+                            <span class="text-gray-600 text-sm font-semibold">
+                                {{ vendor$.name }}
+                            </span>
+                            <span class="text-xs text-gray-400">
+                                {{ vendor$.phone }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex flex-row items-center mt-2" *ngIf="isEditing$">
+                        <select class="p-2 w-full border-2 mt-2 font-normal text-xs" *ngIf="isEditing$">
+                            <option value="" disabled>Select a Vendor</option>
+                            <option *ngFor="let vendor of allVendors$" [value]="vendor.id">{{ vendor.name }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex flex-row items-center px-4 py-2 border-2 rounded-full text-gray-700 border-gray-700 cursor-pointer mt-4 md:mt-0">
+                    <mat-icon
+                        fontIcon="phone"
+                        class="mt-1"
+                    ></mat-icon>
+                    <div class="flex flex-col ml-2">
+                        <span class="text-xs">Store</span>
+                        <span class="font-semibold text-sm">
+                            +260 0977 123 456 789
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="!isProductLoaded$">
+    Loading...
+</div>

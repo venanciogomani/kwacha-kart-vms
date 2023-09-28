@@ -120,27 +120,10 @@
                                 </td>
                                 <th scope="row" class="px-4 py-4">
                                     <div class="flex flex-col">
-                                        <input 
-                                            type="text" 
-                                            placeholder="Vendor name" 
-                                            class="w-full p-2 border-2 text-xs font-normal" 
-                                            [(ngModel)]="vendorEdit$.name"
-                                            [innerHTML]="sanitizeUserInput()"
-                                        >
-                                        <input 
-                                            type="text" 
-                                            placeholder="Email" 
-                                            class="w-full p-2 border-2 mt-1 text-xs font-normal" 
-                                            [(ngModel)]="vendorEdit$.email"
-                                            [innerHTML]="sanitizeUserInput()"
-                                        >
-                                        <input 
-                                            type="text" 
-                                            placeholder="Phone" 
-                                            class="w-full p-2 border-2 mt-1 text-xs font-normal" 
-                                            [(ngModel)]="vendorEdit$.phone"
-                                            [innerHTML]="sanitizeUserInput()"
-                                        >
+                                        <select class="p-2 w-full border-2 mt-2 text-xs font-normal" [(ngModel)]="vendorEdit$.id">
+                                            <option value="0" disabled>Select a User</option>
+                                            <option *ngFor="let user of allUsers$" [value]="user.id">{{ user.name }}</option>
+                                        </select>
                                     </div>
                                 </th>
                                 <th scope="row" class="px-4 py-4">
@@ -225,13 +208,13 @@
                                 <th scope="row" class="px-4 py-4">
                                     <div class="flex flex-col">
                                         <span *ngIf="!isEditRow(vendor.id)" class="font-regular">
-                                            {{ vendor.name }}
+                                            {{ getUserById(vendor.userId)?.name}}
                                         </span>
                                         <span *ngIf="!isEditRow(vendor.id)" class="font-normal text-xs">
-                                            {{ vendor.email }}
+                                            {{ getUserById(vendor.userId)?.email }}
                                         </span>
                                         <span *ngIf="!isEditRow(vendor.id)" class="font-normal text-xs">
-                                            {{ vendor.phone }}
+                                            {{ getUserById(vendor.userId)?.phone }}
                                         </span>
                                         <input
                                             *ngIf="isEditRow(vendor.id)"

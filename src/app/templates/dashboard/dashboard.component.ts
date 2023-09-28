@@ -6,6 +6,7 @@ import { CategoryApiService } from 'src/services/api/category.api.service';
 import { OrderApiService } from 'src/services/api/order.api.service';
 import { PlanApiService } from 'src/services/api/plan.api.service';
 import { ProductApiService } from 'src/services/api/products.api.service';
+import { ReviewApiService } from 'src/services/api/reviews.api.service';
 import { RoleApiService } from 'src/services/api/role.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
@@ -27,6 +28,7 @@ export class DashboardComponent {
         private categoryApiService: CategoryApiService,
         private brandApiService: BrandApiService,
         private orderApiService: OrderApiService,
+        private reviewApiService: ReviewApiService,
         private store: Store<UserModel>,
         private router: Router
     ) { }
@@ -40,6 +42,7 @@ export class DashboardComponent {
         this.brandApiService.createInitialBrandsState();
         this.categoryApiService.createInitialCategoriesState();
         this.orderApiService.createInitialOrdersState();
+        this.reviewApiService.createInitialReviewsState();
 
         this.store.select(selectUser).subscribe((user: UserModel) => {
             if (Object.keys(user).length === 0) {

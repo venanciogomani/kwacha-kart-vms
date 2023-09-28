@@ -39,10 +39,22 @@ export class CategoryApiService {
         return this.http.get<ProductCategoryModel[]>(`${this.apiUrl}categories`, { headers });
     }
 
+    async getAllParentCategories(): Promise<Observable<any[]>> {
+        const headers = { 'Content-Type': 'application/json' };
+
+        return this.http.get<any[]>(`${this.apiUrl}categories/parent`, { headers });
+    }
+
     async getCategoryById(id: string): Promise<Observable<ProductCategoryModel>> {
         const headers = { 'Content-Type': 'application/json' };
 
         return this.http.get<ProductCategoryModel>(`${this.apiUrl}categories/${id}`, { headers });
+    }
+
+    saveCategory(category: ProductCategoryModel): Observable<ProductCategoryModel> {
+        const headers = { 'Content-Type': 'application/json' };
+
+        return this.http.post<ProductCategoryModel>(`${this.apiUrl}categories`, category, { headers });
     }
 
     isDataLoaded(): Observable<boolean> {

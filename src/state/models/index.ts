@@ -104,6 +104,7 @@ export interface VendorModel {
     status: boolean;
     isVerified: boolean;
     storeId: string;
+    userId: string;
     roleId: string;
     createdAt: string;
     updatedAt?: string;
@@ -190,6 +191,8 @@ export interface ProductModel {
     colors?: string[];
     promotionId?: string[];
     vendorId: string;
+    sku?: string;
+    status: boolean;
 }
 
 export interface ProductCategoryModel {
@@ -225,12 +228,10 @@ export interface ProductBrandModel {
 export interface ProductReviewModel {
     id: string;
     rating: number;
-    review: string;
-    status: boolean;
+    comment: string;
     productId: string;
-    userId: string;
-    createdAt: string;
-    updatedAt?: string;
+    authorId: string;
+    dateCreated: string;
 }
 
 export interface UserModel {

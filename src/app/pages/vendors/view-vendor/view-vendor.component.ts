@@ -215,7 +215,7 @@ export class ViewVendorComponent {
     }
 
     toggleViewProduct(id: string) {
-        this.route.navigate([`/products/view/${id}`]);
+        this.route.navigate([`dashboard/products/view/${id}`]);
     }
 
     toggleTabStatus(tab: keyof TabStatus): void {

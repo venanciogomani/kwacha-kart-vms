@@ -42,7 +42,17 @@ export class AuthApiService {
         return this.http.post<UserModel[]>(this.apiUrl + "users/usersByIds", { ids }, { headers });
     }
 
+    getAllUsers(): Observable<UserModel[]> {
+        const headers = { 'content-type': 'application/json' }
+
+        return this.http.get<UserModel[]>(this.apiUrl + "users/all", { headers })
+    }
+
     isUserLoggedIn(): Observable<boolean> {
+        return this.isDataLoaded$.asObservable();
+    }
+
+    isDataLoaded(): Observable<boolean> {
         return this.isDataLoaded$.asObservable();
     }
 }

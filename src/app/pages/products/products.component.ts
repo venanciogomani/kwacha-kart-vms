@@ -53,7 +53,8 @@ export class ProductsComponent {
         dateCreated: '',
         categoryId: '',
         brandId: '',
-        vendorId: ''
+        vendorId: '',
+        status: false
     };
 
     currentVendorId = '';
@@ -92,6 +93,7 @@ export class ProductsComponent {
         this.store.select(selectUser).subscribe((user: any) => {
             if (user && user.user && user.user.id) {
                 this.currentVendorId = user.user.id;
+                console.log(user);
             }
         });
     }
@@ -252,7 +254,7 @@ export class ProductsComponent {
     }
 
     toggleViewProduct(id: string) {
-        this.router.navigate([`dashboard/products/${id}`]);
+        this.router.navigate([`dashboard/products/view/${id}`]);
     }
 
     ngOnDestroy(): void {
@@ -270,7 +272,8 @@ export class ProductsComponent {
             dateCreated: '',
             categoryId: '',
             brandId: '',
-            vendorId: ''
+            vendorId: '',
+            status: false
         };
 
         if (this.currentVendorId !== '') {

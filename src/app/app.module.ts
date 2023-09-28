@@ -24,6 +24,7 @@ import { ordersReducer } from 'src/state/reducers/orders.reducer';
 import { categoriesReducer } from 'src/state/reducers/categories.reducer';
 import { brandsReducer } from 'src/state/reducers/brands.reducer';
 import { tagsReducer } from 'src/state/reducers/tags.reducer';
+import { reviewsReducer } from 'src/state/reducers/reviews.reducer';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { tagsReducer } from 'src/state/reducers/tags.reducer';
       categories: categoriesReducer,
       brands: brandsReducer,
       tags: tagsReducer,
+      reviews: reviewsReducer
     })
   ],
   providers: [],

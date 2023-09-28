@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { ProductBrands } from "src/state/dataset";
 import { ProductBrandModel } from "src/state";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { BrandsState } from "src/state/reducers/brands.reducer";
 import { loadBrandsSuccess } from "src/state/actions/brands.actions";
@@ -47,6 +47,12 @@ export class BrandApiService {
         }
 
         return brand[0];
+    }
+
+    saveBrand(brand: ProductBrandModel): Observable<ProductBrandModel> {
+        const headers = { 'Content-Type': 'application/json' };
+
+        return this.http.post<ProductBrandModel>(`${this.apiUrl}brands`, brand, { headers });
     }
 
     isDataLoaded(): BehaviorSubject<boolean> {

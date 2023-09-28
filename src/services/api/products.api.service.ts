@@ -46,7 +46,7 @@ export class ProductApiService {
     }
 
     getProductsByVendorId(vendorId: string): ProductModel[] {
-        return ProductItems.filter(product => product.vendorId === vendorId);
+        return [] as ProductModel[];
     }
 
     saveProduct(product: ProductModel): Observable<ProductModel> {

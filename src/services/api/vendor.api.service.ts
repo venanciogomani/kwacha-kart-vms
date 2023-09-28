@@ -46,23 +46,11 @@ export class VendorApiService {
     }
 
     getVendorsByRoleId(roleId: string): VendorModel[] {
-        const vendor = Vendors.filter(vendor => vendor.roleId === roleId);
-
-        if (vendor.length === 0) {
-            return [];
-        }
-        
-        return vendor;
+        return [] as VendorModel[];
     }
 
     getVendorsByStoreId(storeId: string): VendorModel[] {
-        const vendor = Vendors.filter(vendor => vendor.storeId === storeId);
-
-        if (vendor.length === 0) {
-            return [];
-        }
-        
-        return vendor;
+        return [] as VendorModel[];
     }
 
     saveVendor(vendor: VendorModel): Observable<VendorModel> {
