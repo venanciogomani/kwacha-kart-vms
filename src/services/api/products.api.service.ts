@@ -5,7 +5,8 @@ import { loadProductsSuccess } from "src/state/actions/products.actions";
 import { ProductsState } from "src/state/reducers/products.reducer";
 import { ProductItems } from "src/state/dataset";
 import { BehaviorSubject, Observable } from "rxjs";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { AuthApiService } from "./auth.api.service";
 
 @Injectable(
     { providedIn: "root" }
@@ -18,7 +19,8 @@ export class ProductApiService {
 
     constructor(
         private store: Store<ProductsState>,
-        private http: HttpClient
+        private http: HttpClient,
+        private authApiService: AuthApiService
     ) { }
 
     async createInitialProductsState() {
@@ -34,15 +36,25 @@ export class ProductApiService {
     }
 
     async getAllProducts(): Promise<Observable<ProductModel[]>> {
-        const headers = { 'Content-Type': 'application/json' };
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<ProductModel[]>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.get<ProductModel[]>(`${this.apiUrl}products`, { headers });
+        return this.http.get<ProductModel[]>(`${this.apiUrl}products`, options);
     }
 
     async getProductById(id: string): Promise<Observable<ProductModel>> {
-        const headers = { 'Content-Type': 'application/json' };
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<ProductModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
         
-        return this.http.get<ProductModel>(`${this.apiUrl}products/${id}`, { headers });
+        return this.http.get<ProductModel>(`${this.apiUrl}products/${id}`, options);
     }
 
     getProductsByVendorId(vendorId: string): ProductModel[] {
@@ -50,9 +62,14 @@ export class ProductApiService {
     }
 
     saveProduct(product: ProductModel): Observable<ProductModel> {
-        const headers = { 'Content-Type': 'application/json' };
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<ProductModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.post<ProductModel>(`${this.apiUrl}products`, product, { headers });
+        return this.http.post<ProductModel>(`${this.apiUrl}products`, product, options);
     }
 
     isDataLoaded(): Observable<boolean> {

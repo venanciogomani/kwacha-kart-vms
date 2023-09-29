@@ -3,9 +3,10 @@ import { Store } from "@ngrx/store";
 import { ProductBrands } from "src/state/dataset";
 import { ProductBrandModel } from "src/state";
 import { BehaviorSubject, Observable } from "rxjs";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { BrandsState } from "src/state/reducers/brands.reducer";
 import { loadBrandsSuccess } from "src/state/actions/brands.actions";
+import { AuthApiService } from "./auth.api.service";
 
 @Injectable(
     { providedIn: "root" }
@@ -18,7 +19,8 @@ export class BrandApiService {
     
     constructor(
         private store: Store<{}>,
-        private http: HttpClient
+        private http: HttpClient,
+        private authApiService: AuthApiService
     ) { }
 
     async createInitialBrandsState() {
@@ -34,9 +36,14 @@ export class BrandApiService {
     }
 
     async getAllBrands() {
-        const headers = { 'Content-Type': 'application/json' };
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<ProductBrandModel[]>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.get<ProductBrandModel[]>(`${this.apiUrl}brands`, { headers });
+        return this.http.get<ProductBrandModel[]>(`${this.apiUrl}brands`, options);
     }
 
     getBrandById(id: string): ProductBrandModel {
@@ -50,9 +57,14 @@ export class BrandApiService {
     }
 
     saveBrand(brand: ProductBrandModel): Observable<ProductBrandModel> {
-        const headers = { 'Content-Type': 'application/json' };
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<ProductBrandModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.post<ProductBrandModel>(`${this.apiUrl}brands`, brand, { headers });
+        return this.http.post<ProductBrandModel>(`${this.apiUrl}brands`, brand, options);
     }
 
     isDataLoaded(): BehaviorSubject<boolean> {

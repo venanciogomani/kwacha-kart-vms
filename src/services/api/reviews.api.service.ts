@@ -2,9 +2,10 @@ import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { ProductReviewModel } from "src/state";
 import { BehaviorSubject, Observable } from "rxjs";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { ReviewsState } from "src/state/reducers/reviews.reducer";
 import { loadReviewsSuccess } from "src/state/actions/reviews.actions";
+import { AuthApiService } from "./auth.api.service";
 
 @Injectable(
     { providedIn: "root" }
@@ -17,7 +18,8 @@ export class ReviewApiService {
 
     constructor(
         private store: Store<{}>,
-        private http: HttpClient
+        private http: HttpClient,
+        private authApiService: AuthApiService
     ) { }
 
     async createInitialReviewsState() {
@@ -33,15 +35,25 @@ export class ReviewApiService {
     }
 
     async getAllReviews() {
-        const headers = { 'Content-Type': 'application/json' };
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<ProductReviewModel[]>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.get<ProductReviewModel[]>(`${this.apiUrl}reviews`, { headers });
+        return this.http.get<ProductReviewModel[]>(`${this.apiUrl}reviews`, options);
     }
 
     async getReviewById(id: string): Promise<Observable<ProductReviewModel>> {
-        const headers = { 'Content-Type': 'application/json' };
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<ProductReviewModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.get<ProductReviewModel>(`${this.apiUrl}reviews/${id}`, { headers });
+        return this.http.get<ProductReviewModel>(`${this.apiUrl}reviews/${id}`, options);
     }
 
     isDataLoaded(): BehaviorSubject<boolean> {

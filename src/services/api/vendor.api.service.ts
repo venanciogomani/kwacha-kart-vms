@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { BehaviorSubject, Observable } from "rxjs";
@@ -6,6 +6,7 @@ import { VendorModel } from "src/state";
 import { loadVendorsSuccess } from "src/state/actions/vendors.actions";
 import { Vendors } from "src/state/dataset";
 import { VendorsState } from "src/state/reducers/vendors.reducer";
+import { AuthApiService } from "./auth.api.service";
 
 @Injectable (
     {providedIn: "root"}
@@ -18,7 +19,8 @@ export class VendorApiService {
 
     constructor(
         private store: Store<VendorsState>,
-        private http: HttpClient
+        private http: HttpClient,
+        private authApiService: AuthApiService
     ) { }
 
     async createInitialVendorsState() {
@@ -34,15 +36,25 @@ export class VendorApiService {
     }
 
     async getAllVendors(): Promise<Observable<VendorModel[]>> {
-        const headers = { 'content-type': 'application/json' }
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<VendorModel[]>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return (this.http.get<VendorModel[]>(this.apiUrl + "vendors", { headers }));
+        return (this.http.get<VendorModel[]>(this.apiUrl + "vendors", options));
     }
 
     async getVendorById(id: string): Promise<Observable<VendorModel>> {
-        const headers = { 'content-type': 'application/json' }
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<VendorModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.get<VendorModel>(this.apiUrl + "vendors/" + id, { headers });
+        return this.http.get<VendorModel>(this.apiUrl + "vendors/" + id, options);
     }
 
     getVendorsByRoleId(roleId: string): VendorModel[] {
@@ -54,9 +66,14 @@ export class VendorApiService {
     }
 
     saveVendor(vendor: VendorModel): Observable<VendorModel> {
-        const headers = { 'content-type': 'application/json' }
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<VendorModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.post<VendorModel>(this.apiUrl + "vendors", vendor, { headers });
+        return this.http.post<VendorModel>(this.apiUrl + "vendors", vendor, options);
     }
 
     isDataLoaded(): Observable<boolean> {

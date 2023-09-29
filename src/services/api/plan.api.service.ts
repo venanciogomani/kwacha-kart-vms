@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { BehaviorSubject, Observable, catchError, throwError } from "rxjs";
@@ -6,6 +6,7 @@ import { StorePlansModel, StoreRoleModel } from "src/state";
 import { loadPlansSuccess } from "src/state/actions/plans.actions";
 import { Plans } from "src/state/dataset";
 import { PlansState } from "src/state/reducers/plans.reducer";
+import { AuthApiService } from "./auth.api.service";
 
 @Injectable (
     {providedIn: "root"}
@@ -18,11 +19,12 @@ export class PlanApiService {
     
     constructor(
         private store: Store<PlansState>,
-        private http: HttpClient
+        private http: HttpClient,
+        private authApiService: AuthApiService
     ) { }
 
     async createInitialPlansState() {
-        (await this.getAllPlans()).subscribe((allPlans: StorePlansModel[]) => {
+        this.getAllPlans().subscribe((allPlans: StorePlansModel[]) => {
             const initialState: PlansState = {
                 plans: allPlans,
                 loading: false
@@ -34,9 +36,14 @@ export class PlanApiService {
     }
 
     getAllPlans(): Observable<StorePlansModel[]> {
-        const headers = { 'content-type': 'application/json' }
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<StorePlansModel[]>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
         
-        return this.http.get<StorePlansModel[]>(this.apiUrl + 'plans', { headers })
+        return this.http.get<StorePlansModel[]>(this.apiUrl + 'plans', options)
     }
 
     getPlanById(id: string) {
@@ -50,10 +57,15 @@ export class PlanApiService {
     }
 
     savePlan(plan: StorePlansModel): Observable<StorePlansModel> {
-        const headers = { 'content-type': 'application/json' }
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<StorePlansModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
         
         return this.http
-            .post<StorePlansModel>(this.apiUrl + 'plans', plan, { headers })
+            .post<StorePlansModel>(this.apiUrl + 'plans', plan, options)
             .pipe(
                 catchError((error: HttpErrorResponse) => {
                     return throwError('Something bad happened; please try again later.');

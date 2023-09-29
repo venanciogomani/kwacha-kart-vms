@@ -1,10 +1,11 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { BehaviorSubject, Observable } from "rxjs";
 import { VendorOrderModel } from "src/state";
 import { OrdersState } from "src/state/reducers/orders.reducer";
 import { loadOrdersSuccess } from "src/state/actions/orders.actions";
+import { AuthApiService } from "./auth.api.service";
 
 @Injectable (
     { providedIn: "root" }
@@ -17,7 +18,8 @@ export class OrderApiService {
 
     constructor(
         private http: HttpClient,
-        private store: Store<OrdersState>
+        private store: Store<OrdersState>,
+        private authApiService: AuthApiService
     ) { }
 
     async createInitialOrdersState() {
@@ -33,9 +35,14 @@ export class OrderApiService {
     }
 
     async getAllOrders(): Promise<Observable<VendorOrderModel[]>> {
-        const headers = { 'content-type': 'application/json' }
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<VendorOrderModel[]>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.get<VendorOrderModel[]>(this.apiUrl + "orders", { headers })
+        return this.http.get<VendorOrderModel[]>(this.apiUrl + "orders", options)
     }
 
     isDataLoaded(): Observable<boolean> {

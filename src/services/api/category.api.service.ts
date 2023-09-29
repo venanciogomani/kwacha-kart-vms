@@ -3,9 +3,10 @@ import { Store } from "@ngrx/store";
 import { ProductCategories } from "src/state/dataset";
 import { ProductCategoryModel } from "src/state";
 import { BehaviorSubject, Observable } from "rxjs";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { CategoriesState } from "src/state/reducers/categories.reducer";
 import { loadCategoriesSuccess } from "src/state/actions/categories.actions";
+import { AuthApiService } from "./auth.api.service";
 
 @Injectable(
     { providedIn: "root" }
@@ -18,7 +19,8 @@ export class CategoryApiService {
     
     constructor(
         private store: Store<{}>,
-        private http: HttpClient
+        private http: HttpClient,
+        private authApiService: AuthApiService
     ) { }
 
     async createInitialCategoriesState() {
@@ -34,27 +36,47 @@ export class CategoryApiService {
     }
 
     async getAllCategories(): Promise<Observable<ProductCategoryModel[]>> {
-        const headers = { 'Content-Type': 'application/json' };
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<ProductCategoryModel[]>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.get<ProductCategoryModel[]>(`${this.apiUrl}categories`, { headers });
+        return this.http.get<ProductCategoryModel[]>(`${this.apiUrl}categories`, options);
     }
 
     async getAllParentCategories(): Promise<Observable<any[]>> {
-        const headers = { 'Content-Type': 'application/json' };
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<any[]>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.get<any[]>(`${this.apiUrl}categories/parent`, { headers });
+        return this.http.get<any[]>(`${this.apiUrl}categories/parent`, options);
     }
 
     async getCategoryById(id: string): Promise<Observable<ProductCategoryModel>> {
-        const headers = { 'Content-Type': 'application/json' };
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<ProductCategoryModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.get<ProductCategoryModel>(`${this.apiUrl}categories/${id}`, { headers });
+        return this.http.get<ProductCategoryModel>(`${this.apiUrl}categories/${id}`, options);
     }
 
     saveCategory(category: ProductCategoryModel): Observable<ProductCategoryModel> {
-        const headers = { 'Content-Type': 'application/json' };
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<ProductCategoryModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.post<ProductCategoryModel>(`${this.apiUrl}categories`, category, { headers });
+        return this.http.post<ProductCategoryModel>(`${this.apiUrl}categories`, category, options);
     }
 
     isDataLoaded(): Observable<boolean> {

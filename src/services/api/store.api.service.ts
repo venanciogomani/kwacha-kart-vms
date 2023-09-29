@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { BehaviorSubject, Observable } from "rxjs";
@@ -6,6 +6,7 @@ import { PaymentAccountTypeModel, PaymentMethodModel, StorePaymentDetailsModel, 
 import { loadStoresSuccess } from "src/state/actions/stores.actions";
 import { Stores, StorePaymentDetails, PaymentMethods, PaymentAccountTypes } from "src/state/dataset";
 import { StoresState } from "src/state/reducers/stores.reducer";
+import { AuthApiService } from "./auth.api.service";
 
 @Injectable(
     { providedIn: "root" }
@@ -18,7 +19,8 @@ export class StoreApiService {
 
     constructor(
         private store: Store<StoresState>,
-        private http: HttpClient
+        private http: HttpClient,
+        private authApiService: AuthApiService
     ) { }
 
     async createInitialStoresState() {
@@ -34,9 +36,14 @@ export class StoreApiService {
     }
 
     async getAllStores(): Promise<Observable<StoresModel[]>> {
-        const headers = { 'content-type': 'application/json' }
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<StoresModel[]>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.get<StoresModel[]>(this.apiUrl + 'stores', { headers })
+        return this.http.get<StoresModel[]>(this.apiUrl + 'stores', options)
     }
 
     getStoreById(id: string): StoresModel {
@@ -57,9 +64,14 @@ export class StoreApiService {
     }
 
     saveStore(store: StoresModel): Observable<StoresModel> {
-        const headers = { 'content-type': 'application/json' }
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<StoresModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.post<StoresModel>(this.apiUrl + 'stores', store, { headers })
+        return this.http.post<StoresModel>(this.apiUrl + 'stores', store, options)
     }
 
     getPaymentMethodById(id: string): PaymentMethodModel {

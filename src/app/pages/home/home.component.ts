@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AuthApiService } from 'src/services/api/auth.api.service';
 
 @Component({
   selector: 'app-home',
@@ -6,5 +7,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
+    constructor() { }
 
+    ngOnInit(): void {}
 }

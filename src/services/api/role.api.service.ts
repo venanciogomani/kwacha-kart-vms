@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { BehaviorSubject, Observable, catchError, throwError } from "rxjs";
@@ -6,6 +6,7 @@ import { StoreRoleModel } from "src/state";
 import { loadRolesSuccess } from "src/state/actions/roles.actions";
 import { Roles, Permissions } from "src/state/dataset";
 import { RolesState } from "src/state/reducers/roles.reducer";
+import { AuthApiService } from "./auth.api.service";
 
 @Injectable (
     {providedIn: "root"}
@@ -18,7 +19,8 @@ export class RoleApiService {
 
     constructor(
         private store: Store<RolesState>,
-        private http: HttpClient
+        private http: HttpClient,
+        private authApiService: AuthApiService
     ) { }
 
     async createInitialRolesState() {
@@ -35,9 +37,14 @@ export class RoleApiService {
     }
 
     async getAllRoles(): Promise<Observable<StoreRoleModel[]>> {
-        const headers = { 'content-type': 'application/json' }
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<StoreRoleModel[]>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return await this.http.get<StoreRoleModel[]>(this.apiUrl + 'roles', { headers })
+        return this.http.get<StoreRoleModel[]>(this.apiUrl + 'roles', options)
     }
 
     getRoleById(id: string) {
@@ -51,15 +58,25 @@ export class RoleApiService {
     }
 
     getAllPermissions(): Observable<StoreRoleModel[]> {
-        const headers = { 'content-type': 'application/json' }
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<StoreRoleModel[]>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.get<StoreRoleModel[]>(this.apiUrl + 'permissions', { headers })
+        return this.http.get<StoreRoleModel[]>(this.apiUrl + 'permissions', options)
     }
 
     getAllPermissionIdsByRole(roleId: string) {
-        const headers = { 'content-type': 'application/json' }
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<StoreRoleModel[]>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
-        return this.http.get<StoreRoleModel[]>(this.apiUrl + 'permissions/role/' + roleId, { headers })
+        return this.http.get<StoreRoleModel[]>(this.apiUrl + 'permissions/role/' + roleId, options)
     }
 
     saveRole(role: StoreRoleModel): Observable<StoreRoleModel> {
@@ -69,10 +86,15 @@ export class RoleApiService {
             return throwError('Role already exists.');
         }
 
-        const headers = { 'content-type': 'application/json' }
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<StoreRoleModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
         return this.http
-            .post<StoreRoleModel>(this.apiUrl + 'roles', role, { headers })
+            .post<StoreRoleModel>(this.apiUrl + 'roles', role, options)
             .pipe(
                 catchError((error: HttpErrorResponse) => {
                     return throwError('Something bad happened; please try again later.');
@@ -87,10 +109,15 @@ export class RoleApiService {
             return throwError('Role does not exist.');
         }
 
-        const headers = { 'content-type': 'application/json' }
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<StoreRoleModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
         return this.http
-            .put<StoreRoleModel>(this.apiUrl, role, { headers })
+            .put<StoreRoleModel>(this.apiUrl, role, options)
             .pipe(
                 catchError((error: HttpErrorResponse) => {
                     return throwError('Something bad happened; please try again later.');
@@ -105,10 +132,15 @@ export class RoleApiService {
             return throwError('Role does not exist.');
         }
 
-        const headers = { 'content-type': 'application/json' }
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<StoreRoleModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
 
         return this.http
-            .delete<StoreRoleModel>(this.apiUrl + roleId, { headers })
+            .delete<StoreRoleModel>(this.apiUrl + roleId, options)
             .pipe(
                 catchError((error: HttpErrorResponse) => {
                     return throwError('Something bad happened; please try again later.');
