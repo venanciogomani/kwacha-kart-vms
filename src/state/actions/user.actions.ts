@@ -2,8 +2,12 @@ import { createAction } from "@ngrx/store";
 import { UserModel } from "../models";
 
 export enum UserActionTypes {
-    LoadUser = '[User] Load User',
-    LoadUserSuccess = '[User] Load User Success',
+    LoadUsers = '[User] Load User',
+    LoadUsersSuccess = '[User] Load User Success',
+    LoadSingleUser = '[User] Load Single User',
+    LoadSingleUserSuccess = '[User] Load Single User Success',
+    LoadMyUser = '[User] Load My User',
+    LoadMyUserSuccess = '[User] Load My User Success',
     addUser = '[User] Add User',
     addUserSuccess = '[User] Add User Success',
     EditUser = '[User] Edit User',
@@ -12,12 +16,31 @@ export enum UserActionTypes {
     DeleteUserSuccess = '[User] Delete User Success',
 }
 
-export const loadUser = createAction(
-    UserActionTypes.LoadUser
+export const loadUsers = createAction(
+    UserActionTypes.LoadUsers
 );
 
-export const loadUserSuccess = createAction(
-    UserActionTypes.LoadUserSuccess,
+export const loadUsersSuccess = createAction(
+    UserActionTypes.LoadUsersSuccess,
+    (users: UserModel[]) => ({ users }),
+);
+
+export const loadSingleUser = createAction(
+    UserActionTypes.LoadSingleUser,
+    (id: string) => ({ id }),
+);
+
+export const loadSingleUserSuccess = createAction(
+    UserActionTypes.LoadSingleUserSuccess,
+    (user: UserModel) => ({ user }),
+);
+
+export const loadMyUser = createAction(
+    UserActionTypes.LoadMyUser
+);
+
+export const loadMyUserSuccess = createAction(
+    UserActionTypes.LoadMyUserSuccess,
     (user: UserModel) => ({ user }),
 );
 

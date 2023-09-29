@@ -10,13 +10,7 @@ import { StoreApiService } from 'src/services/api/store.api.service';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
 import { StoreRoleModel, StoresModel, VendorModel } from 'src/state';
 import { selectLoading, selectVendors } from 'src/state/selectors/vendors.selectors';
-import { selectLoading as selectUsersLoading, selectUser } from 'src/state/selectors/user.selectors';
-import { loadStoresSuccess } from 'src/state/actions/stores.actions';
 import { selectStores } from 'src/state/selectors/stores.selectors';
-
-type SortStatus = {
-    [key in 'name' | 'city' | 'status']: boolean;
-}
 
 @Component({
   selector: 'app-vendors',
@@ -31,12 +25,6 @@ export class VendorsComponent {
 
     toasterMessage = 'Something went wrong!';
     toasterType = 'error';
-    
-    sortStatus: SortStatus = {
-        name: false,
-        city: false,
-        status: false,
-    };
 
     vendors$: VendorModel[] = [];
     fileteredVendors$: VendorModel[] = [];
@@ -113,20 +101,20 @@ export class VendorsComponent {
 
     ngOnInit(): void {
         if (this.vendors$.length === 0) {
-            this.vendorApiService
-                .isDataLoaded()
-                .pipe(takeUntil(this.destroy$),
-                    filter((isLoaded: boolean) => isLoaded),
-                    switchMap(() => this.store.select(selectLoading))
-                )
-                .subscribe((isLoading: boolean) => {
-                    if (!isLoading) {
-                        this.getAllVendors();
-                    }
-                });
+            this.getAllVendors();
         } else {
             this.filterVendorsBySearchTerm();
             this.totalVendors = this.vendors$.length;
+
+            if (this.allStores$.length === 0) {
+                this.getAllStores();
+            }
+    
+            if (this.allUsers$.length === 0) {
+                this.getAllUsers();
+            }
+            
+            this.getAllRoles();
             this.isVendorsLoading$ = false;
         }
     }
@@ -252,6 +240,8 @@ export class VendorsComponent {
             }
             
             this.getAllRoles();
+            this.isVendorsLoading$ = false;
+            console.log(this.vendors$);
         });
     }
 

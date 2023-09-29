@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AuthApiService } from 'src/services/api/auth.api.service';
 import { UserModel } from 'src/state';
-import { selectUser } from 'src/state/selectors/user.selectors';
+import { selectAuth } from 'src/state/selectors/auth.selectors';
 
 @Component({
   selector: 'app-login',
@@ -23,8 +23,8 @@ export class LoginComponent {
     ) { }
 
     ngOnInit(): void {
-        this.store.select(selectUser).subscribe((user: UserModel) => {
-            if (Object.keys(user).length !== 0) {
+        this.store.select(selectAuth).subscribe((user: UserModel) => {
+            if (user && Object.keys(user).length !== 0) {
                 this.login();
             }
         });

@@ -41,7 +41,7 @@
                     {{ addRow ? 'Cancel' : 'Add Vendor' }}
                 </button>
             </div>
-            <div class="flex flex-col py-2">
+            <div class="flex flex-col py-2" *ngIf="!isVendorsLoading$">
                 <!-- desktop table -->
                 <div class="relative overflow-x-auto shadow-md hidden md:block">
                     <table class="w-full text-sm text-left">
@@ -96,7 +96,7 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="text-gray-700" *ngIf="!isVendorsLoading$">
+                        <tbody class="text-gray-700">
                             <!-- Add New Role -->
                             <tr class="border-b" *ngIf="addRow">
                                 <td class="w-4 p-4">
@@ -335,13 +335,6 @@
                                 </td>
                             </tr>
                         </tbody>
-                        <tbody class="text-gray-700" *ngIf="isVendorsLoading$">
-                            <tr>
-                                <td colspan="8" class="text-center py-4 text-gray-600">
-                                    Loading...
-                                </td>
-                            </tr>
-                        </tbody>
                     </table>
                 </div>
                 <!-- mobile table -->
@@ -463,6 +456,9 @@
                         </span>
                     </div>
                 </div>
+            </div>
+            <div class="flex flex-col py-2" *ngIf="isVendorsLoading$">
+                Loading...
             </div>
         </div>
     </div>

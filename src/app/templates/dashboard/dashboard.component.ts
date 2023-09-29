@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { AuthApiService } from 'src/services/api/auth.api.service';
 import { BrandApiService } from 'src/services/api/brand.api.service';
 import { CategoryApiService } from 'src/services/api/category.api.service';
 import { OrderApiService } from 'src/services/api/order.api.service';
@@ -11,7 +12,7 @@ import { RoleApiService } from 'src/services/api/role.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
 import { UserModel } from 'src/state';
-import { selectUser } from 'src/state/selectors/user.selectors';
+import { selectAuthLoading } from 'src/state/selectors/auth.selectors';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,6 +30,7 @@ export class DashboardComponent {
         private brandApiService: BrandApiService,
         private orderApiService: OrderApiService,
         private reviewApiService: ReviewApiService,
+        private authApiService: AuthApiService,
         private store: Store<UserModel>,
         private router: Router
     ) { }
@@ -43,12 +45,13 @@ export class DashboardComponent {
         this.categoryApiService.createInitialCategoriesState();
         this.orderApiService.createInitialOrdersState();
         this.reviewApiService.createInitialReviewsState();
+        this.authApiService.createInitialUserState();
 
-        this.store.select(selectUser).subscribe((user: UserModel) => {
-            if (Object.keys(user).length === 0) {
-                // uncomment this line to enable redirect if not logged in
-                //this.router.navigate(['auth/login']);
-            }
-        });
+        // this.store.select(selectAuthLoading).subscribe((data: any) => {
+        //     if (data?.user && Object.keys(data?.user).length === 0) {
+        //         // uncomment this line to enable redirect if not logged in
+        //         //this.router.navigate(['auth/login']);
+        //     }
+        // });
     }
 }

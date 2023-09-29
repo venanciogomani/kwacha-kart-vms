@@ -248,6 +248,7 @@ export interface UserModel {
     isVerified: boolean;
     roleId: string;
     storeId?: string;
+    userTypeId?: string;
     createdAt: string;
     updatedAt?: string;
 }

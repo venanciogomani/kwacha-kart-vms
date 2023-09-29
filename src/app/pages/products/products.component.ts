@@ -10,7 +10,7 @@ import { ProductApiService } from 'src/services/api/products.api.service';
 import { formatDateString } from 'src/services/helpers';
 import { ProductBrandModel, ProductCategoryModel, ProductModel } from 'src/state';
 import { selectLoading, selectProducts } from 'src/state/selectors/products.selectors';
-import { selectUser } from 'src/state/selectors/user.selectors';
+import { selectMyUser } from 'src/state/selectors/user.selectors';
 
 type SortStatus = {
     [key in 'title' | 'price' | 'salePrice' | 'quantity']: boolean;
@@ -90,7 +90,7 @@ export class ProductsComponent {
             this.filterProductsBySearchTerm();
         });
 
-        this.store.select(selectUser).subscribe((user: any) => {
+        this.store.select(selectMyUser).subscribe((user: any) => {
             if (user && user.user && user.user.id) {
                 this.currentVendorId = user.user.id;
                 console.log(user);
