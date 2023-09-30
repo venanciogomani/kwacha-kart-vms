@@ -51,10 +51,40 @@
             fontIcon="apps"
             class="text-gray-500 cursor-pointer"
         ></mat-icon>
-        <img
-            src="../../../assets/img/user-placeholder.png"
-            alt="user placeholder"
-            class="h-10 w-10 rounded-full cursor-pointer"
-        />
+        <div class="h-10 w-10 relative">
+            <img
+                src="../../../assets/img/user-placeholder.png"
+                alt="user placeholder"
+                class="w-full rounded-full cursor-pointer"
+                (click)="toggleDropdown()"
+            />
+            <div 
+                *ngIf="isDropdownOpen"
+                class="absolute top-10 right-0 bg-white rounded-lg border-2 border-gray-200 flex flex-col"
+            >
+                <div 
+                    (click)="goToProfile()"
+                    class="px-4 py-3 border-b border-gray-200 hover:bg-gray-200 cursor-pointer transition duration-200 ease-out flex flex-row items-center"
+                >
+                    <mat-icon
+                        fontIcon="account_circle"
+                        class="mr-1 text-sm"
+                    ></mat-icon>
+                    <span>
+                        Profile
+                    </span>
+                </div>
+                <div 
+                    (click)="performLogout()"
+                    class="px-4 py-3 hover:bg-gray-200 cursor-pointer transition duration-200 ease-out flex flex-row items-center"
+                >
+                    <mat-icon
+                        fontIcon="settings"
+                        class="mr-1 text-sm"
+                    ></mat-icon>
+                    <span>Logout</span>
+                </div>
+            </div>
+        </div>
     </div>
 </header>
