@@ -12,7 +12,7 @@ import { RoleApiService } from 'src/services/api/role.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
 import { UserModel } from 'src/state';
-import { selectAuthLoading } from 'src/state/selectors/auth.selectors';
+import { selectAuth } from 'src/state/selectors/auth.selectors';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,6 +20,8 @@ import { selectAuthLoading } from 'src/state/selectors/auth.selectors';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent {
+    currentUser$ = this.store.select(selectAuth);
+
     constructor(
         private storeApiService: StoreApiService,
         private plansApiService: PlanApiService,
@@ -47,11 +49,11 @@ export class DashboardComponent {
         this.reviewApiService.createInitialReviewsState();
         this.authApiService.createInitialUserState();
 
-        // this.store.select(selectAuthLoading).subscribe((data: any) => {
-        //     if (data?.user && Object.keys(data?.user).length === 0) {
-        //         // uncomment this line to enable redirect if not logged in
-        //         //this.router.navigate(['auth/login']);
-        //     }
-        // });
+        const token = this.authApiService.getAuthToken();
+        if (!token) {
+            this.router.navigate(['auth/login']);
+        } else {
+            this.authApiService.resetInactivityTimer();
+        }
     }
 }

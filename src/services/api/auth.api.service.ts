@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
 import { Store } from "@ngrx/store";
 import { BehaviorSubject, Observable } from "rxjs";
 import { UserModel } from "src/state";
@@ -18,14 +19,6 @@ export class AuthApiService {
     private token: string | null = null;
     private inactivityTimer: any;
 
-    getToken(): string | null {
-        return this.getAuthToken();
-    }
-
-    setToken(token: string | null): void {
-        this.token = token;
-    }
-
     private isDataLoaded$ = new BehaviorSubject<boolean>(false);
     private isUserLoggedIn$ = new BehaviorSubject<boolean>(false);
     private userDataSubject: BehaviorSubject<UserModel | null> = new BehaviorSubject<UserModel | null>(null);  
@@ -33,7 +26,8 @@ export class AuthApiService {
 
     constructor(
         private store: Store<UserModel>,
-        private http: HttpClient
+        private http: HttpClient,
+        private router: Router
     ) { }
 
     createInitialUserState() {
@@ -45,6 +39,7 @@ export class AuthApiService {
 
             this.store.dispatch(loadUsersSuccess(initialState.users));
             this.isUserLoggedIn$.next(true);
+            this.resetInactivityTimer();
         });
     }
 
@@ -56,7 +51,6 @@ export class AuthApiService {
             this.userDataSubject.next(user);
             this.store.dispatch(loadAuthSuccess(user.user));
             this.isDataLoaded$.next(true);
-            this.setToken(user.token);
             sessionStorage.setItem('token', user.token);
         },
             (error) => {
@@ -69,6 +63,8 @@ export class AuthApiService {
         this.userDataSubject.next(null);
         this.isDataLoaded$.next(false);
         this.isUserLoggedIn$.next(false);
+        this.clearAuthToken();
+        this.router.navigate(['auth/login']);
     }
 
     getAllUsersByIds(ids: string[]): Observable<UserModel[]> {
@@ -114,7 +110,8 @@ export class AuthApiService {
 
     resetInactivityTimer(): void {
         clearTimeout(this.inactivityTimer);
-        this.inactivityTimer = setTimeout(() => this.logout(), 60000);
+        this.inactivityTimer = setTimeout(() => this.logout(), 600000);
+        console.log("Inactivity timer reset");
     }
 
     getAuthToken(): string | null {
@@ -125,5 +122,22 @@ export class AuthApiService {
         }
 
         return null;
+    }
+
+    clearAuthToken(): void {
+        sessionStorage.removeItem('token');
+    }
+
+    async getCurrentUser(): Promise<Observable<UserModel>> {
+        const token = this.getAuthToken();
+        
+        if (!token) {
+            return new Observable<UserModel>();
+        }
+
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${token}`);
+        const options = { headers, withCredentials: true };
+
+        return await this.http.get<UserModel>(this.authUrl + "me", options);
     }
 }

@@ -18,17 +18,10 @@ export class LoginComponent {
     
     constructor(
         private router: Router,
-        private authApiService: AuthApiService,
-        private store: Store<UserModel>
+        private authApiService: AuthApiService
     ) { }
 
-    ngOnInit(): void {
-        this.store.select(selectAuth).subscribe((user: UserModel) => {
-            if (user && Object.keys(user).length !== 0) {
-                this.login();
-            }
-        });
-    }
+    ngOnInit(): void {}
 
     async performLogin() {
         (await this.authApiService.login(this.user.email, this.user.password));

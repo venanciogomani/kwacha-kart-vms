@@ -74,13 +74,13 @@ export class UsersComponent {
         private router: Router,
         private sanitizer: DomSanitizer
     ) {
-        this.store.select(selectAuth).subscribe(( myUser: any ) => {
-            if (myUser && Object.keys(myUser).length > 0) {
-                this.myUser$ = myUser.user;
-            }
-        });
+        this.store.select(selectUsers).subscribe(async ( users: UserModel[] ) => {
+            (await this.authApiService.getCurrentUser()).subscribe(( myUser: any ) => {
+                if (myUser && Object.keys(myUser).length > 0) {
+                    this.myUser$ = myUser.user;
+                }
+            });
 
-        this.store.select(selectUsers).subscribe(( users: UserModel[] ) => {
             this.users$ = this.myUser$ && this.myUser$.id !== '' ? 
                 users.filter((user: UserModel) => user.id !== this.myUser$.id)
                 : users;
