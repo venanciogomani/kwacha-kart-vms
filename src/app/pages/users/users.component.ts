@@ -90,6 +90,8 @@ export class UsersComponent {
         this.store.select(selectRoles).subscribe(( roles: StoreRoleModel[] ) => {
             this.allRoles$ = roles;
         });
+
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     ngOnInit(): void {
@@ -157,6 +159,7 @@ export class UsersComponent {
         }
         
         this.calculateTotalPages();
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     goToPrevPage() {

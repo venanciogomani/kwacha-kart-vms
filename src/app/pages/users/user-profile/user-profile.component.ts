@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { AuthApiService } from 'src/services/api/auth.api.service';
 import { UserModel } from 'src/state';
 import { selectAuth } from 'src/state/selectors/auth.selectors';
 
@@ -14,11 +15,14 @@ export class UserProfileComponent {
     password$: string = '';
 
     constructor(
-        private store: Store<{ user: UserModel }>
+        private store: Store<{ user: UserModel }>,
+        private authApiService: AuthApiService
     ) { 
         this.store.select(selectAuth).subscribe((user: UserModel) => {
             this.editUser$ = user;
         });
+
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     ngOnInit(): void {

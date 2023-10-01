@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Subject, filter, switchMap, takeUntil } from 'rxjs';
 import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
+import { AuthApiService } from 'src/services/api/auth.api.service';
 import { CategoryApiService } from 'src/services/api/category.api.service';
 import { formatDateString } from 'src/services/helpers';
 import { ProductCategoryModel } from 'src/state';
@@ -70,6 +71,7 @@ export class ProductCategoriesComponent {
 
     constructor(
         private categoryApiService: CategoryApiService,
+        private authApiService: AuthApiService,
         private store: Store,
         private router: Router,
         private sanitizer: DomSanitizer
@@ -84,6 +86,8 @@ export class ProductCategoriesComponent {
                 this.currentVendorId = user.user.id;
             }
         });
+
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     ngOnInit(): void {
@@ -148,6 +152,7 @@ export class ProductCategoriesComponent {
         }
         
         this.calculateTotalPages();
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     goToPrevPage() {

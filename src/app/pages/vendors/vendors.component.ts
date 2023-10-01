@@ -100,6 +100,8 @@ export class VendorsComponent {
         this.store.select(selectStores).subscribe((stores: StoresModel[]) => {
             this.allStores$ = stores;
         });
+
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     ngOnInit(): void {
@@ -150,6 +152,7 @@ export class VendorsComponent {
         }
         
         this.calculateTotalPages();
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     goToPrevPage() {

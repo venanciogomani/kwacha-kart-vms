@@ -16,13 +16,16 @@ export class AuthApiService {
     private authUrl = "http://localhost:5000/auth/";
     private apiUrl = "http://localhost:2200/api/";
 
-    private token: string | null = null;
     private inactivityTimer: any;
+    private tokenExpirationTimer: any;
 
     private isDataLoaded$ = new BehaviorSubject<boolean>(false);
     private isUserLoggedIn$ = new BehaviorSubject<boolean>(false);
     private userDataSubject: BehaviorSubject<UserModel | null> = new BehaviorSubject<UserModel | null>(null);  
+    private tokenSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
+
     userData$: Observable<UserModel | null> = this.userDataSubject.asObservable();
+    token$: Observable<string | null> = this.tokenSubject.asObservable();
 
     constructor(
         private store: Store<UserModel>,
@@ -134,7 +137,11 @@ export class AuthApiService {
     resetInactivityTimer(): void {
         clearTimeout(this.inactivityTimer);
         this.inactivityTimer = setTimeout(() => this.logout(), 600000);
-        console.log("Inactivity timer reset");
+        this.reserLogoutTimer();
+    }
+
+    setInitialToken(token: string) {
+        this.tokenSubject.next(token);
     }
 
     getAuthToken(): string | null {
@@ -151,6 +158,28 @@ export class AuthApiService {
         sessionStorage.removeItem('token');
     }
 
+    reserLogoutTimer(): void {
+        if (this.tokenExpirationTimer) {
+            clearTimeout(this.tokenExpirationTimer);
+        }
+
+        const token = this.getAuthToken();
+        const tokenData = this.decodeToken(token);
+
+        if (tokenData && tokenData.exp) {
+            const expirationTime = tokenData.exp * 1000;
+            const now = new Date().getTime();
+            const expiresIn = expirationTime - now;
+            this.tokenExpirationTimer = setTimeout(() => {
+                this.refreshToken().subscribe((newToken: any) => {
+                    this.tokenSubject.next(newToken);
+                }, (error) => {
+                    console.log(error);
+                });
+            }, expiresIn);
+        }
+    }
+
     async getCurrentUser(): Promise<Observable<UserModel>> {
         const token = this.getAuthToken();
         
@@ -162,5 +191,27 @@ export class AuthApiService {
         const options = { headers, withCredentials: true };
 
         return this.http.get<UserModel>(this.authUrl + "me", options);
+    }
+
+    private refreshToken(): Observable<any> {
+        const token = this.getAuthToken();
+        if (!token) {
+            return new Observable<any>();
+        }
+
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${token}`);
+        const options = { headers, withCredentials: true };
+
+        return this.http.get<any>(this.authUrl + "renewToken", options);
+    }
+
+    private decodeToken(token: string | null): any {
+        if (!token) {
+            return null;
+        }
+
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace('-', '+').replace('_', '/');
+        return JSON.parse(atob(base64));
     }
 }

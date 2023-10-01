@@ -10,6 +10,7 @@ import { selectProductById } from 'src/state/selectors/products.selectors';
 import { selectVendorById, selectVendors } from 'src/state/selectors/vendors.selectors';
 import { formatDateString } from 'src/services/helpers';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { AuthApiService } from 'src/services/api/auth.api.service';
 
 @Component({
   selector: 'app-view-product',
@@ -55,9 +56,12 @@ export class ViewProductComponent {
         private router: Router,
         private activatedRoute: ActivatedRoute,
         private productApiService: ProductApiService,
+        private authApiService: AuthApiService,
         private sanitizer: DomSanitizer,
         private store: Store<any>
-    ) { }
+    ) { 
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
+    }
 
     async ngOnInit(): Promise<void> {
         this.getCurrentProduct();

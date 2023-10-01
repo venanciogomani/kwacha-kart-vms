@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { AuthApiService } from 'src/services/api/auth.api.service';
 import { BrandApiService } from 'src/services/api/brand.api.service';
 import { CategoryApiService } from 'src/services/api/category.api.service';
 import { ProductApiService } from 'src/services/api/products.api.service';
@@ -70,6 +71,7 @@ export class ViewVendorComponent {
         private productApiService: ProductApiService,
         private vendorApiService: VendorApiService,
         private categoryApiService: CategoryApiService,
+        private authApiService: AuthApiService,
         private brandApiService: BrandApiService,
         private store: Store,
     ) {
@@ -88,6 +90,8 @@ export class ViewVendorComponent {
         this.store.select(selectLoading).subscribe((isLoading: boolean) => {
             this.isProductLoading$ = isLoading; // use this for loading screen or lazyloading
         });
+
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     async ngOnInit(): Promise<void> {
@@ -159,6 +163,7 @@ export class ViewVendorComponent {
         }
         
         this.calculateTotalPages();
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     goToPrevPage() {

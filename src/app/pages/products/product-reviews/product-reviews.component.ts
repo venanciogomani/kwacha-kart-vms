@@ -88,6 +88,8 @@ export class ProductReviewsComponent {
         this.store.select(selectProducts).subscribe(( products: ProductModel[] ) => {
             this.allProducts$ = products;
         });
+
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     ngOnInit(): void {
@@ -151,6 +153,7 @@ export class ProductReviewsComponent {
         }
         
         this.calculateTotalPages();
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     getAllCustomers() {

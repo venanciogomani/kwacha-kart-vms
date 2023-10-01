@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 import { Subject, filter, switchMap, takeUntil } from 'rxjs';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
+import { AuthApiService } from 'src/services/api/auth.api.service';
 import { PlanApiService } from 'src/services/api/plan.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
 import { StorePlansModel, StoresModel } from 'src/state';
@@ -71,6 +72,7 @@ export class StorePlansComponent {
     constructor(
         private storeApiService: StoreApiService,
         private planApiService: PlanApiService,
+        private authApiService: AuthApiService,
         private store: Store<{ plans: StorePlansModel[] }>,
         private sanitizer: DomSanitizer
     ) {
@@ -81,6 +83,8 @@ export class StorePlansComponent {
         this.store.select(selectLoading).subscribe((isLoading: boolean) => {
             this.isPlansLoading$ = isLoading; // use this for loading screen or lazyloading
         });
+
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     ngOnInit() {
@@ -118,6 +122,7 @@ export class StorePlansComponent {
         }
 
         this.calculateTotalPages();
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     toggleAddPlanModal() {

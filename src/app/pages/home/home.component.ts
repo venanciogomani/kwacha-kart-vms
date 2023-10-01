@@ -7,7 +7,11 @@ import { AuthApiService } from 'src/services/api/auth.api.service';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
-    constructor() { }
+    constructor(
+        private authApiService: AuthApiService
+    ) { 
+        this.authApiService.resetInactivityTimer();
+    }
 
     ngOnInit(): void {}
 }

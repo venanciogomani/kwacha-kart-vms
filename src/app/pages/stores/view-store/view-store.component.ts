@@ -6,6 +6,7 @@ import { capitalizeFirstLetter, maskString } from 'src/services/helpers';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
 import { ProductApiService } from 'src/services/api/products.api.service';
+import { AuthApiService } from 'src/services/api/auth.api.service';
 
 @Component({
   selector: 'app-view-store',
@@ -28,9 +29,12 @@ export class ViewStoreComponent {
         private router: ActivatedRoute,
         private vendorApiService: VendorApiService,
         private productApiService: ProductApiService,
-        private storeApiService: StoreApiService
+        private storeApiService: StoreApiService,
+        private authApiService: AuthApiService
     ) { 
         this.singleStore$ = this.storeApiService.getStoreById(this.router.snapshot.paramMap.get('id') || '')
+
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     toggleEdit() {

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Subject, filter, switchMap, takeUntil } from 'rxjs';
 import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
+import { AuthApiService } from 'src/services/api/auth.api.service';
 import { BrandApiService } from 'src/services/api/brand.api.service';
 import { formatDateString } from 'src/services/helpers';
 import { ProductBrandModel } from 'src/state';
@@ -67,6 +68,7 @@ export class ProductBrandsComponent {
 
     constructor(
         private brandApiService: BrandApiService,
+        private authApiService: AuthApiService,
         private store: Store,
         private router: Router,
         private sanitizer: DomSanitizer
@@ -75,6 +77,8 @@ export class ProductBrandsComponent {
             this.brands$ = brands;
             this.filterBrandsBySearchTerm();
         });
+
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     ngOnInit(): void {
@@ -122,6 +126,7 @@ export class ProductBrandsComponent {
         }
         
         this.calculateTotalPages();
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     goToPrevPage() {

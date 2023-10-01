@@ -102,6 +102,8 @@ export class ProductsComponent {
                 console.log(user);
             }
         });
+
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     async ngOnInit(): Promise<void> {
@@ -218,6 +220,7 @@ export class ProductsComponent {
         }
         
         this.calculateTotalPages();
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     goToPrevPage() {

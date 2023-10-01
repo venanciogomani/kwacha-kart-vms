@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 import { Subject, filter, switchMap, takeUntil } from 'rxjs';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
+import { AuthApiService } from 'src/services/api/auth.api.service';
 import { RoleApiService } from 'src/services/api/role.api.service';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
 import { StorePermissionsModel, StoreRoleModel, VendorModel } from 'src/state/models';
@@ -64,12 +65,15 @@ export class StoreRolesComponent {
     constructor(
         private vendorApiService: VendorApiService,
         private roleApiService: RoleApiService,
+        private authApiService: AuthApiService,
         private store: Store<{ roles: StoreRoleModel[] }>,
         private sanitizer: DomSanitizer
     ) {
         this.store.select(selectRoles).subscribe((roles: StoreRoleModel[]) => {
             this.roles$ = roles;
         });
+
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     ngOnInit() {
@@ -107,6 +111,7 @@ export class StoreRolesComponent {
         }
 
         this.calculateTotalPages();
+        this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     goToPrevPage() {
