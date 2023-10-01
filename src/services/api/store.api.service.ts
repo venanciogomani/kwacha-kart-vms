@@ -58,11 +58,6 @@ export class StoreApiService {
         return Stores.filter(store => store.planId === planId);
     }
 
-    // TODO: Remove this method
-    getStores(): StoresModel[] {
-        return Stores;
-    }
-
     saveStore(store: StoresModel): Observable<StoresModel> {
         const authToken = this.authApiService.getAuthToken();
         if (!authToken) {
@@ -72,6 +67,28 @@ export class StoreApiService {
         const options = { headers, withCredentials: true };
 
         return this.http.post<StoresModel>(this.apiUrl + 'stores', store, options)
+    }
+
+    updateStore(store: StoresModel): Observable<StoresModel> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<StoresModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+
+        return this.http.put<StoresModel>(this.apiUrl + 'stores/' + store.id, store, options)
+    }
+
+    deleteStore(storeId: string): Observable<StoresModel> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<StoresModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+
+        return this.http.delete<StoresModel>(this.apiUrl + 'stores/' + storeId, options)
     }
 
     getPaymentMethodById(id: string): PaymentMethodModel {

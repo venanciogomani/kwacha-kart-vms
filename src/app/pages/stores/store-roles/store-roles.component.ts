@@ -43,6 +43,7 @@ export class StoreRolesComponent {
     isAddingRole$ = false;
     isEditingRole$ = false;
     isViewingRole$ = false;
+    isDeletingRole$ = false;
 
     isRolesLoading$ = true;
 
@@ -216,6 +217,72 @@ export class StoreRolesComponent {
         );
     }
 
+    performUpdateRole() {
+        if (this.roleEdit.name === '') {
+            this.toaster.isOpen = true;
+            this.toasterMessage = 'Role name is required!';
+            this.toasterType = 'error';
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 5000);
+            return;
+        }
+
+        if (this.roleEdit.permissionsId.length === 0) {
+            this.toaster.isOpen = true;
+            this.toasterMessage = 'At least one permission is required!';
+            this.toasterType = 'error';
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 5000);
+            return;
+        }
+
+        this.roleEdit.updatedAt = new Date().toISOString();
+
+        this.roleApiService.updateRole(this.roleEdit).subscribe((response) => {
+                this.toaster.isOpen = true;
+                this.toasterMessage = 'Role has been updated successfully!';
+                this.toasterType = 'success';
+                setTimeout(() => {
+                    this.toaster.isOpen = false;
+                }, 5000);
+                this.getAllRoles();
+                this.closeRoleModal();
+            },
+            (error) => {
+                this.toaster.isOpen = true;
+                this.toasterMessage = 'Something went wrong!';
+                this.toasterType = 'error';
+                setTimeout(() => {
+                    this.toaster.isOpen = false;
+                }, 5000);
+            }
+        );
+    }
+
+    performDeleteRole() {
+        this.roleApiService.deleteRole(this.roleEdit.id).subscribe((response) => {
+                this.toaster.isOpen = true;
+                this.toasterMessage = 'Role has been deleted successfully!';
+                this.toasterType = 'success';
+                setTimeout(() => {
+                    this.toaster.isOpen = false;
+                }, 5000);
+                this.getAllRoles();
+                this.closeRoleModal();
+            },
+            (error) => {
+                this.toaster.isOpen = true;
+                this.toasterMessage = error;
+                this.toasterType = 'error';
+                setTimeout(() => {
+                    this.toaster.isOpen = false;
+                }, 5000);
+            }
+        );
+    }
+
     sanitizeUserInput() {
         this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(this.userDescription);
     }
@@ -236,6 +303,7 @@ export class StoreRolesComponent {
         this.isAddingRole$ = true;
         this.isEditingRole$ = false;
         this.isViewingRole$ = false;
+        this.isDeletingRole$ = false;
         
         this.resetRoleEdit();
 
@@ -248,6 +316,7 @@ export class StoreRolesComponent {
         this.isAddingRole$ = false;
         this.isEditingRole$ = true;
         this.isViewingRole$ = false;
+        this.isDeletingRole$ = false;
         this.availablePermissions$ = this.getAllPermissionsIdsByRole(role.id);
 
         this.resetRoleEdit();
@@ -263,6 +332,7 @@ export class StoreRolesComponent {
         this.isAddingRole$ = false;
         this.isEditingRole$ = false;
         this.isViewingRole$ = true;
+        this.isDeletingRole$ = false;
         this.availablePermissions$ = this.getAllPermissionsIdsByRole(role.id);
 
         this.resetRoleEdit();
@@ -274,10 +344,21 @@ export class StoreRolesComponent {
         }
     }
 
+    toggleDeleteRoleModal(role: StoreRoleModel) {
+        this.isDeletingRole$ = true;
+        this.roleEdit =  {...role }
+        console.log(this.roleEdit);
+        
+        if (this.modal) {
+            this.modal.isOpen = !this.modal.isOpen;
+        }
+    }
+
     closeRoleModal() {
         this.isAddingRole$ = false;
         this.isEditingRole$ = false;
         this.isViewingRole$ = false;
+        this.isDeletingRole$ = false;
         this.resetRoleEdit();
         
         if (this.modal) {

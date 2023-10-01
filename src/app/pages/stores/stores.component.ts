@@ -3,6 +3,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Subject, filter, switchMap, takeUntil } from 'rxjs';
+import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
 import { PlanApiService } from 'src/services/api/plan.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
@@ -21,6 +22,7 @@ type SortStatus = {
   styleUrls: ['./stores.component.scss']
 })
 export class StoresComponent {
+    @ViewChild(ModalComponent) modal!: ModalComponent;
     @ViewChild(ToasterComponent) toaster!: ToasterComponent;
 
     userDescription: string = '<script>alert("XSS Attack")</script>';
@@ -54,6 +56,7 @@ export class StoresComponent {
     editRow: { [key: string]: boolean } = {};
 
     addRow = false;
+    deleteRow = false;
 
     searchTerm = '';
 
@@ -139,13 +142,26 @@ export class StoresComponent {
         return this.editRow[id];
     }
 
-    toggleEditStore(id: string): void {
-        this.editRow[id] = !this.editRow[id];
+    toggleEditStore(store: StoresModel): void {
+        this.resetEditStore();
+        this.deleteRow = false;
+        this.addRow = false;
+        this.editRow[store.id] = !this.editRow[store.id];
+        this.editStore = { ...store };
     }
 
     toggleAddStore(): void {
         this.resetEditStore();
         this.addRow = !this.addRow;
+        this.deleteRow = false;
+    }
+
+    toggleDeleteStore(store: StoresModel): void {
+        this.resetEditStore();
+        this.editStore = { ...store };
+        this.deleteRow = true;
+        this.addRow = false;
+        this.modal.isOpen = true;
     }
 
     getVendorById(id: string) {
@@ -320,11 +336,80 @@ export class StoresComponent {
         });
     }
 
+    performUpdateStore() {
+        if (this.editStore.name === '' 
+            || this.editStore.vendorId === '' 
+            || this.editStore.planId === '' 
+            || this.editStore.address === ''
+            || this.editStore.city === ''
+        ) {
+            this.toasterMessage = 'Please fill all the fields!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 3000);
+            return;
+        }
+
+        this.editStore.updatedAt = new Date().toISOString();
+        this.editStore.country = 'Zambia';
+        this.editStore.province = this.editStore.city;
+        this.editStore.roleId = 'store';
+
+        this.storeApiService.updateStore(this.editStore).subscribe((store: StoresModel) => {
+            this.toasterMessage = 'Store updated successfully!';
+            this.toasterType = 'success';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 3000);
+            this.getAllStores();
+            this.toggleEditStore(this.editStore);
+        }, (error: any) => {
+            this.toasterMessage = 'Something went wrong!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 3000);
+        });
+    }
+
+    performDeleteStore() {
+        this.storeApiService.deleteStore(this.editStore.id).subscribe((store: StoresModel) => {
+            this.toasterMessage = 'Store deleted successfully!';
+            this.toasterType = 'success';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 3000);
+            this.getAllStores();
+            this.resetEditStore();
+            this.deleteRow = false;
+            this.modal.isOpen = false;
+        }, (error: any) => {
+            this.toasterMessage = 'Something went wrong!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 3000);
+        });
+    }
+
     sanitizeUserInput() {
         this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(this.userDescription);
     }
 
     closeToaster() {
         this.toaster.isOpen = false;
+    }
+
+    closeStoreModal() {
+        this.resetEditStore();
+        this.deleteRow = false;
+        this.addRow = false;
+        this.modal.isOpen = false;
     }
 }

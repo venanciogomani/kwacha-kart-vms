@@ -72,6 +72,28 @@ export class ProductApiService {
         return this.http.post<ProductModel>(`${this.apiUrl}products`, product, options);
     }
 
+    updateProduct(product: ProductModel): Observable<ProductModel> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<ProductModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+
+        return this.http.put<ProductModel>(`${this.apiUrl}products/${product.id}`, product, options);
+    }
+
+    deleteProduct(id: string): Observable<void> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<void>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+
+        return this.http.delete<void>(`${this.apiUrl}products/${id}`, options);
+    }
+
     isDataLoaded(): Observable<boolean> {
         return this.isDataLoaded$.asObservable();
     }

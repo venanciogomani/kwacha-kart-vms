@@ -49,9 +49,10 @@ export class StorePlansComponent {
         billingCycle: ''
     };
 
-    isPlansLoading$ = false;
+    isDeletingPlan = false;
+    isEditingPlan = false;
 
-    editRow: { [key: string]: boolean } = {};
+    isPlansLoading$ = false;
 
     searchTerm: string = '';
 
@@ -121,6 +122,8 @@ export class StorePlansComponent {
 
     toggleAddPlanModal() {
         this.resetPlanEdit();
+        this.isDeletingPlan = false;
+        this.isEditingPlan = false;
         if (this.modal) {
             this.modal.isOpen = !this.modal.isOpen;
         }
@@ -128,7 +131,19 @@ export class StorePlansComponent {
 
     toggleEditPlanModal(plan: StorePlansModel) {
         this.resetPlanEdit();
+        this.isDeletingPlan = false;
+        this.isEditingPlan = true;
         this.planEdit =  {...plan }
+        if (this.modal) {
+            this.modal.isOpen = !this.modal.isOpen;
+        }
+    }
+
+    toggleDeletePlanModal(plan: StorePlansModel) {
+        this.resetPlanEdit();
+        this.planEdit =  {...plan }
+        this.isDeletingPlan = true;
+        this.isEditingPlan = false;
         if (this.modal) {
             this.modal.isOpen = !this.modal.isOpen;
         }
@@ -169,6 +184,60 @@ export class StorePlansComponent {
         
         this.planApiService.savePlan(this.planEdit).subscribe((plan: StorePlansModel) => {
             this.toasterMessage = 'Plan published successfully!';
+            this.toasterType = 'success';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 3000);
+            this.getAllPlans();
+            this.toggleAddPlanModal();
+        },
+        (error) => {
+            this.toasterMessage = 'Something went wrong!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 3000);
+        });
+    }
+
+    performUpdatePlan() {
+        if (this.planEdit.name === '' || this.planEdit.description === '' || this.planEdit.price === 0) {
+            this.toasterMessage = 'Please fill all the required fields';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 3000);
+            return;
+        }
+
+        this.planEdit.updatedAt = new Date().toISOString();
+
+        this.planApiService.updatePlan(this.planEdit).subscribe((plan: StorePlansModel) => {
+            this.toasterMessage = 'Plan updated successfully!';
+            this.toasterType = 'success';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 3000);
+            this.getAllPlans();
+            this.toggleAddPlanModal();
+        },
+        (error) => {
+            this.toasterMessage = error;
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.toaster.isOpen = false;
+            }, 3000);
+        });
+    }
+
+    performDeletePlan() {
+        this.planApiService.deletePlan(this.planEdit.id).subscribe((response: any) => {
+            this.toasterMessage = 'Plan deleted successfully!';
             this.toasterType = 'success';
             this.toaster.isOpen = true;
             setTimeout(() => {

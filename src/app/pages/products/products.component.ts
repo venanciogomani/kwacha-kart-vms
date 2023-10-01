@@ -3,7 +3,9 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Subject, filter, switchMap, takeUntil } from 'rxjs';
+import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
+import { AuthApiService } from 'src/services/api/auth.api.service';
 import { BrandApiService } from 'src/services/api/brand.api.service';
 import { CategoryApiService } from 'src/services/api/category.api.service';
 import { ProductApiService } from 'src/services/api/products.api.service';
@@ -11,6 +13,7 @@ import { formatDateString } from 'src/services/helpers';
 import { ProductBrandModel, ProductCategoryModel, ProductModel } from 'src/state';
 import { selectLoading, selectProducts } from 'src/state/selectors/products.selectors';
 import { selectMyUser } from 'src/state/selectors/user.selectors';
+import { selectVendors } from 'src/state/selectors/vendors.selectors';
 
 type SortStatus = {
     [key in 'title' | 'price' | 'salePrice' | 'quantity']: boolean;
@@ -22,6 +25,7 @@ type SortStatus = {
   styleUrls: ['./products.component.scss']
 })
 export class ProductsComponent {
+    @ViewChild(ModalComponent) modal!: ModalComponent;
     @ViewChild(ToasterComponent) toaster!: ToasterComponent;
 
     userDescription: string = '<script>alert("XSS Attack")</script>';
@@ -62,6 +66,7 @@ export class ProductsComponent {
     editRow: { [key: string]: boolean } = {};
 
     addRow = false;
+    deleteRow = false;
 
     searchTerm = '';
 
@@ -80,6 +85,7 @@ export class ProductsComponent {
     constructor(
         private productApiService: ProductApiService,
         private categoryApiService: CategoryApiService,
+        private authApiService: AuthApiService,
         private brandApiService: BrandApiService,
         private store: Store,
         private router: Router,
@@ -98,7 +104,7 @@ export class ProductsComponent {
         });
     }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         if (this.products$.length === 0) {
             this.productApiService
                 .isDataLoaded()
@@ -144,14 +150,27 @@ export class ProductsComponent {
         } else {
             this.getAllBrands();
         }
+
+        (await this.authApiService.getCurrentUser()).subscribe((user: any) => {
+            if (user && user.user && user.user.id) {
+                this.store.select(selectVendors).subscribe((vendors: any) => {
+                    if (vendors && vendors.length > 0) {
+                        this.currentVendorId = vendors.find((vendor: any) => vendor.userId === user.user.id)?.id;
+                    }
+                });
+            }
+        });
     }
 
     isEditRow(id: string): boolean {
         return this.editRow[id];
     }
 
-    toggleEditProduct(id: string): void {
-        this.editRow[id] = !this.editRow[id];
+    toggleEditProduct(product: ProductModel): void {
+        this.resetEditProduct();
+        this.addRow = false;
+        this.editRow[product.id] = !this.editRow[product.id];
+        this.editProducts$ = { ...product };
     }
 
     getProductById(id: string) {
@@ -181,6 +200,7 @@ export class ProductsComponent {
     async getAllProducts() {
         return (await this.productApiService.getAllProducts()).subscribe((allProducts: ProductModel[]) => {
             this.products$ = allProducts;
+            this.totalProducts = this.products$.length;
             this.filterProductsBySearchTerm();
         });
     }
@@ -231,6 +251,7 @@ export class ProductsComponent {
 
     calculateTotalPages() {
         this.totalPages = Math.ceil(this.products$.length / this.pageSize);
+        this.totalProducts = this.products$.length;
     }
 
     sortBy(key: string) {
@@ -284,6 +305,15 @@ export class ProductsComponent {
     toggleAddProduct(): void {
         this.resetEditProduct();
         this.addRow = !this.addRow;
+        this.deleteRow = false;
+    }
+
+    toggleDeleteProduct(product: ProductModel): void {
+        this.resetEditProduct();
+        this.editProducts$ = { ...product };
+        this.deleteRow = !this.deleteRow;
+        this.addRow = false;
+        this.modal.isOpen = true;
     }
 
     sanitizeUserInput() {
@@ -357,7 +387,6 @@ export class ProductsComponent {
                 this.closeToaster();
             }, 3000);
             this.getAllProducts();
-            this.toggleAddProduct();
         }, () => {
             this.toasterMessage = 'Something went wrong!';
             this.toasterType = 'error';
@@ -366,5 +395,94 @@ export class ProductsComponent {
                 this.closeToaster();
             }, 3000);
         });
+    }
+
+    performUpdateProduct() {
+        if (
+            this.editProducts$.title === '' 
+            || this.editProducts$.price === 0 
+            || this.editProducts$.quantity === 0 
+            || this.editProducts$.categoryId === '' 
+            || this.editProducts$.brandId === ''
+        ) {
+            this.toasterMessage = 'Please fill all the required fields!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+            return;
+        }
+
+        const numericSalePrice = Number(this.editProducts$.salePrice);
+        const numericPrice = Number(this.editProducts$.price);
+        
+        if (numericSalePrice > numericPrice) {
+            this.toasterMessage = 'Sale price cannot be greater than price!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+            return;
+        }
+        
+        if (this.editProducts$.vendorId === '') {
+            this.toasterMessage = 'Please login to add product!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+            return;
+        }
+
+        this.productApiService.updateProduct(this.editProducts$).subscribe((product: ProductModel) => {
+            this.addRow = false;
+            this.editRow[this.editProducts$.id] = false;
+            this.resetEditProduct();
+            this.toasterMessage = 'Product updated successfully!';
+            this.toasterType = 'success';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+            this.getAllProducts();
+        }, () => {
+            this.toasterMessage = 'Something went wrong!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+        });
+    }
+
+    performDeleteProduct() {
+        this.productApiService.deleteProduct(this.editProducts$.id).subscribe(() => {
+            this.addRow = false;
+            this.resetEditProduct();
+            this.toasterMessage = 'Product deleted successfully!';
+            this.toasterType = 'success';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+            this.getAllProducts();
+            this.deleteRow = false;
+            this.modal.isOpen = false;
+        }, () => {
+            this.toasterMessage = 'Something went wrong!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+        });
+    }
+
+    closeProductModal() {
+        this.modal.isOpen = false;
+        this.deleteRow = false;
     }
 }

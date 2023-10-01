@@ -22,7 +22,6 @@ import { SharedModule } from 'src/app/shared/shared.module';
     StoreRolesComponent,
     StorePlansComponent,
     ViewStoreComponent,
-    ModalComponent
   ],
   imports: [
     CommonModule,

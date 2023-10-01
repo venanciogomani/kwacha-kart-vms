@@ -270,12 +270,19 @@
                                     <span *ngIf="!isEditRow(product.id)" class="font-normal">
                                         {{ product.quantity }}
                                     </span>
+                                    <input
+                                        *ngIf="isEditRow(product.id)"
+                                        type="number"
+                                        class="w-full p-2 border-2 font-normal mt-1"
+                                        [(ngModel)]="editProducts$.quantity"
+                                        [innerHTML]="sanitizeUserInput()"
+                                    />
                                 </th>
                                 <th scope="row" class="px-4 py-4">
                                     <span *ngIf="!isEditRow(product.id)" class="font-normal">
                                         {{ getCategoryById(product.categoryId)?.name }}
                                     </span>
-                                    <select class="p-2 w-full border-2 mt-2 font-normal text-xs" *ngIf="isEditRow(product.id)">
+                                    <select class="p-2 w-full border-2 mt-2 font-normal text-xs" *ngIf="isEditRow(product.id)" [(ngModel)]="editProducts$.categoryId">
                                         <option value="" disabled>Select a Category</option>
                                         <option *ngFor="let category of productCategories$" [value]="category.id">{{ category.name }}</option>
                                     </select>
@@ -284,7 +291,7 @@
                                     <span *ngIf="!isEditRow(product.id)" class="font-normal">
                                         {{ getBrandsById(product.brandId)?.name }}
                                     </span>
-                                    <select class="p-2 w-full border-2 mt-2 font-normal text-xs" *ngIf="isEditRow(product.id)">
+                                    <select class="p-2 w-full border-2 mt-2 font-normal text-xs" *ngIf="isEditRow(product.id)" [(ngModel)]="editProducts$.brandId">
                                         <option value="" disabled>Select a Brand</option>
                                         <option *ngFor="let brand of productBrands$" [value]="brand.id">{{ brand.name }}</option>
                                     </select>
@@ -315,22 +322,24 @@
                                         ></mat-icon>
                                         <mat-icon
                                             *ngIf="isEditRow(product.id)"
-                                            (click)="toggleEditProduct(product.id)"
+                                            (click)="toggleEditProduct(product)"
                                             class="cursor-pointer text-yellow-600"
                                             fontIcon="clear"
                                         ></mat-icon>
                                         <mat-icon
                                             *ngIf="!isEditRow(product.id)"
-                                            (click)="toggleEditProduct(product.id)"
+                                            (click)="toggleEditProduct(product)"
                                             class="cursor-pointer text-yellow-400"
                                             fontIcon="edit"
                                         ></mat-icon>
                                         <mat-icon
                                             *ngIf="isEditRow(product.id)"
+                                            (click)="performUpdateProduct()"
                                             class="cursor-pointer text-emerald-400"
                                             fontIcon="check_circle"
                                         ></mat-icon>
                                         <mat-icon
+                                            (click)="toggleDeleteProduct(product)"
                                             class="cursor-pointer text-rose-600"
                                             fontIcon="delete"
                                         ></mat-icon>
@@ -468,6 +477,31 @@
         </div>
     </div>
 </div>
+
+<!-- Product Modal -->
+<app-modal>
+    <!-- Modal body -->
+    <div class="flex flex-col justify-center items-center p-4">
+        <div class="py-3">
+            Are you sure you want to delete this product?
+        </div>
+        <div class="flex flex-row items-center justify-center">
+            <button
+                type="submit"
+                (click)="performDeleteProduct()"
+                class="text-gray-600 text-sm mr-2 bg-transparent px-4 py-2 rounded-lg border-2 border-gray-600"
+            >
+                Delete
+            </button>
+            <button
+                (click)="closeProductModal()"
+                class="text-white text-sm bg-rose-600 px-4 py-2 rounded-lg hover:bg-rose-500 transition duration-200 ease-in-out"
+            >
+                Cancel
+            </button>
+        </div>
+    </div>
+</app-modal>
 
 <app-toaster>
     <div class="flex flex-row w-full h-full">

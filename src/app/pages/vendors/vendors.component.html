@@ -120,7 +120,7 @@
                                 </td>
                                 <th scope="row" class="px-4 py-4">
                                     <div class="flex flex-col">
-                                        <select class="p-2 w-full border-2 mt-2 text-xs font-normal" [(ngModel)]="vendorEdit$.id">
+                                        <select class="p-2 w-full border-2 mt-2 text-xs font-normal" [(ngModel)]="vendorEdit$.userId">
                                             <option value="0" disabled>Select a User</option>
                                             <option *ngFor="let user of allUsers$" [value]="user.id">{{ user.name }}</option>
                                         </select>
@@ -208,7 +208,7 @@
                                 <th scope="row" class="px-4 py-4">
                                     <div class="flex flex-col">
                                         <span *ngIf="!isEditRow(vendor.id)" class="font-regular">
-                                            {{ getUserById(vendor.userId)?.name}}
+                                            {{ getUserById(vendor.userId)?.name }}
                                         </span>
                                         <span *ngIf="!isEditRow(vendor.id)" class="font-normal text-xs">
                                             {{ getUserById(vendor.userId)?.email }}
@@ -216,27 +216,10 @@
                                         <span *ngIf="!isEditRow(vendor.id)" class="font-normal text-xs">
                                             {{ getUserById(vendor.userId)?.phone }}
                                         </span>
-                                        <input
-                                            *ngIf="isEditRow(vendor.id)"
-                                            type="text"
-                                            class="w-full p-2 border-2 font-normal"
-                                            [(ngModel)]="vendorEdit$.name"
-                                            [innerHTML]="sanitizeUserInput()"
-                                        />
-                                        <input
-                                            *ngIf="isEditRow(vendor.id)"
-                                            type="text"
-                                            class="w-full p-2 border-2 font-normal mt-1"
-                                            [(ngModel)]="vendorEdit$.email"
-                                            [innerHTML]="sanitizeUserInput()"
-                                        />
-                                        <input
-                                            *ngIf="isEditRow(vendor.id)"
-                                            type="text"
-                                            class="w-full p-2 border-2 font-normal mt-1"
-                                            [(ngModel)]="vendorEdit$.phone"
-                                            [innerHTML]="sanitizeUserInput()"
-                                        />
+                                        <select class="p-2 w-full border-2 mt-2 text-xs font-normal" *ngIf="isEditRow(vendor.id)" [(ngModel)]="vendorEdit$.userId">
+                                            <option value="0" disabled>Select a User</option>
+                                            <option *ngFor="let user of allUsers$" [value]="user.id">{{ user.name }}</option>
+                                        </select>
                                     </div>
                                 </th>
                                 <th scope="row" class="px-4 py-4">
@@ -256,10 +239,10 @@
                                             [(ngModel)]="vendorEdit$.address"
                                             [innerHTML]="sanitizeUserInput()"
                                         >
-                                        <select class="p-2 w-full border-2 mt-2 font-normal text-xs">
-                                            <option value="1">Lusaka</option>
-                                            <option value="2">Ndola</option>
-                                            <option value="3">Kabwe</option>
+                                        <select class="p-2 w-full border-2 mt-2 font-normal text-xs" [(ngModel)]="vendorEdit$.city">
+                                            <option value="Lusaka">Lusaka</option>
+                                            <option value="Ndola">Ndola</option>
+                                            <option value="Kabwe">Kabwe</option>
                                         </select>
                                     </div>
                                 </th>
@@ -319,10 +302,12 @@
                                         ></mat-icon>
                                         <mat-icon
                                             *ngIf="isEditRow(vendor.id)"
+                                            (click)="performUpdateVendor()"
                                             class="cursor-pointer text-emerald-400"
                                             fontIcon="check_circle"
                                         ></mat-icon>
                                         <mat-icon
+                                            (click)="toggleDeleteVendor(vendor)"
                                             class="cursor-pointer text-rose-600"
                                             fontIcon="delete"
                                         ></mat-icon>
@@ -463,6 +448,31 @@
         </div>
     </div>
 </div>
+
+<!-- Vendor Modal -->
+<app-modal>
+    <!-- Modal body -->
+    <div class="flex flex-col justify-center items-center p-4">
+        <div class="py-3">
+            Are you sure you want to delete this vendor?
+        </div>
+        <div class="flex flex-row items-center justify-center">
+            <button
+                type="submit"
+                (click)="performDeleteVendor()"
+                class="text-gray-600 text-sm mr-2 bg-transparent px-4 py-2 rounded-lg border-2 border-gray-600"
+            >
+                Delete
+            </button>
+            <button
+                (click)="closeVendorModal()"
+                class="text-white text-sm bg-rose-600 px-4 py-2 rounded-lg hover:bg-rose-500 transition duration-200 ease-in-out"
+            >
+                Cancel
+            </button>
+        </div>
+    </div>
+</app-modal>
 
 <app-toaster>
     <div class="flex flex-row w-full h-full">

@@ -11,6 +11,7 @@ import { VendorApiService } from 'src/services/api/vendor.api.service';
 import { StoreRoleModel, StoresModel, VendorModel } from 'src/state';
 import { selectLoading, selectVendors } from 'src/state/selectors/vendors.selectors';
 import { selectStores } from 'src/state/selectors/stores.selectors';
+import { ModalComponent } from 'src/app/shared/modal/modal.component';
 
 @Component({
   selector: 'app-vendors',
@@ -18,6 +19,7 @@ import { selectStores } from 'src/state/selectors/stores.selectors';
   styleUrls: ['./vendors.component.scss']
 })
 export class VendorsComponent {
+    @ViewChild(ModalComponent) modal!: ModalComponent;
     @ViewChild(ToasterComponent) toaster!: ToasterComponent;
 
     userDescription: string = '<script>alert("XSS Attack")</script>';
@@ -66,6 +68,7 @@ export class VendorsComponent {
     allUsers$: any[] = [];
 
     addRow = false;
+    deleteRow = false;
 
     searchTerm = '';
 
@@ -241,16 +244,12 @@ export class VendorsComponent {
             
             this.getAllRoles();
             this.isVendorsLoading$ = false;
-            console.log(this.vendors$);
         });
     }
 
     publishVendor() {
-        if (this.vendorEdit$.name === '' 
-            || this.vendorEdit$.address === '' 
+        if (this.vendorEdit$.address === '' 
             || this.vendorEdit$.city === '' 
-            || this.vendorEdit$.phone === '' 
-            || this.vendorEdit$.email === '' 
             || this.vendorEdit$.storeId === '' 
             || this.vendorEdit$.userId === ''
             || this.vendorEdit$.roleId === ''
@@ -264,6 +263,10 @@ export class VendorsComponent {
 
             return;
         }
+
+        this.vendorEdit$.name = this.getUserById(this.vendorEdit$.userId).name;
+        this.vendorEdit$.phone = this.getUserById(this.vendorEdit$.userId).phone;
+        this.vendorEdit$.email = this.getUserById(this.vendorEdit$.userId).email;
 
         const modifiedVendorName = this.vendorEdit$.name.replace(/\s/g, '_').toLowerCase();
         const timestamp = new Date().getTime();
@@ -296,6 +299,73 @@ export class VendorsComponent {
         });
     }
 
+    performUpdateVendor() {
+        if (this.vendorEdit$.address === '' 
+            || this.vendorEdit$.city === '' 
+            || this.vendorEdit$.storeId === '' 
+            || this.vendorEdit$.userId === ''
+            || this.vendorEdit$.roleId === ''
+        ) {
+            this.toasterMessage = 'Please fill all the fields!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+
+            return;
+        }
+
+        this.vendorEdit$.name = this.getUserById(this.vendorEdit$.userId).name;
+        this.vendorEdit$.phone = this.getUserById(this.vendorEdit$.userId).phone;
+        this.vendorEdit$.email = this.getUserById(this.vendorEdit$.userId).email;
+
+        this.vendorEdit$.country = 'Zambia';
+        this.vendorEdit$.province = this.vendorEdit$.city;
+        this.vendorEdit$.updatedAt = new Date().toISOString();
+
+        this.vendorApiService.updateVendor(this.vendorEdit$).subscribe((vendor: VendorModel) => {
+            this.toasterMessage = 'Vendor updated successfully!';
+            this.toasterType = 'success';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+            this.getAllVendors();
+            this.editRow[this.vendorEdit$.id] = false;
+            this.resetVendorEdit();
+        }, (error: any) => {
+            this.toasterMessage = 'Something went wrong!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+        });
+    }
+
+    performDeleteVendor() {
+        this.vendorApiService.deleteVendor(this.vendorEdit$.id).subscribe((vendor: any) => {
+            this.toasterMessage = 'Vendor deleted successfully!';
+            this.toasterType = 'success';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+            this.getAllVendors();
+            this.resetVendorEdit();
+            this.deleteRow = false;
+            this.modal.isOpen = false;
+        }, (error: any) => {
+            this.toasterMessage = 'Something went wrong!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+        });
+    }
+
     sanitizeUserInput() {
         this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(this.userDescription);
     }
@@ -304,12 +374,28 @@ export class VendorsComponent {
         this.toaster.isOpen = false;
     }
 
+    closeVendorModal() {
+        this.modal.isOpen = false;
+        this.resetVendorEdit();
+        this.addRow = false;
+        this.deleteRow = false;
+    }
+
     toggleVendorStatus() {
         this.vendorEdit$.status = !this.vendorEdit$.status;
     }
 
     toggleVendorVerification() {
         this.vendorEdit$.isVerified = !this.vendorEdit$.isVerified;
+    }
+
+    toggleDeleteVendor(vendor: VendorModel) {
+        this.resetVendorEdit();
+        this.addRow = false;
+        this.editRow[vendor.id] = false;
+        this.deleteRow = true;
+        this.vendorEdit$ = { ...vendor };
+        this.modal.isOpen = true;
     }
 
     resetVendorEdit() {

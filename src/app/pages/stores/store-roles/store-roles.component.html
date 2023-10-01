@@ -164,6 +164,7 @@
                                         fontIcon="edit"
                                     ></mat-icon>
                                     <mat-icon
+                                        (click)="toggleDeleteRoleModal(role)"
                                         class="cursor-pointer text-rose-600"
                                         fontIcon="delete"
                                     ></mat-icon>
@@ -228,7 +229,7 @@
 <!-- Plan Modal -->
 <app-modal>
     <!-- Modal header -->
-    <div class="flex items-start justify-between px-4 py-3 border-b rounded-t">
+    <div class="flex items-start justify-between px-4 py-3 border-b rounded-t" *ngIf="!isDeletingRole$">
         <h3 class="text-lg font-semibold text-gray-700">
             {{ isEditingRole$ ? 'Edit ' + roleEdit.name : isViewingRole$ ? roleEdit.name : 'Add' }} Role
         </h3>
@@ -242,7 +243,27 @@
         </button>
     </div>
     <!-- Modal body -->
-    <div class="p-4 flex flex-col">
+    <div class="flex flex-col justify-center items-center p-4" *ngIf="isDeletingRole$">
+        <div class="py-3">
+            Are you sure you want to delete this role?
+        </div>
+        <div class="flex flex-row items-center justify-center">
+            <button
+                type="submit"
+                (click)="performDeleteRole()"
+                class="text-gray-600 text-sm mr-2 bg-transparent px-4 py-2 rounded-lg border-2 border-gray-600"
+            >
+                Delete
+            </button>
+            <button
+                (click)="closeRoleModal()"
+                class="text-white text-sm bg-rose-600 px-4 py-2 rounded-lg hover:bg-rose-500 transition duration-200 ease-in-out"
+            >
+                Cancel
+            </button>
+        </div>
+    </div>
+    <div class="p-4 flex flex-col" *ngIf="!isDeletingRole$">
         <div class="flex flex-col md:flex-row">
             <div class="flex flex-col w-full md:w-1/2">
                 <div class="flex flex-col p-2">
@@ -351,14 +372,14 @@
         </div>
     </div>
     <!-- Modal footer -->
-    <div class="flex items-center justify-end px-4 py-3 border-t border-gray-200">
+    <div class="flex items-center justify-end px-4 py-3 border-t border-gray-200" *ngIf="!isDeletingRole$">
         <button
             type="submit"
-            (click)="publishRole()"
+            (click)="isEditingRole$ ? performUpdateRole() : publishRole()"
             class="text-gray-600 text-sm mr-2 bg-transparent px-4 py-2 rounded-lg border-2 border-gray-600"
             *ngIf="!isViewingRole$"
         >
-            Publish
+            {{ isEditingRole$ ? 'Update' : 'Publish' }}
         </button>
         <button
             (click)="closeRoleModal()"

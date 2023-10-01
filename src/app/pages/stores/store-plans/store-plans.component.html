@@ -180,6 +180,7 @@
                                         fontIcon="edit"
                                     ></mat-icon>
                                     <mat-icon
+                                        (click)="toggleDeletePlanModal(plan)"
                                         class="cursor-pointer text-rose-600"
                                         fontIcon="delete"
                                     ></mat-icon>
@@ -244,7 +245,7 @@
 <!-- Plan Modal -->
 <app-modal>
     <!-- Modal header -->
-    <div class="flex items-start justify-between px-4 py-3 border-b rounded-t">
+    <div class="flex items-start justify-between px-4 py-3 border-b rounded-t" *ngIf="!isDeletingPlan">
         <h3 class="text-lg font-semibold text-gray-700">
             {{ planEdit.name ? 'Edit ' + planEdit.name : 'Add Subscription' }} Plan
         </h3>
@@ -258,7 +259,26 @@
         </button>
     </div>
     <!-- Modal body -->
-    <div class="p-4 grid grid-cols-2">
+    <div class="flex flex-col p-4 items-center justify-center" *ngIf="isDeletingPlan">
+        <div class="flex items-center justify-center">
+            Are you sure you want to delete this plan?
+        </div>
+        <div class="flex flex-row items-center justify-center">
+            <button
+                (click)="performDeletePlan()"
+                class="text-gray-600 text-sm mr-2 bg-transparent px-4 py-2 rounded-lg border-2 border-gray-600"
+            >
+                Delete
+            </button>
+            <button
+                (click)="toggleAddPlanModal()"
+                class="text-white text-sm bg-rose-600 px-4 py-2 rounded-lg hover:bg-rose-500 transition duration-200 ease-in-out"
+            >
+                Cancel
+            </button>
+        </div>
+    </div>
+    <div class="p-4 grid grid-cols-2" *ngIf="!isDeletingPlan">
         <div class="flex flex-col p-2">
             <span class="text-gray-500 text-sm font-semibold mb-2">Name</span>
             <input
@@ -317,12 +337,12 @@
         </div>
     </div>
     <!-- Modal footer -->
-    <div class="flex items-center justify-end px-4 py-3 border-t border-gray-200">
+    <div class="flex items-center justify-end px-4 py-3 border-t border-gray-200" *ngIf="!isDeletingPlan">
         <button
-            (click)="publishPlan()"
+            (click)="isEditingPlan ? performUpdatePlan() : publishPlan()"
             class="text-gray-600 text-sm mr-2 bg-transparent px-4 py-2 rounded-lg border-2 border-gray-600"
         >
-            Publish
+            {{ isEditingPlan ? 'Update' : 'Publish' }}
         </button>
         <button
             (click)="toggleAddPlanModal()"

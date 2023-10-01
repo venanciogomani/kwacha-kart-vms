@@ -103,12 +103,6 @@ export class RoleApiService {
     }
 
     updateRole(role: StoreRoleModel): Observable<StoreRoleModel> {
-        const roleIndex = Roles.findIndex(item => item.id === role.id);
-
-        if (roleIndex === -1) {
-            return throwError('Role does not exist.');
-        }
-
         const authToken = this.authApiService.getAuthToken();
         if (!authToken) {
             return new Observable<StoreRoleModel>();
@@ -117,7 +111,7 @@ export class RoleApiService {
         const options = { headers, withCredentials: true };
 
         return this.http
-            .put<StoreRoleModel>(this.apiUrl, role, options)
+            .put<StoreRoleModel>(this.apiUrl + 'roles/' + role.id, role, options)
             .pipe(
                 catchError((error: HttpErrorResponse) => {
                     return throwError('Something bad happened; please try again later.');
@@ -126,21 +120,16 @@ export class RoleApiService {
     }
 
     deleteRole(roleId: string): Observable<StoreRoleModel> {
-        const roleIndex = Roles.findIndex(item => item.id === roleId);
-
-        if (roleIndex === -1) {
-            return throwError('Role does not exist.');
-        }
-
         const authToken = this.authApiService.getAuthToken();
         if (!authToken) {
             return new Observable<StoreRoleModel>();
         }
         const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
         const options = { headers, withCredentials: true };
+        console.log('delete role: ', roleId);
 
         return this.http
-            .delete<StoreRoleModel>(this.apiUrl + roleId, options)
+            .delete<StoreRoleModel>(this.apiUrl + 'roles/' + roleId, options)
             .pipe(
                 catchError((error: HttpErrorResponse) => {
                     return throwError('Something bad happened; please try again later.');

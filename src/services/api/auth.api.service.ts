@@ -65,6 +65,7 @@ export class AuthApiService {
         this.isUserLoggedIn$.next(false);
         this.clearAuthToken();
         this.router.navigate(['auth/login']);
+        this.http.post<void>(this.authUrl + "logout", {}).toPromise();
     }
 
     getAllUsersByIds(ids: string[]): Observable<UserModel[]> {
@@ -98,6 +99,28 @@ export class AuthApiService {
         const options = { headers, withCredentials: true };
 
         return this.http.post<UserModel>(this.apiUrl + "users/save", user, options);
+    }
+
+    updateUser(user: UserModel): Observable<UserModel> {
+        const authToken = this.getAuthToken();
+        if (!authToken) {
+            return new Observable<UserModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+
+        return this.http.put<UserModel>(this.apiUrl + "users/" + user.id, user, options);
+    }
+
+    deleteUser(id: string): Observable<void> {
+        const authToken = this.getAuthToken();
+        if (!authToken) {
+            return new Observable<void>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+
+        return this.http.delete<void>(this.apiUrl + "users/" + id, options);
     }
 
     isUserLoggedIn(): Observable<boolean> {
@@ -138,6 +161,6 @@ export class AuthApiService {
         const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${token}`);
         const options = { headers, withCredentials: true };
 
-        return await this.http.get<UserModel>(this.authUrl + "me", options);
+        return this.http.get<UserModel>(this.authUrl + "me", options);
     }
 }

@@ -8,6 +8,7 @@ import { VendorsModule } from './vendors/vendors.module';
 import { ProductsModule } from './products/products.module';
 import { UsersModule } from './users/users.module';
 import { ToasterComponent } from '../shared/toaster/toaster.component';
+import { SharedModule } from '../shared/shared.module';
 
 
 
@@ -22,7 +23,8 @@ import { ToasterComponent } from '../shared/toaster/toaster.component';
         ProductsModule,
         UsersModule,
         MatIconModule,
-        MatSlideToggleModule
+        MatSlideToggleModule,
+        SharedModule
     ],
     exports: [
         HomeComponent

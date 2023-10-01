@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { BehaviorSubject, Observable } from "rxjs";
 import { VendorModel } from "src/state";
-import { loadVendorsSuccess } from "src/state/actions/vendors.actions";
+import { deleteVendor, loadVendorsSuccess } from "src/state/actions/vendors.actions";
 import { Vendors } from "src/state/dataset";
 import { VendorsState } from "src/state/reducers/vendors.reducer";
 import { AuthApiService } from "./auth.api.service";
@@ -74,6 +74,28 @@ export class VendorApiService {
         const options = { headers, withCredentials: true };
 
         return this.http.post<VendorModel>(this.apiUrl + "vendors", vendor, options);
+    }
+
+    updateVendor(vendor: VendorModel): Observable<VendorModel> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<VendorModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+
+        return this.http.put<VendorModel>(this.apiUrl + "vendors/" + vendor.id, vendor, options);
+    }
+
+    deleteVendor(id: string): Observable<string> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<string>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+
+        return this.http.delete<string>(this.apiUrl + "vendors/" + id, options);
     }
 
     isDataLoaded(): Observable<boolean> {

@@ -45,6 +45,17 @@ export class OrderApiService {
         return this.http.get<VendorOrderModel[]>(this.apiUrl + "orders", options)
     }
 
+    updateOrder(order: VendorOrderModel): Observable<VendorOrderModel> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<VendorOrderModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+
+        return this.http.put<VendorOrderModel>(this.apiUrl + "orders", order, options);
+    }
+
     isDataLoaded(): Observable<boolean> {
         return this.isDataLoaded$.asObservable();
     }

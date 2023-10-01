@@ -67,6 +67,28 @@ export class BrandApiService {
         return this.http.post<ProductBrandModel>(`${this.apiUrl}brands`, brand, options);
     }
 
+    updateBrand(brand: ProductBrandModel): Observable<ProductBrandModel> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<ProductBrandModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+
+        return this.http.put<ProductBrandModel>(`${this.apiUrl}brands`, brand, options);
+    }
+
+    deleteBrand(id: string): Observable<any> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<any>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers };
+
+        return this.http.delete<any>(`${this.apiUrl}brands/${id}`, options);
+    }
+
     isDataLoaded(): BehaviorSubject<boolean> {
         return this.isDataLoaded$;
     }
