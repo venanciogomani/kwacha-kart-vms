@@ -245,9 +245,8 @@
                                     <span *ngIf="!isEditRow(store.id)">
                                         {{ getPlanById(store.planId)?.name }}
                                     </span>
-                                    <select class="p-2 w-full border-2" *ngIf="isEditRow(store.id)">
+                                    <select class="p-2 w-full border-2" *ngIf="isEditRow(store.id)" [(ngModel)]="editStore.planId">
                                         <option value="0" disabled>Select a Plan</option>
-                                        <option [value]="getPlanById(store.planId)?.id" selected>{{ getPlanById(store.planId)?.name }}</option>
                                         <option *ngFor="let plan of allPlans$" [value]="plan.id">{{ plan.name }}</option>
                                     </select>
                                 </td>
