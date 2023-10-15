@@ -57,6 +57,17 @@ export class VendorApiService {
         return this.http.get<VendorModel>(this.apiUrl + "vendors/" + id, options);
     }
 
+    async getVendorByUserId(userId: string): Promise<Observable<VendorModel>> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<VendorModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+
+        return this.http.get<VendorModel>(this.apiUrl + "vendors/user/" + userId, options);
+    }
+
     getVendorsByRoleId(roleId: string): VendorModel[] {
         return [] as VendorModel[];
     }

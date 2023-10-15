@@ -51,7 +51,6 @@ export class AuthApiService {
         const options = { headers, withCredentials: true };
 
         this.http.post<UserModel>(this.authUrl + "vendor/login", { username, password }, options).subscribe((user: any) => {
-            console.log(user);
             this.userDataSubject.next(user);
             this.store.dispatch(loadAuthSuccess(user.user));
             this.isDataLoaded$.next(true);

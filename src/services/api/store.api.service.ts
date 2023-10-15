@@ -23,8 +23,8 @@ export class StoreApiService {
         private authApiService: AuthApiService
     ) { }
 
-    async createInitialStoresState() {
-        (await this.getAllStores()).subscribe((allStores: StoresModel[]) => {
+    async createInitialStoresState(userId: string) {
+        (await this.getAllStoresByVendorId(userId)).subscribe((allStores: StoresModel[]) => {
             const initialState: StoresState = {
                 stores: allStores,
                 loading: false
@@ -44,6 +44,17 @@ export class StoreApiService {
         const options = { headers, withCredentials: true };
 
         return this.http.get<StoresModel[]>(this.apiUrl + 'stores', options)
+    }
+
+    async getAllStoresByVendorId(vendorId: string): Promise<Observable<StoresModel[]>> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<StoresModel[]>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+
+        return this.http.get<StoresModel[]>(this.apiUrl + 'stores/vendor/' + vendorId, options)
     }
 
     getStoreById(id: string): StoresModel {

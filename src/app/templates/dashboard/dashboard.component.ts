@@ -20,7 +20,8 @@ import { selectAuth } from 'src/state/selectors/auth.selectors';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent {
-    currentUser$ = this.store.select(selectAuth);
+    currentUser$: UserModel = {} as UserModel;
+    isLoading$ = true;
 
     constructor(
         private storeApiService: StoreApiService,
@@ -38,22 +39,39 @@ export class DashboardComponent {
     ) { }
 
     ngOnInit() {
-        this.storeApiService.createInitialStoresState();
-        this.plansApiService.createInitialPlansState();
-        this.roleApiService.createInitialRolesState();
-        this.vendorApiService.createInitialVendorsState();
-        this.productApiService.createInitialProductsState();
-        this.brandApiService.createInitialBrandsState();
-        this.categoryApiService.createInitialCategoriesState();
-        this.orderApiService.createInitialOrdersState();
-        this.reviewApiService.createInitialReviewsState();
-        this.authApiService.createInitialUserState();
-
+        if (Object.keys(this.currentUser$).length === 0) {
+            this.getCurrentUser();
+        }
         const token = this.authApiService.getAuthToken();
         if (!token) {
             this.router.navigate(['auth/login']);
-        } else {
-            this.authApiService.resetInactivityTimer();
         }
+    }
+
+    async getCurrentUser() {
+        (await this.authApiService.getCurrentUser()).subscribe(async (user: any) => {
+            if (Object.keys(user).length > 0) {
+                (await this.vendorApiService.getVendorByUserId(user.user.id)).subscribe((vendor: any) => {
+                    if (Object.keys(vendor).length > 0) {
+                        this.storeApiService.createInitialStoresState(vendor.id);
+                        this.productApiService.createInitialProductsState(vendor.id);
+                    }
+                });
+                this.currentUser$ = user.user;
+                this.plansApiService.createInitialPlansState();
+                this.roleApiService.createInitialRolesState();
+                this.vendorApiService.createInitialVendorsState();
+                this.brandApiService.createInitialBrandsState();
+                this.categoryApiService.createInitialCategoriesState();
+                this.orderApiService.createInitialOrdersState();
+                this.reviewApiService.createInitialReviewsState();
+                this.authApiService.createInitialUserState();
+                this.authApiService.resetInactivityTimer();
+                this.isLoading$ = false;
+            }
+        }, (error) => {
+            this.authApiService.clearAuthToken();
+            this.router.navigate(['auth/login']);
+        });
     }
 }

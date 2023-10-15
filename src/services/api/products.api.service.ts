@@ -23,8 +23,8 @@ export class ProductApiService {
         private authApiService: AuthApiService
     ) { }
 
-    async createInitialProductsState() {
-        (await this.getAllProducts()).subscribe((allProducts: ProductModel[]) => {
+    async createInitialProductsState(userId: string) {
+        (await this.getAllProductsByVendorId(userId)).subscribe((allProducts: ProductModel[]) => {
             const initialState: ProductsState = {
                 products: allProducts,
                 loading: false
@@ -44,6 +44,17 @@ export class ProductApiService {
         const options = { headers, withCredentials: true };
 
         return this.http.get<ProductModel[]>(`${this.apiUrl}products`, options);
+    }
+
+    async getAllProductsByVendorId(vendorId: string): Promise<Observable<ProductModel[]>> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<ProductModel[]>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+
+        return this.http.get<ProductModel[]>(`${this.apiUrl}products/vendor/${vendorId}`, options);
     }
 
     async getProductById(id: string): Promise<Observable<ProductModel>> {

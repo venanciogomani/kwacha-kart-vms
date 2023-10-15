@@ -9,7 +9,7 @@ import { AuthApiService } from 'src/services/api/auth.api.service';
 import { PlanApiService } from 'src/services/api/plan.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
-import { StorePlansModel, StoresModel, VendorModel } from 'src/state';
+import { StorePlansModel, StoresModel, UserModel, VendorModel } from 'src/state';
 import { StoresState } from 'src/state/reducers/stores.reducer';
 import { selectLoading, selectStores } from 'src/state/selectors/stores.selectors';
 
@@ -37,6 +37,8 @@ export class StoresComponent {
         city: false,
         status: false,
     };
+
+    currentUser$: UserModel = {} as UserModel;
 
     stores$: StoresModel[] = [];
     fileterdStores$: StoresModel[] = [];
@@ -83,7 +85,9 @@ export class StoresComponent {
         private sanitizer: DomSanitizer
     ) {
         this.store.select(selectStores).subscribe((stores: StoresModel[]) => {
-            this.stores$ = stores;
+            if (stores?.length > 0) {
+                this.stores$ = stores;
+            }
         });
 
         this.store.select(selectLoading).subscribe((isLoading: boolean) => {
@@ -95,50 +99,19 @@ export class StoresComponent {
 
     ngOnInit(): void {
         if (this.allPlans$.length === 0) {
-            this.planApiService
-                .isDataLoaded()
-                .pipe(takeUntil(this.destroy$),
-                    filter((isLoaded: boolean) => isLoaded),
-                    switchMap(() => this.store.select(selectLoading))
-                )
-                .subscribe((isLoading: boolean) => {
-                    if (!isLoading) {
-                        this.getAllPlans();
-                    }
-                });
-        } else {
             this.getAllPlans();
         }
 
+        if (this.vendors$.length === 0) {
+            this.getAllVendors();
+        }
+
         if (this.stores$.length === 0) {
-            this.storeApiService
-                .isDataLoaded()
-                .pipe(takeUntil(this.destroy$),
-                    filter((isLoaded: boolean) => isLoaded),
-                    switchMap(() => this.store.select(selectStores))
-                )
-                .subscribe((stores: StoresModel[]) => {
-                    this.getAllStores();
-                });
+            this.isStoresLoading$ = true;
+            this.getAllStores();
         } else {
             this.filterStoresBySearchTerm();
             this.totalStores = this.stores$.length;
-        }
-
-        if (this.vendors$.length === 0) {
-            this.vendorApiService
-                .isDataLoaded()
-                .pipe(takeUntil(this.destroy$),
-                    filter((isLoaded: boolean) => isLoaded),
-                    switchMap(() => this.store.select(selectLoading))
-                )
-                .subscribe((isLoading: boolean) => {
-                    if (!isLoading) {
-                        this.getAllVendors();
-                    }
-                });
-        } else {
-            this.getAllVendors();
         }
     }
 
@@ -189,9 +162,19 @@ export class StoresComponent {
     }
 
     async getAllStores() {
-        return (await this.storeApiService.getAllStores()).subscribe((stores: StoresModel[]) => {
-            this.stores$ = stores;
-            this.filterStoresBySearchTerm();
+        (await this.authApiService.getCurrentUser()).subscribe(async (user: any) => {
+            if (Object.keys(user).length > 0) {
+                this.currentUser$ = user.user;
+
+                (await this.vendorApiService.getVendorByUserId(this.currentUser$.id)).subscribe(async (vendor: VendorModel) => {
+                    if (Object.keys(vendor).length > 0) {
+                        (await this.storeApiService.getAllStoresByVendorId(vendor.id)).subscribe((stores: StoresModel[]) => {
+                            this.stores$ = stores;
+                            this.filterStoresBySearchTerm();
+                        });
+                    }
+                });
+            }
         });
     }
 
@@ -208,6 +191,7 @@ export class StoresComponent {
         }
         
         this.calculateTotalPages();
+        this.isStoresLoading$ = false;
         this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
