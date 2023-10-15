@@ -1,7 +1,7 @@
-<div class="p-4 flex flex-col">
+<div class="p-4 flex flex-col" *ngIf="!isLoading$">
     <div class="flex flex-col px-4">
         <h1 class="text-gray-700 text-2xl font-black">
-            Venancio Gomani
+            {{ editUser$.name }}
         </h1>
     </div>
     <div class="w-full p-4 flex flex-col">
@@ -12,7 +12,7 @@
                         Role
                     </span>
                     <span class="text-gray-700 text-xl font-semibold">
-                        Admin
+                        {{ getRoleById(editUser$.roleId) }}
                     </span>
                 </div>
                 <div class="flex flex-row items-center mt-4 md:mt-0">
@@ -49,8 +49,8 @@
             <div class="grid grid-cols-2 lg:grid-cols-4 justify-between px-4 py-4">
                 <div class="flex flex-col py-3">
                     <span class="text-xs text-gray-600 font-normal">Contact</span>
-                    <span class="text-gray-700 font-semibold" *ngIf="!isEditing$">venanciogomani@gmailc.om</span>
-                    <span class="text-gray-700 font-semibold" *ngIf="!isEditing$">0977123456</span>
+                    <span class="text-gray-700 font-semibold" *ngIf="!isEditing$">{{ editUser$.email }}</span>
+                    <span class="text-gray-700 font-semibold" *ngIf="!isEditing$">{{ editUser$.phone }}</span>
                     <div class="p-2" *ngIf="isEditing$">
                         <input 
                             type="text" 
@@ -70,9 +70,9 @@
                 </div>
                 <div class="flex flex-col py-3">
                     <span class="text-xs text-gray-600 font-normal">Address</span>
-                    <span class="text-gray-700 font-semibold" *ngIf="!isEditing$">123456 Chilanga</span>
-                    <span class="text-gray-700 font-semibold" *ngIf="!isEditing$">Lusaka, Lusaka</span>
-                    <span class="text-gray-700 font-semibold" *ngIf="!isEditing$">Zambia</span>
+                    <span class="text-gray-700 font-semibold" *ngIf="!isEditing$">{{ editUser$.address }}</span>
+                    <span class="text-gray-700 font-semibold" *ngIf="!isEditing$">{{ editUser$.city }}, {{ editUser$.province }}</span>
+                    <span class="text-gray-700 font-semibold" *ngIf="!isEditing$">{{ editUser$.country }}</span>
                     <div class="p-2" *ngIf="isEditing$">
                         <input 
                             type="text" 
@@ -173,4 +173,7 @@
             </div>
         </div>
     </div>
+</div>
+<div *ngIf="isLoading$">
+    Loading...
 </div>
