@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthApiService, UserRole } from 'src/services/api/auth.api.service';
 
 type SubmenuStatus = {
     [key in 'dashboard' | 'stores' | 'vendors' | 'products' | 'users' | 'settings']: boolean;
@@ -11,7 +12,10 @@ type SubmenuStatus = {
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent {
-    constructor(private router: Router) {}
+    constructor(
+        private router: Router,
+        private authApiService: AuthApiService
+    ) {}
 
     submenuStatus: SubmenuStatus = {
         dashboard: false,
@@ -28,6 +32,10 @@ export class SidebarComponent {
 
     isMenuOpen(submenu: keyof SubmenuStatus): boolean {
         return this.submenuStatus[submenu];
+    }
+
+    hasRole(role: keyof UserRole): boolean {
+        return this.authApiService.hasRole(role);
     }
 
     navigateTo(path: string): void {

@@ -99,7 +99,6 @@ export class ProductsComponent {
         this.store.select(selectMyUser).subscribe((user: any) => {
             if (user && user.user && user.user.id) {
                 this.currentVendorId = user.user.id;
-                console.log(user);
             }
         });
 
@@ -108,51 +107,23 @@ export class ProductsComponent {
 
     async ngOnInit(): Promise<void> {
         if (this.products$.length === 0) {
-            this.productApiService
-                .isDataLoaded()
-                .pipe(takeUntil(this.destroy$),
-                    filter((isDataLoaded: boolean) => isDataLoaded),
-                    switchMap(() => this.store.select(selectLoading))
-                )
-                .subscribe((isLoading: boolean) => {
-                    if (isLoading) {
-                        this.isProductsLoading$ = isLoading;
-                    }
-                });
-        } else {
             this.getAllProducts();
         }
 
         if (this.productCategories$.length === 0) {
-            this.categoryApiService
-                .isDataLoaded()
-                .pipe(takeUntil(this.destroy$),
-                    filter((isDataLoaded: boolean) => isDataLoaded)
-                )
-                .subscribe((isDataLoaded: boolean) => {
-                    if (isDataLoaded) {
-                        this.getAllCategories();
-                    }
-                });
-        } else {
             this.getAllCategories();
         }
 
         if (this.productBrands$.length === 0) {
-            this.brandApiService
-                .isDataLoaded()
-                .pipe(takeUntil(this.destroy$),
-                    filter((isDataLoaded: boolean) => isDataLoaded)
-                )
-                .subscribe((isDataLoaded: boolean) => {
-                    if (isDataLoaded) {
-                        this.getAllBrands();
-                    }
-                });
-        } else {
             this.getAllBrands();
         }
 
+        if (this.currentVendorId === '') {
+            this.getMyCurrentVendorId();
+        }
+    }
+
+    async getMyCurrentVendorId() {
         (await this.authApiService.getCurrentUser()).subscribe((user: any) => {
             if (user && user.user && user.user.id) {
                 this.store.select(selectVendors).subscribe((vendors: any) => {
@@ -200,11 +171,13 @@ export class ProductsComponent {
     }
 
     async getAllProducts() {
-        return (await this.productApiService.getAllProducts()).subscribe((allProducts: ProductModel[]) => {
-            this.products$ = allProducts;
-            this.totalProducts = this.products$.length;
-            this.filterProductsBySearchTerm();
-        });
+        if (this.currentVendorId !== '') {
+            (await this.productApiService.getAllProductsByVendorId(this.currentVendorId)).subscribe((allProducts: ProductModel[]) => {
+                this.products$ = allProducts;
+                this.totalProducts = this.products$.length;
+                this.filterProductsBySearchTerm();
+            });
+        }
     }
 
     filterProductsBySearchTerm() {

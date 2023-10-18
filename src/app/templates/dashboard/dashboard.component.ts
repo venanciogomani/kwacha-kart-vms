@@ -12,7 +12,6 @@ import { RoleApiService } from 'src/services/api/role.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
 import { UserModel } from 'src/state';
-import { selectAuth } from 'src/state/selectors/auth.selectors';
 
 @Component({
   selector: 'app-dashboard',
@@ -55,6 +54,7 @@ export class DashboardComponent {
                     if (Object.keys(vendor).length > 0) {
                         this.storeApiService.createInitialStoresState(vendor.id);
                         this.productApiService.createInitialProductsState(vendor.id);
+                        this.reviewApiService.createInitialReviewsState(vendor.id);
                     }
                 });
                 this.currentUser$ = user.user;
@@ -64,7 +64,6 @@ export class DashboardComponent {
                 this.brandApiService.createInitialBrandsState();
                 this.categoryApiService.createInitialCategoriesState();
                 this.orderApiService.createInitialOrdersState();
-                this.reviewApiService.createInitialReviewsState();
                 this.authApiService.createInitialUserState();
                 this.authApiService.resetInactivityTimer();
                 this.isLoading$ = false;

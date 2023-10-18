@@ -8,6 +8,10 @@ import { loadAuthSuccess } from "src/state/actions/auth.actions";
 import { loadUsersSuccess } from "src/state/actions/user.actions";
 import { UserState } from "src/state/reducers/user.reducer";
 
+export type UserRole = {
+    [key in 'admin' | 'superadmin' | 'vendor']: boolean;
+}
+
 @Injectable (
     {providedIn: "root"}
 )
@@ -26,6 +30,12 @@ export class AuthApiService {
 
     userData$: Observable<UserModel | null> = this.userDataSubject.asObservable();
     token$: Observable<string | null> = this.tokenSubject.asObservable();
+
+    userRole: UserRole = {
+        admin: false,
+        superadmin: false,
+        vendor: true,
+    }
 
     constructor(
         private store: Store<UserModel>,
@@ -213,5 +223,9 @@ export class AuthApiService {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace('-', '+').replace('_', '/');
         return JSON.parse(atob(base64));
+    }
+
+    hasRole(role: keyof UserRole): boolean {
+        return this.userRole[role];
     }
 }
