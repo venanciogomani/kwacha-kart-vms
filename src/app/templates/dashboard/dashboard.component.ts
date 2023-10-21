@@ -55,12 +55,12 @@ export class DashboardComponent {
                         this.storeApiService.createInitialStoresState(vendor.id);
                         this.productApiService.createInitialProductsState(vendor.id);
                         this.reviewApiService.createInitialReviewsState(vendor.id);
+                        this.vendorApiService.createInitialVendorsState(vendor.storeId);
                     }
                 });
                 this.currentUser$ = user.user;
                 this.plansApiService.createInitialPlansState();
                 this.roleApiService.createInitialRolesState();
-                this.vendorApiService.createInitialVendorsState();
                 this.brandApiService.createInitialBrandsState();
                 this.categoryApiService.createInitialCategoriesState();
                 this.orderApiService.createInitialOrdersState();

@@ -57,8 +57,15 @@ export class StoreApiService {
         return this.http.get<StoresModel[]>(this.apiUrl + 'stores/vendor/' + vendorId, options)
     }
 
-    getStoreById(id: string): StoresModel {
-        return Stores.find(store => store.id === id) || {} as StoresModel;
+    async getStoreById(id: string): Promise<Observable<StoresModel>> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<StoresModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+
+        return this.http.get<StoresModel>(this.apiUrl + 'stores/' + id, options)
     }
 
     getStoreByVendorId(vendorId: string): StoresModel[] {
@@ -106,8 +113,14 @@ export class StoreApiService {
         return PaymentMethods.find(paymentMethod => paymentMethod.id === id && paymentMethod.status === true) || {} as PaymentMethodModel;
     }
 
-    getStorePaymentDetailsByStoreId(storeId: string): StorePaymentDetailsModel[] {
-        return StorePaymentDetails.filter(storePaymentDetail => storePaymentDetail.storeId === storeId);
+    async getStorePaymentDetailsByStoreId(storeId: string): Promise<Observable<StorePaymentDetailsModel[]>> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<StorePaymentDetailsModel[]>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+        return this.http.get<StorePaymentDetailsModel[]>(this.apiUrl + 'payment-methods/store/payment-details/' + storeId, options)
     }
 
     getStorePrimaryPaymentDetailsByStoreId(storeId: string): StorePaymentDetailsModel {

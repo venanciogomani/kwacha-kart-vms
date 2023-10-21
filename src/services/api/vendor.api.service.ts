@@ -23,8 +23,8 @@ export class VendorApiService {
         private authApiService: AuthApiService
     ) { }
 
-    async createInitialVendorsState() {
-        (await this.getAllVendors()).subscribe((allVendors: VendorModel[]) => {
+    async createInitialVendorsState(storeId: string) {
+        (await this.getVendorsByStoreId(storeId)).subscribe((allVendors: VendorModel[]) => {
             const initialState: VendorsState = {
                 vendors: allVendors,
                 loading: false
@@ -44,6 +44,22 @@ export class VendorApiService {
         const options = { headers, withCredentials: true };
 
         return (this.http.get<VendorModel[]>(this.apiUrl + "vendors", options));
+    }
+
+    async getVendorsByStoreId(storeId: string): Promise<Observable<VendorModel[]>> {
+        try {
+            const authToken = this.authApiService.getAuthToken();
+            if (!authToken) {
+                return new Observable<VendorModel[]>();
+            }
+            const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+            const options = { headers, withCredentials: true };
+
+            return (this.http.get<VendorModel[]>(this.apiUrl + "vendors/store/" + storeId, options));
+        } catch (error) {
+            console.error(error);
+            return new Observable<VendorModel[]>();
+        }
     }
 
     async getVendorById(id: string): Promise<Observable<VendorModel>> {
@@ -69,10 +85,6 @@ export class VendorApiService {
     }
 
     getVendorsByRoleId(roleId: string): VendorModel[] {
-        return [] as VendorModel[];
-    }
-
-    getVendorsByStoreId(storeId: string): VendorModel[] {
         return [] as VendorModel[];
     }
 

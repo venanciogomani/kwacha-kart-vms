@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Subject, filter, switchMap, takeUntil } from 'rxjs';
 import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
-import { AuthApiService } from 'src/services/api/auth.api.service';
+import { AuthApiService, UserRole } from 'src/services/api/auth.api.service';
 import { RoleApiService } from 'src/services/api/role.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
@@ -28,6 +28,7 @@ export class VendorsComponent {
     toasterMessage = 'Something went wrong!';
     toasterType = 'error';
 
+    currentVendor$: VendorModel = {} as VendorModel;
     vendors$: VendorModel[] = [];
     fileteredVendors$: VendorModel[] = [];
     isVendorsLoading$ = false;
@@ -119,7 +120,6 @@ export class VendorsComponent {
                 this.getAllUsers();
             }
             
-            this.getAllRoles();
             this.isVendorsLoading$ = false;
         }
     }
@@ -233,20 +233,53 @@ export class VendorsComponent {
     }
 
     async getAllVendors() {
-        return (await this.vendorApiService.getAllVendors()).subscribe((vendors: VendorModel[]) => {
-            this.vendors$ = vendors;
-            this.filterVendorsBySearchTerm();
-
-            if (this.allStores$.length === 0) {
-                this.getAllStores();
-            }
-    
-            if (this.allUsers$.length === 0) {
-                this.getAllUsers();   
-            }
-            
-            this.getAllRoles();
+        try {
+            (await this.authApiService.getCurrentUser()).subscribe(async (user: any) => {
+                if (Object.keys(user).length > 0) {
+                    const currentUser = user.user;
+                    if (Object.keys(currentUser).length > 0) {
+                        (await this.vendorApiService.getVendorByUserId(currentUser.id)).subscribe(async (vendor: VendorModel) => {
+                            if (vendor && Object.keys(vendor).length > 0) {
+                                this.currentVendor$ = vendor;
+                                (await this.vendorApiService.getVendorsByStoreId(vendor.storeId)).subscribe((vendors: VendorModel[]) => {
+                                    if (vendors.length > 0) {
+                                        this.vendors$ = vendors;
+                                        this.filterVendorsBySearchTerm();
+                            
+                                        if (this.allStores$.length === 0) {
+                                            this.getAllStores();
+                                        }
+                                
+                                        if (this.allUsers$.length === 0) {
+                                            this.getAllUsers();   
+                                        }
+                                        
+                                        this.getAllRoles();
+                                        this.isVendorsLoading$ = false;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (error) {
             this.isVendorsLoading$ = false;
+        }
+    }
+
+    async getMyCurrentUser() {
+        (await this.authApiService.getCurrentUser()).subscribe(async (user: any) => {
+            if (Object.keys(user).length > 0) {
+                const currentUser = user.user;
+                if (Object.keys(currentUser).length > 0) {
+                    (await this.vendorApiService.getVendorByUserId(currentUser.id)).subscribe((vendor: VendorModel) => {
+                        if (vendor && Object.keys(vendor).length > 0) {
+                            this.currentVendor$ = vendor;
+                        }
+                    });
+                }
+            }
         });
     }
 
@@ -437,5 +470,9 @@ export class VendorsComponent {
     getUserById(id: string) {
         const user = this.allUsers$.filter(user => user.id === id)[0];
         return user || {} as any;
+    }
+
+    hasRole(role: keyof UserRole): boolean {
+        return this.authApiService.hasRole(role);
     }
 }

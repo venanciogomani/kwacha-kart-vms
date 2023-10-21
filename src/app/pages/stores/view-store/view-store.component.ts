@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { StoreApiService } from 'src/services/api/store.api.service';
-import { StorePaymentDetailsModel, StoresModel } from 'src/state';
+import { StorePaymentDetailsModel, StoresModel, VendorModel } from 'src/state';
 import { capitalizeFirstLetter, maskString } from 'src/services/helpers';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
@@ -15,15 +15,22 @@ import { AuthApiService } from 'src/services/api/auth.api.service';
 })
 export class ViewStoreComponent {
     @ViewChild(ModalComponent) modal!: ModalComponent;
+
+    isLoading$ = true;
     
     showEdit = false;
-    singleStore$: StoresModel;
+    singleStoreId$ = this.router.snapshot.paramMap.get('id') || '';
+    singleStore$: StoresModel = {} as StoresModel;
     transactionType: string = 'all';
     transactionTitle: string = 'Transactions History';
     hideAccountNumber: boolean = true;
     isShowAccountNumber: string[] = [];
 
     isWidthdrawModal: boolean = false;
+
+    vendors$: VendorModel[] = [];
+
+    paymentDetails$: StorePaymentDetailsModel[] = [] as StorePaymentDetailsModel[];
 
     constructor(
         private router: ActivatedRoute,
@@ -32,9 +39,35 @@ export class ViewStoreComponent {
         private storeApiService: StoreApiService,
         private authApiService: AuthApiService
     ) { 
-        this.singleStore$ = this.storeApiService.getStoreById(this.router.snapshot.paramMap.get('id') || '')
-
         this.authApiService.resetInactivityTimer(); // reset inactivity timer
+    }
+
+    ngOnInit() {
+        if (this.singleStoreId$) {
+            this.getStore();
+        }
+
+        if (this.vendors$.length === 0) {
+            this.getAllVendors();
+        }
+    }
+
+    async getStore() {
+        (await this.storeApiService.getStoreById(this.singleStoreId$)).subscribe((store: StoresModel) => {
+            this.singleStore$ = store;
+
+            if (this.paymentDetails$.length === 0) {
+                this.getStorePaymentDetails();
+            }
+            
+            this.isLoading$ = false;
+        });
+    }
+    
+    async getAllVendors() {
+        (await this.vendorApiService.getAllVendors()).subscribe((vendors: VendorModel[]) => {
+            this.vendors$ = vendors;
+        });
     }
 
     toggleEdit() {
@@ -66,8 +99,14 @@ export class ViewStoreComponent {
         return this.isShowAccountNumber.includes(account.id);
     }
 
-    get getStorePaymentDetails() {
-        return this.storeApiService.getStorePaymentDetailsByStoreId(this.singleStore$.id);
+    async getStorePaymentDetails() {
+        return (await this.storeApiService.getStorePaymentDetailsByStoreId(this.singleStore$.id)).subscribe((paymentDetails: StorePaymentDetailsModel[]) => {
+            console.log(this.singleStore$.id);
+            if (paymentDetails?.length > 0) {
+                this.paymentDetails$ = paymentDetails;
+            }
+            this.isLoading$ = false;
+        });
     }
 
     get getStorePrimaryPaymentDetails() {
@@ -105,7 +144,7 @@ export class ViewStoreComponent {
     }
 
     get getAllProductsByVendorIdOfStoreId() {
-        const vendorIds = this.vendorApiService.getVendorsByStoreId(this.singleStore$.id).map(vendor => vendor.id);
+        const vendorIds = this.vendors$.map(vendor => vendor.id);
         const products = vendorIds.map(vendorId => this.productApiService.getProductsByVendorId(vendorId));
         return products.flat();
     }

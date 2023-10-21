@@ -79,17 +79,6 @@ export class ViewVendorComponent {
         // this.store.select(selectProducts).subscribe((product: ProductModel[]) => {
         //     this.products$ = product;
         // });
-        const vendorId = this.router.snapshot.paramMap.get('id') || '';
-
-        this.store.select(selectVendorById(vendorId)).subscribe((vendor: any) => {
-            this.singleVendor$ = vendor;
-        });
-
-        this.products$ = this.productApiService.getProductsByVendorId(this.router.snapshot.paramMap.get('id') || '');
-
-        this.store.select(selectLoading).subscribe((isLoading: boolean) => {
-            this.isProductLoading$ = isLoading; // use this for loading screen or lazyloading
-        });
 
         this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
@@ -99,22 +88,11 @@ export class ViewVendorComponent {
             (await this.vendorApiService.getVendorById(this.router.snapshot.paramMap.get('id') || '')).subscribe((vendor: VendorModel) => {
                 this.singleVendor$ = vendor;
                 this.vendorTitle = vendor.name;
+
+                this.getAllProducts();
             });
         } else {
             this.vendorTitle = this.singleVendor$.name;
-        }
-
-        if (this.products$.length === 0) {
-            this.productApiService
-                .isDataLoaded()
-                .subscribe((isDataLoaded: boolean) => {
-                    if (isDataLoaded) {
-                        this.getAllProducts();
-                    }
-                });
-        } else {
-            this.filterProductsBySearchTerm();
-            this.totalProducts = this.products$.length;
         }
 
         if (this.allProductCategories$.length === 0) {
@@ -127,9 +105,10 @@ export class ViewVendorComponent {
     }
 
     async getAllProducts() {
-        (await this.productApiService.getAllProducts()).subscribe((allProducts: ProductModel[]) => {
+        (await this.productApiService.getAllProductsByVendorId(this.singleVendor$.id)).subscribe((allProducts: ProductModel[]) => {
             this.products$ = allProducts;
             this.filterProductsBySearchTerm();
+            this.totalProducts = this.products$.length;
         });
     }
 

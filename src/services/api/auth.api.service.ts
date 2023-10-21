@@ -9,7 +9,7 @@ import { loadUsersSuccess } from "src/state/actions/user.actions";
 import { UserState } from "src/state/reducers/user.reducer";
 
 export type UserRole = {
-    [key in 'admin' | 'superadmin' | 'vendor']: boolean;
+    [key in 'ROLE_ADMIN' | 'ROLE_SUPER_ADMIN' | 'ROLE_VENDOR_ADMIN']: boolean;
 }
 
 @Injectable (
@@ -32,9 +32,9 @@ export class AuthApiService {
     token$: Observable<string | null> = this.tokenSubject.asObservable();
 
     userRole: UserRole = {
-        admin: false,
-        superadmin: false,
-        vendor: true,
+        ROLE_ADMIN: false,
+        ROLE_SUPER_ADMIN: false,
+        ROLE_VENDOR_ADMIN: true
     }
 
     constructor(
