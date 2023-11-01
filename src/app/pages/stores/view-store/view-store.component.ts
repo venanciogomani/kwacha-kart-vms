@@ -1,12 +1,13 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { StoreApiService } from 'src/services/api/store.api.service';
-import { StorePaymentDetailsModel, StoresModel, VendorModel } from 'src/state';
+import { PaymentMethodModel, StorePaymentDetailsModel, StoresModel, VendorModel } from 'src/state';
 import { capitalizeFirstLetter, maskString } from 'src/services/helpers';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
 import { ProductApiService } from 'src/services/api/products.api.service';
-import { AuthApiService } from 'src/services/api/auth.api.service';
+import { AuthApiService, UserRole } from 'src/services/api/auth.api.service';
+import { PaymentApiService } from 'src/services/api/payment.api.service';
 
 @Component({
   selector: 'app-view-store',
@@ -31,18 +32,24 @@ export class ViewStoreComponent {
     vendors$: VendorModel[] = [];
 
     paymentDetails$: StorePaymentDetailsModel[] = [] as StorePaymentDetailsModel[];
+    paymentMethods$: PaymentMethodModel[] = [] as PaymentMethodModel[];
 
     constructor(
         private router: ActivatedRoute,
         private vendorApiService: VendorApiService,
         private productApiService: ProductApiService,
         private storeApiService: StoreApiService,
+        private paymentApiService: PaymentApiService,
         private authApiService: AuthApiService
     ) { 
         this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
     ngOnInit() {
+        if (this.paymentMethods$.length === 0) {
+            this.getAllPaymentMethods();
+        }
+
         if (this.singleStoreId$) {
             this.getStore();
         }
@@ -81,8 +88,12 @@ export class ViewStoreComponent {
             : capitalizeFirstLetter(type) + ' Transactions';
     }
 
-    sanitizeAccountNumber(account: StorePaymentDetailsModel) {
-        return this.hideAccountNumber ? maskString(account.accountNumber) : account.accountNumber;
+    sanitizeAccountNumber(account: StorePaymentDetailsModel | undefined) {
+        if (account) {
+            return maskString(account.accountNumber);
+        }
+
+        return '';
     }
 
     toggleOnHideAccountNumber(account: StorePaymentDetailsModel) {
@@ -101,7 +112,6 @@ export class ViewStoreComponent {
 
     async getStorePaymentDetails() {
         return (await this.storeApiService.getStorePaymentDetailsByStoreId(this.singleStore$.id)).subscribe((paymentDetails: StorePaymentDetailsModel[]) => {
-            console.log(this.singleStore$.id);
             if (paymentDetails?.length > 0) {
                 this.paymentDetails$ = paymentDetails;
             }
@@ -110,23 +120,31 @@ export class ViewStoreComponent {
     }
 
     get getStorePrimaryPaymentDetails() {
-        return this.storeApiService.getStorePrimaryPaymentDetailsByStoreId(this.singleStore$.id);
+        return this.paymentDetails$?.find(paymentDetail => paymentDetail.isPrimary);
     }
 
-    getPaymentMethodById(id: string) {
-        return this.storeApiService.getPaymentMethodById(id);
+    getPaymentMethodById(id: string | undefined) {
+        return this.paymentDetails$?.find(paymentDetail => paymentDetail.paymentMethodId === id) || {} as StorePaymentDetailsModel;
     }
 
-    getPaymentMethodTypeById(id: string) {
-        return this.storeApiService.getPaymentMethodTypeById(id);
+    getPaymentMethodNameById(id: string) {
+        return this.paymentMethods$.find(paymentMethod => paymentMethod.id === id)?.name || '';
     }
 
-    get getAllPaymentMethods() {
-        return this.storeApiService.getAllPaymentMethods();
+    getPaymentMethodLogoById(id: string) {
+        return this.paymentMethods$.find(paymentMethod => paymentMethod.id === id)?.logo || '';
+    }
+
+    async getAllPaymentMethods() {
+        return (await this.paymentApiService.getAllPaymentMethods()).subscribe((paymentMethods: PaymentMethodModel[]) => {
+            if (paymentMethods?.length > 0) {
+                this.paymentMethods$ = paymentMethods;
+            }
+        });
     }
 
     get getAllPaymentMethodTypes() {
-        return this.storeApiService.getAllPaymentMethodTypes();
+        return this.paymentApiService.getAllPaymentMethodTypes();
     }
 
     toggleAddPaymentModal() {
@@ -153,5 +171,9 @@ export class ViewStoreComponent {
         const products = this.getAllProductsByVendorIdOfStoreId;
         const quantities = products.map(product => product.quantity);
         return quantities.reduce((a, b) => a + b, 0);
+    }
+
+    hasRole(role: keyof UserRole): boolean {
+        return this.authApiService.hasRole(role);
     }
 }

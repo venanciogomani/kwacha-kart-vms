@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { Subject, filter, switchMap, takeUntil } from 'rxjs';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
-import { AuthApiService } from 'src/services/api/auth.api.service';
+import { AuthApiService, UserRole } from 'src/services/api/auth.api.service';
 import { PlanApiService } from 'src/services/api/plan.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
@@ -400,5 +400,9 @@ export class StoresComponent {
         this.deleteRow = false;
         this.addRow = false;
         this.modal.isOpen = false;
+    }
+
+    hasRole(role: keyof UserRole): boolean {
+        return this.authApiService.hasRole(role);
     }
 }

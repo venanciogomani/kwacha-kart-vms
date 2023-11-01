@@ -127,18 +127,6 @@ export class StoreApiService {
         return StorePaymentDetails.find(storePaymentDetail => storePaymentDetail.storeId === storeId && storePaymentDetail.isPrimary === true) || {} as StorePaymentDetailsModel;
     }
 
-    getAllPaymentMethods(): PaymentMethodModel[] {
-        return PaymentMethods.filter(paymentMethod => paymentMethod.status === true);
-    }
-
-    getAllPaymentMethodTypes(): PaymentAccountTypeModel[] {
-        return PaymentAccountTypes.filter(paymentAccountType => paymentAccountType.status === true);
-    }
-
-    getPaymentMethodTypeById(id: string): PaymentAccountTypeModel {
-        return PaymentAccountTypes.find(paymentAccountType => paymentAccountType.id === id && paymentAccountType.status === true) || {} as PaymentAccountTypeModel;
-    }
-
     isDataLoaded(): Observable<boolean> {
         return this.isDataLoaded$.asObservable();
     }

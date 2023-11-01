@@ -37,7 +37,7 @@
                         Account Holder
                     </span>
                     <span class="font-semibold text-gray-600">
-                        {{ getStorePrimaryPaymentDetails.accountName }}
+                        {{ getStorePrimaryPaymentDetails?.accountName }}
                     </span>
                 </div>
                 <div class="p-4 flex flex-col">
@@ -45,10 +45,11 @@
                         Payment To
                     </span>
                     <span class="font-semibold text-gray-600">
-                        {{ getPaymentMethodById(getStorePrimaryPaymentDetails.paymentMethodId).name }}: {{ sanitizeAccountNumber(getStorePrimaryPaymentDetails) }}
+                        {{ getPaymentMethodById(getStorePrimaryPaymentDetails?.paymentMethodId).accountType }}: {{ sanitizeAccountNumber(getStorePrimaryPaymentDetails) }}
                     </span>
                 </div>
                 <mat-icon
+                    *ngIf="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN')"
                     (click)="toggleEdit()"
                     fontIcon="more_vert"
                     class="absolute top-2 right-2 text-gray-500 cursor-pointer"
@@ -207,8 +208,9 @@
                     </span>
                 </div>
                 <div 
-                    (click)="toggleAddPaymentModal()"
-                    class="flex flex-row items-center p-2 rounded-full bg-emerald-500 cursor-pointer hover:bg-emerald-600 transition duration-300 ease-in-out"
+                    (click)="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN') && toggleAddPaymentModal()"
+                    class="flex flex-row items-center p-2 rounded-full bg-emerald-500 hover:bg-emerald-600 transition duration-300 ease-in-out"
+                    [ngClass]="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN') ? 'cursor-pointer' : 'cursor-not-allowed'"
                 >
                     <div class="bg-white rounded-full shadow-md text-emerald-500 font-black text-xl text-center px-2">
                         +
@@ -218,7 +220,7 @@
                     </span>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-2 pb-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-2 pb-3" *ngIf="paymentDetails$ && paymentDetails$.length">
                 <div class="p-2" *ngFor="let storePaymentDets of paymentDetails$">
                     <div class="flex flex-col bg-gradient-to-r from-cyan-800 to-emerald-500 rounded-xl px-3 py-6 shadow-lg">
                         <div class="flex flex-row items-center flex-grow justify-between">
@@ -227,7 +229,7 @@
                                     {{ storePaymentDets.isPrimary ? 'Primary' : 'Secondary' }}
                                 </span>
                                 <span class="text-white font-semibold text-sm">
-                                    {{ getPaymentMethodById(storePaymentDets.paymentMethodId).name }}
+                                    {{ getPaymentMethodById(storePaymentDets.paymentMethodId).accountType }}
                                 </span>
                             </div>
                             <div class="flex flex-row items-center">
@@ -235,15 +237,16 @@
                                     (click)="toggleOnHideAccountNumber(storePaymentDets)"
                                     fontIcon="visibility_off"
                                     class="text-white text-sm cursor-pointer mr-2"
-                                    *ngIf="!isShowAccountNumberToggle(storePaymentDets)"
+                                    *ngIf="!isShowAccountNumberToggle(storePaymentDets) && (hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN'))"
                                 ></mat-icon>
                                 <mat-icon
                                     (click)="toggleOnHideAccountNumber(storePaymentDets)"
                                     fontIcon="visibility"
                                     class="text-white text-sm cursor-pointer mr-2"
-                                    *ngIf="isShowAccountNumberToggle(storePaymentDets)"
+                                    *ngIf="isShowAccountNumberToggle(storePaymentDets) && (hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN'))"
                                 ></mat-icon>
                                 <mat-icon
+                                    *ngIf="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN')"
                                     fontIcon="edit"
                                     class="text-white text-sm cursor-pointer"
                                 ></mat-icon>
@@ -251,8 +254,8 @@
                         </div>
                         <div class="flex flex-row items-center flex-grow justify-between mt-4 bg-gradient-to-l from-gray-100/20 py-2 rounded-md">
                             <img
-                                [src]="'../../../assets/img/logos/' + getPaymentMethodById(storePaymentDets.paymentMethodId).img"
-                                alt="customer placeholder"
+                                [src]="'../../../assets/img/logos/' + getPaymentMethodLogoById(storePaymentDets.paymentMethodId)"
+                                alt="Payment Method Logo"
                                 class="w-auto h-12"
                             >
                             <span class="text-white text-sm pr-4" *ngIf="!isShowAccountNumberToggle(storePaymentDets)">
@@ -276,7 +279,7 @@
                                     Type
                                 </span>
                                 <span class="text-white text-sm">
-                                    {{ getPaymentMethodTypeById(getPaymentMethodById(storePaymentDets.paymentMethodId).accountTypeId).name}}
+                                    {{ getPaymentMethodNameById(storePaymentDets.paymentMethodId) }}
                                 </span>
                             </div>
                         </div>
@@ -413,8 +416,9 @@
                     </span>
                 </div>
                 <div
-                    (click)="toggleWithdrawPaymentModal()"
-                    class="flex flex-row bg-gray-700 rounded-xl p-2 items-center cursor-pointer hover:bg-gray-600 transition duration-300 ease-in-out"
+                    (click)="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN') && toggleWithdrawPaymentModal()"
+                    class="flex flex-row bg-gray-700 rounded-xl p-2 items-center hover:bg-gray-600 transition duration-300 ease-in-out"
+                    [ngClass]="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN') ? 'cursor-pointer' : 'cursor-not-allowed'"
                 >
                     <div class="flex items-center justify-center bg-white h-12 w-12 rounded-full">
                         <mat-icon
@@ -426,7 +430,10 @@
                         Withdraw
                     </span>
                 </div>
-                <div class="flex flex-row bg-emerald-500 rounded-xl p-2 items-center cursor-pointer hover:bg-emerald-400 transition duration-300 ease-in-out mt-4">
+                <div 
+                    class="flex flex-row bg-emerald-500 rounded-xl p-2 items-center hover:bg-emerald-400 transition duration-300 ease-in-out mt-4"
+                    [ngClass]="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN') ? 'cursor-pointer' : 'cursor-not-allowed'"
+                >
                     <div class="flex items-center justify-center bg-white h-12 w-12 rounded-full">
                         <mat-icon
                             fontIcon="list_alt"
@@ -530,7 +537,7 @@
             <span class="text-gray-500 text-sm font-semibold mb-2">Payment Method</span>
             <select class="p-2 w-full border-2">
                 <option value="0" disabled>Select a Payment Method</option>
-                <option *ngFor="let method of getAllPaymentMethods" [value]="method.id">{{ method.name }}</option>
+                <option *ngFor="let method of paymentMethods$" [value]="method.id">{{ method.name }}</option>
             </select>
         </div>
         <div class="flex flex-col p-2">
@@ -572,7 +579,7 @@
             <span class="text-gray-500 text-sm font-semibold mb-2">Choose Payment Method*</span>
             <select class="p-2 w-full border-2">
                 <option value="0" disabled>Select a Payment Method</option>
-                <option *ngFor="let method of getAllPaymentMethods" [value]="method.id">{{ method.name }}</option>
+                <option *ngFor="let method of paymentMethods$" [value]="method.id">{{ method.name }}</option>
             </select>
         </div>
         <div class="flex flex-col p-2">

@@ -31,6 +31,7 @@
                     </button>
                 </div>
                 <button
+                    *ngIf="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN')"
                     (click)="toggleAddStore()"
                     class="
                         bg-transparent py-3 px-4 text-sm border-2 border-gray-700

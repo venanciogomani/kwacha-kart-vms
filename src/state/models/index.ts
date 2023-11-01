@@ -54,6 +54,7 @@ export interface StorePaymentDetailsModel {
     accountNumber: string;
     accountName: string;
     accountType: string;
+    accountTypeId?: string;
     isPrimary: boolean;
     createdAt: string;
     updatedAt?: string;
@@ -72,7 +73,7 @@ export interface PaymentMethodModel {
     name: string;
     description?: string;
     fee: number;
-    img?: string;
+    logo?: string;
     status: boolean;
     accountTypeId: string;
     createdAt: string;

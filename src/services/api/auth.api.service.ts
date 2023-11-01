@@ -78,7 +78,6 @@ export class AuthApiService {
         this.isUserLoggedIn$.next(false);
         this.clearAuthToken();
         this.router.navigate(['auth/login']);
-        this.http.post<void>(this.authUrl + "logout", {}).toPromise();
     }
 
     getAllUsersByIds(ids: string[]): Observable<UserModel[]> {
