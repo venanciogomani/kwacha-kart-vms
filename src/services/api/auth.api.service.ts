@@ -33,8 +33,8 @@ export class AuthApiService {
 
     userRole: UserRole = {
         ROLE_ADMIN: false,
-        ROLE_SUPER_ADMIN: false,
-        ROLE_VENDOR_ADMIN: true
+        ROLE_SUPER_ADMIN: true,
+        ROLE_VENDOR_ADMIN: false
     }
 
     constructor(
