@@ -17,6 +17,8 @@ export class LoginComponent {
     }
     
     error: string | null = null;
+
+    loginBtnDisabled = true;
     
     constructor(
         private router: Router,
@@ -50,5 +52,13 @@ export class LoginComponent {
 
     register() {
         this.router.navigate(['auth/register']);
+    }
+
+    checkLoginInputs() {
+        if (this.user.email && this.user.password) {
+            this.loginBtnDisabled = false;
+        } else {
+            this.loginBtnDisabled = true;
+        }
     }
 }

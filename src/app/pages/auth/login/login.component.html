@@ -24,6 +24,7 @@
             class="w-full h-full outline-none"
             placeholder="Email"
             [(ngModel)]="user.email"
+            (ngModelChange)="checkLoginInputs()"
         >
     </div>
     <div class="w-4/5 h-14 border-2 border-gray-400 rounded-full mt-5 px-5 flex flex-row items-center">
@@ -36,11 +37,14 @@
             class="w-full h-full outline-none"   
             placeholder="Password"
             [(ngModel)]="user.password"
+            (ngModelChange)="checkLoginInputs()"
         >
     </div>
     <button
         (click)="performLogin()"
-        class="w-4/5 h-14 bg-gradient-to-r from-pink-500 to-yellow-500 text-white rounded-full mt-5 font-semibold"
+        class="w-4/5 h-14 bg-gradient-to-r text-white rounded-full mt-5 font-semibold"
+        [ngClass]="loginBtnDisabled ? 'from-gray-400 to-gray-700' : 'from-pink-500 to-yellow-500'"
+        [disabled]="loginBtnDisabled"
     >
         Login
     </button>
