@@ -16,6 +16,8 @@ export class LoginComponent {
         password: ''
     }
     
+    error: string | null = null;
+    
     constructor(
         private router: Router,
         private authApiService: AuthApiService
@@ -24,14 +26,19 @@ export class LoginComponent {
     ngOnInit(): void {}
 
     async performLogin() {
-        (await this.authApiService.login(this.user.email, this.user.password));
-
-        this.authApiService.isUserLoggedIn().subscribe((isUserLoggedIn: boolean) => {
-            if (isUserLoggedIn) {
-                this.login();
+        this.authApiService.login(this.user.email, this.user.password).subscribe(
+            (user) => {
+                this.authApiService.isUserLoggedIn().subscribe((isUserLoggedIn: boolean) => {
+                    if (isUserLoggedIn) {
+                        this.login();
+                    }
+                });
+            },
+            (error) => {
+                this.error = error.message;
             }
-        });
-    }
+        );
+    }    
 
     login() {
         this.router.navigate(['dashboard']);

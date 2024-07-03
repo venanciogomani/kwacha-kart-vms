@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { Store } from "@ngrx/store";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, tap } from "rxjs";
 import { UserModel } from "src/state";
 import { loadAuthSuccess } from "src/state/actions/auth.actions";
 import { loadUsersSuccess } from "src/state/actions/user.actions";
@@ -56,21 +56,20 @@ export class AuthApiService {
         });
     }
 
-    async login(username: string, password: string): Promise<void> {
+    login(username: string, password: string): Observable<UserModel> {
         const headers = { 'content-type': 'application/json' }
         const options = { headers, withCredentials: true };
-
-        this.http.post<UserModel>(this.authUrl + "vendor/login", { username, password }, options).subscribe((user: any) => {
-            this.userDataSubject.next(user);
-            this.store.dispatch(loadAuthSuccess(user.user));
-            this.isDataLoaded$.next(true);
-            sessionStorage.setItem('token', user.token);
-        },
-            (error) => {
-                console.log(error);
-            }
+    
+        return this.http.post<UserModel>(this.authUrl + "vendor/login", { username, password }, options).pipe(
+            tap((user: any) => {
+                this.userDataSubject.next(user);
+                this.store.dispatch(loadAuthSuccess(user.user));
+                this.isDataLoaded$.next(true);
+                sessionStorage.setItem('token', user.token);
+            })
         );
     }
+    
 
     async logout(): Promise<void> {
         this.userDataSubject.next(null);
