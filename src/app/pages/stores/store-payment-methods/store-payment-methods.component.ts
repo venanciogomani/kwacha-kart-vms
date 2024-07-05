@@ -275,7 +275,28 @@ toggleDeletePaymentMethod(paymentMethod: PaymentMethodModel): void {
     });
   }
 
-  performDeletePaymentMethod() {}
+  performDeletePaymentMethod() {
+    this.paymentApiService.deletePaymentMethod(this.paymentMethodEdit.id).subscribe(() => {
+      this.addRow = false;
+      this.resetEditPaymentMethod();
+      this.toasterMessage = 'Payment method deleted successfully!';
+      this.toasterType = 'success';
+      this.toaster.isOpen = true;
+      setTimeout(() => {
+          this.closeToaster();
+      }, 3000);
+      this.getPaymentMethods();
+      this.deleteRow = false;
+      this.modal.isOpen = false;
+    }, () => {
+        this.toasterMessage = 'Something went wrong!';
+        this.toasterType = 'error';
+        this.toaster.isOpen = true;
+        setTimeout(() => {
+            this.closeToaster();
+        }, 3000);
+    });
+  }
 
   closePaymentMethodModal() {
     this.modal.isOpen = false;
