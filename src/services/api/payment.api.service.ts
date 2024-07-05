@@ -43,4 +43,15 @@ export class PaymentApiService {
     getPaymentMethodTypeById(id: string): PaymentAccountTypeModel {
         return {} as PaymentAccountTypeModel;
     }
+
+    savePaymentMethod(paymentMethod: PaymentMethodModel): Observable<PaymentMethodModel> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<PaymentMethodModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+
+        return this.http.post<PaymentMethodModel>(`${this.apiUrl}payment-methods`, paymentMethod, options);
+    }
 }

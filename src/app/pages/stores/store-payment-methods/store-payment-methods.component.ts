@@ -231,7 +231,49 @@ toggleDeletePaymentMethod(paymentMethod: PaymentMethodModel): void {
     this.modal.isOpen = true;
 }
 
-  publishPaymentMethod() {}
+  publishPaymentMethod() {
+    if (
+      this.paymentMethodEdit.name === '' 
+      || this.paymentMethodEdit.accountTypeId === '' 
+      || this.paymentMethodEdit.description === ''
+      || this.paymentMethodEdit.fee === 0 
+    ) {
+        this.toasterMessage = 'Please fill all the required fields!';
+        this.toasterType = 'error';
+        this.toaster.isOpen = true;
+        setTimeout(() => {
+            this.closeToaster();
+        }, 3000);
+        return;
+    }
+
+    this.paymentMethodEdit.logo = "airtel.png";
+    this.paymentMethodEdit.createdAt = new Date().toISOString();
+    this.paymentMethodEdit.updatedAt = new Date().toISOString();
+
+    const modifiedPaymentMethodName = this.paymentMethodEdit.name.trim().toLowerCase().replace(/\s+/g, '_');
+    const timestamp = new Date().getTime();
+    this.paymentMethodEdit.id = `${modifiedPaymentMethodName}_${Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)}_${timestamp}`;
+
+    this.paymentApiService.savePaymentMethod(this.paymentMethodEdit).subscribe((paymentMethod: PaymentMethodModel) => {
+        this.addRow = false;
+        this.resetEditPaymentMethod();
+        this.toasterMessage = 'Payment method added successfully!';
+        this.toasterType = 'success';
+        this.toaster.isOpen = true;
+        setTimeout(() => {
+            this.closeToaster();
+        }, 3000);
+        this.getPaymentMethods();
+    }, () => {
+        this.toasterMessage = 'Something went wrong!';
+        this.toasterType = 'error';
+        this.toaster.isOpen = true;
+        setTimeout(() => {
+            this.closeToaster();
+        }, 3000);
+    });
+  }
 
   performDeletePaymentMethod() {}
 
