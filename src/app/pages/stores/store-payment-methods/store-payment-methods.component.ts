@@ -6,8 +6,7 @@ import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
 import { AuthApiService } from 'src/services/api/auth.api.service';
 import { PaymentApiService } from 'src/services/api/payment.api.service';
-import { PaymentAccountTypeModel, PaymentMethodModel, StorePaymentDetailsModel } from 'src/state';
-import { selectPaymentMethods, selectPaymentMethodsLoading } from 'src/state/selectors/payment-methods.selectors';
+import { PaymentAccountTypeModel, PaymentMethodModel } from 'src/state';
 
 type SortStatus = {
   [key in 'name' | 'status']: boolean;

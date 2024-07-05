@@ -253,3 +253,11 @@ export interface UserModel {
     createdAt: string;
     updatedAt?: string;
 }
+
+export interface DeliveryMethodModel {
+    id: string;
+    name: string;
+    logo: string;
+    deliveryTime: string;
+    deliveryFee: number;
+}
