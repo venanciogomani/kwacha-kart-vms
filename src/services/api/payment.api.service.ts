@@ -18,7 +18,7 @@ export class PaymentApiService {
         private authApiService: AuthApiService
     ) { }
 
-    async getAllPaymentMethods(): Promise<Observable<PaymentMethodModel[]>> {
+    getAllPaymentMethods(): Observable<PaymentMethodModel[]> {
         const authToken = this.authApiService.getAuthToken();
         if (!authToken) {
             return new Observable<PaymentMethodModel[]>();
@@ -29,8 +29,15 @@ export class PaymentApiService {
         return this.http.get<PaymentMethodModel[]>(this.apiUrl + 'payment-methods', options)
     }
 
-    getAllPaymentMethodTypes(): PaymentAccountTypeModel[] {
-        return [];
+    getAllPaymentMethodTypes(): Observable<PaymentAccountTypeModel[]> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<PaymentAccountTypeModel[]>();
+        }
+
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+        return this.http.get<PaymentAccountTypeModel[]>(this.apiUrl + 'payment-methods/acount-types', options)
     }
 
     getPaymentMethodTypeById(id: string): PaymentAccountTypeModel {

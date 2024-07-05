@@ -144,7 +144,7 @@ export class ViewStoreComponent {
     }
 
     get getAllPaymentMethodTypes() {
-        return this.paymentApiService.getAllPaymentMethodTypes();
+        return [] as PaymentMethodModel[];
     }
 
     toggleAddPaymentModal() {

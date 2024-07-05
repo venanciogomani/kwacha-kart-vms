@@ -12,6 +12,8 @@ import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { StorePaymentMethodsComponent } from './store-payment-methods/store-payment-methods.component';
+import { StoreDeliveryMethodsComponent } from './store-delivery-methods/store-delivery-methods.component';
 
 
 
@@ -22,6 +24,8 @@ import { SharedModule } from 'src/app/shared/shared.module';
     StoreRolesComponent,
     StorePlansComponent,
     ViewStoreComponent,
+    StorePaymentMethodsComponent,
+    StoreDeliveryMethodsComponent,
   ],
   imports: [
     CommonModule,
@@ -37,6 +41,8 @@ import { SharedModule } from 'src/app/shared/shared.module';
     StoreRolesComponent,
     StorePlansComponent,
     ViewStoreComponent,
+    StoreDeliveryMethodsComponent,
+    StorePaymentMethodsComponent,
   ]
 })
 export class StoresModule { }

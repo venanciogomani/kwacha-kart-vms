@@ -38,6 +38,8 @@ import { LoginComponent } from './pages/auth/login/login.component';
 import { RegisterComponent } from './pages/auth/register/register.component';
 import { OnboardingComponent } from './templates/onboarding/onboarding.component';
 import { DashboardComponent } from './templates/dashboard/dashboard.component';
+import { StorePaymentMethodsComponent } from './pages/stores/store-payment-methods/store-payment-methods.component';
+import { StoreDeliveryMethodsComponent } from './pages/stores/store-delivery-methods/store-delivery-methods.component';
 
 const routes: Routes = [
     {
@@ -81,6 +83,14 @@ const routes: Routes = [
             {
                 path: 'store/roles',
                 component: StoreRolesComponent
+            },
+            {
+                path: 'store/payment-methods',
+                component: StorePaymentMethodsComponent
+            },
+            {
+                path: 'store/delivery-methods',
+                component: StoreDeliveryMethodsComponent
             },
             {
                 path: 'vendors',
