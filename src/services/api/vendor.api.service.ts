@@ -7,13 +7,15 @@ import { deleteVendor, loadVendorsSuccess } from "src/state/actions/vendors.acti
 import { Vendors } from "src/state/dataset";
 import { VendorsState } from "src/state/reducers/vendors.reducer";
 import { AuthApiService } from "./auth.api.service";
+// import { environment } from "src/environments/environment.prod";
+import { environment } from "src/environments/environments";
 
 @Injectable (
     {providedIn: "root"}
 )
 
 export class VendorApiService {
-    private apiUrl = "http://localhost:2200/api/";
+    private apiUrl = environment.apiUrl;
     
     private isDataLoaded$ = new BehaviorSubject<boolean>(false);
 

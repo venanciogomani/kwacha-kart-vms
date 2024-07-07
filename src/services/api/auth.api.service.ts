@@ -7,6 +7,8 @@ import { UserModel } from "src/state";
 import { loadAuthSuccess } from "src/state/actions/auth.actions";
 import { loadUsersSuccess } from "src/state/actions/user.actions";
 import { UserState } from "src/state/reducers/user.reducer";
+// import { environment } from "src/environments/environment.prod";
+import { environment } from "src/environments/environments";
 
 export type UserRole = {
     [key in 'ROLE_ADMIN' | 'ROLE_SUPER_ADMIN' | 'ROLE_VENDOR_ADMIN']: boolean;
@@ -17,8 +19,8 @@ export type UserRole = {
 )
 
 export class AuthApiService {
-    private authUrl = "http://localhost:5000/auth/";
-    private apiUrl = "http://localhost:2200/api/";
+    private authUrl = environment.authUrl;
+    private apiUrl = environment.apiUrl;
 
     private inactivityTimer: any;
     private tokenExpirationTimer: any;

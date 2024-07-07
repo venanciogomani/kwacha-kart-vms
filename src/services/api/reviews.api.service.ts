@@ -6,13 +6,15 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { ReviewsState } from "src/state/reducers/reviews.reducer";
 import { loadReviewsSuccess } from "src/state/actions/reviews.actions";
 import { AuthApiService } from "./auth.api.service";
+// import { environment } from "src/environments/environment.prod";
+import { environment } from "src/environments/environments";
 
 @Injectable(
     { providedIn: "root" }
 )
 
 export class ReviewApiService {
-    private apiUrl = 'http://localhost:2200/api/';
+    private apiUrl = environment.apiUrl;
 
     private isDataLoaded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 

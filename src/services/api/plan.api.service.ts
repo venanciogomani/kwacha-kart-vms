@@ -7,13 +7,15 @@ import { deletePlan, loadPlansSuccess } from "src/state/actions/plans.actions";
 import { Plans } from "src/state/dataset";
 import { PlansState } from "src/state/reducers/plans.reducer";
 import { AuthApiService } from "./auth.api.service";
+// import { environment } from "src/environments/environment.prod";
+import { environment } from "src/environments/environments";
 
 @Injectable (
     {providedIn: "root"}
 )
 
 export class PlanApiService {
-    private apiUrl = 'http://localhost:2200/api/';
+    private apiUrl = environment.apiUrl;
 
     private isDataLoaded$ = new BehaviorSubject<boolean>(false);
     

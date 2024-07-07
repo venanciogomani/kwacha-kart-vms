@@ -7,13 +7,15 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { BrandsState } from "src/state/reducers/brands.reducer";
 import { loadBrandsSuccess } from "src/state/actions/brands.actions";
 import { AuthApiService } from "./auth.api.service";
+// import { environment } from "src/environments/environment.prod";
+import { environment } from "src/environments/environments";
 
 @Injectable(
     { providedIn: "root" }
 )
 
 export class BrandApiService {
-    private apiUrl = 'http://localhost:2200/api/';
+    private apiUrl = environment.apiUrl;
 
     private isDataLoaded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     

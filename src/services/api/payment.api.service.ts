@@ -4,13 +4,15 @@ import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 import { AuthApiService } from "./auth.api.service";
 import { PaymentAccountTypeModel, PaymentMethodModel } from "src/state/models";
+// import { environment } from "src/environments/environment.prod";
+import { environment } from "src/environments/environments";
 
 @Injectable(
     { providedIn: "root" }
 )
 
 export class PaymentApiService {
-    private apiUrl = 'http://localhost:2200/api/';
+    private apiUrl = environment.apiUrl;
 
     constructor(
         private store: Store<any>,

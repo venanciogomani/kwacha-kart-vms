@@ -7,13 +7,15 @@ import { loadRolesSuccess } from "src/state/actions/roles.actions";
 import { Roles, Permissions } from "src/state/dataset";
 import { RolesState } from "src/state/reducers/roles.reducer";
 import { AuthApiService } from "./auth.api.service";
+// import { environment } from "src/environments/environment.prod";
+import { environment } from "src/environments/environments";
 
 @Injectable (
     {providedIn: "root"}
 )
 
 export class RoleApiService {
-    private apiUrl = 'http://localhost:2200/api/';
+    private apiUrl = environment.apiUrl;
 
     private isDataLoaded$ = new BehaviorSubject<boolean>(false);
 

@@ -7,13 +7,15 @@ import { loadStoresSuccess } from "src/state/actions/stores.actions";
 import { Stores, StorePaymentDetails, PaymentMethods, PaymentAccountTypes } from "src/state/dataset";
 import { StoresState } from "src/state/reducers/stores.reducer";
 import { AuthApiService } from "./auth.api.service";
+// import { environment } from "src/environments/environment.prod";
+import { environment } from "src/environments/environments";
 
 @Injectable(
     { providedIn: "root" }
 )
 
 export class StoreApiService {
-    private apiUrl = 'http://localhost:2200/api/';
+    private apiUrl = environment.apiUrl;
 
     private isDataLoaded$ = new BehaviorSubject<boolean>(false);
 

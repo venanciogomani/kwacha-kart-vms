@@ -6,13 +6,15 @@ import { VendorOrderModel } from "src/state";
 import { OrdersState } from "src/state/reducers/orders.reducer";
 import { loadOrdersSuccess } from "src/state/actions/orders.actions";
 import { AuthApiService } from "./auth.api.service";
+// import { environment } from "src/environments/environment.prod";
+import { environment } from "src/environments/environments";
 
 @Injectable (
     { providedIn: "root" }
 )
 
 export class OrderApiService {
-    private apiUrl = "http://localhost:2200/api/";
+    private apiUrl = environment.apiUrl;
 
     private isDataLoaded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 

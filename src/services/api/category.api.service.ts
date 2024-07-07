@@ -7,13 +7,15 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { CategoriesState } from "src/state/reducers/categories.reducer";
 import { loadCategoriesSuccess } from "src/state/actions/categories.actions";
 import { AuthApiService } from "./auth.api.service";
+// import { environment } from "src/environments/environment.prod";
+import { environment } from "src/environments/environments";
 
 @Injectable(
     { providedIn: "root" }
 )
 
 export class CategoryApiService {
-    private apiUrl = 'http://localhost:2200/api/';
+    private apiUrl = environment.apiUrl;
 
     private isDataLoaded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     
