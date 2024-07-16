@@ -280,7 +280,7 @@
                                     ></mat-icon>
                                     <mat-icon
                                         *ngIf="isEditRow(paymentMethod.id)"
-                                        (click)="publishPaymentMethod()"
+                                        (click)="updatePaymentMethod(paymentMethod.id)"
                                         class="cursor-pointer text-emerald-400"
                                         fontIcon="check_circle"
                                     ></mat-icon>

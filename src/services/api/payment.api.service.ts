@@ -57,6 +57,16 @@ export class PaymentApiService {
         return this.http.post<PaymentMethodModel>(`${this.apiUrl}payment-methods`, paymentMethod, options);
     }
 
+    updatePaymentMethod(paymentMethod: PaymentMethodModel): Observable<PaymentMethodModel> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<PaymentMethodModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+        return this.http.put<PaymentMethodModel>(`${this.apiUrl}payment-methods/${paymentMethod.id}`, paymentMethod, options);
+    }
+
     deletePaymentMethod(id: string): Observable<void> {
         const authToken = this.authApiService.getAuthToken();
         if (!authToken) {

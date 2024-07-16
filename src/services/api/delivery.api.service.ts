@@ -42,6 +42,16 @@ export class DeliveryApiService {
         return this.http.post<DeliveryMethodModel>(`${this.apiUrl}delivery-methods`, deliveryMethod, options);
     }
 
+    updateDeliveryMethod(deliveryMethod: DeliveryMethodModel): Observable<DeliveryMethodModel> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<DeliveryMethodModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+        return this.http.put<DeliveryMethodModel>(`${this.apiUrl}delivery-methods/${deliveryMethod.id}`, deliveryMethod, options);
+    }
+
     deleteDeliveryMethod(id: string): Observable<void> {
         const authToken = this.authApiService.getAuthToken();
         if (!authToken) {

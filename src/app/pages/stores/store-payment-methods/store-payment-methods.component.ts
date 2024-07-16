@@ -220,15 +220,15 @@ export class StorePaymentMethodsComponent {
     this.resetEditPaymentMethod();
     this.addRow = !this.addRow;
     this.deleteRow = false;
-}
+  }
 
-toggleDeletePaymentMethod(paymentMethod: PaymentMethodModel): void {
+  toggleDeletePaymentMethod(paymentMethod: PaymentMethodModel): void {
     this.resetEditPaymentMethod();
     this.paymentMethodEdit = { ...paymentMethod };
     this.deleteRow = !this.deleteRow;
     this.addRow = false;
     this.modal.isOpen = true;
-}
+  }
 
   publishPaymentMethod() {
     if (
@@ -287,6 +287,47 @@ toggleDeletePaymentMethod(paymentMethod: PaymentMethodModel): void {
       this.getPaymentMethods();
       this.deleteRow = false;
       this.modal.isOpen = false;
+    }, () => {
+        this.toasterMessage = 'Something went wrong!';
+        this.toasterType = 'error';
+        this.toaster.isOpen = true;
+        setTimeout(() => {
+            this.closeToaster();
+        }, 3000);
+    });
+  }
+
+  updatePaymentMethod(id: string) {
+    if (
+      this.paymentMethodEdit.name === '' 
+      || this.paymentMethodEdit.accountTypeId === '' 
+      || this.paymentMethodEdit.description === ''
+      || this.paymentMethodEdit.fee === 0 
+    ) {
+        this.toasterMessage = 'Please fill all the required fields!';
+        this.toasterType = 'error';
+        this.toaster.isOpen = true;
+        setTimeout(() => {
+            this.closeToaster();
+        }, 3000);
+        return;
+    }
+
+    this.paymentMethodEdit.logo = "airtel.png";
+    this.paymentMethodEdit.updatedAt = new Date().toISOString();
+
+    this.paymentMethodEdit.id = id;
+
+    this.paymentApiService.updatePaymentMethod(this.paymentMethodEdit).subscribe((paymentMethod: PaymentMethodModel) => {
+        this.toggleEditPaymentMethod(paymentMethod);
+        this.resetEditPaymentMethod();
+        this.toasterMessage = `${paymentMethod.name} Payment method added successfully!`;
+        this.toasterType = 'success';
+        this.toaster.isOpen = true;
+        setTimeout(() => {
+            this.closeToaster();
+        }, 3000);
+        this.getPaymentMethods();
     }, () => {
         this.toasterMessage = 'Something went wrong!';
         this.toasterType = 'error';

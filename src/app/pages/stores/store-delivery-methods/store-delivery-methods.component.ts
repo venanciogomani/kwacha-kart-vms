@@ -193,15 +193,15 @@ export class StoreDeliveryMethodsComponent {
     this.resetEditDeliveryMethod();
     this.addRow = !this.addRow;
     this.deleteRow = false;
-}
+  }
 
-toggleDeleteDeliveryMethod(deliveryMethod: DeliveryMethodModel): void {
-    this.resetEditDeliveryMethod();
-    this.deliveryMethodEdit = { ...deliveryMethod };
-    this.deleteRow = !this.deleteRow;
-    this.addRow = false;
-    this.modal.isOpen = true;
-}
+  toggleDeleteDeliveryMethod(deliveryMethod: DeliveryMethodModel): void {
+      this.resetEditDeliveryMethod();
+      this.deliveryMethodEdit = { ...deliveryMethod };
+      this.deleteRow = !this.deleteRow;
+      this.addRow = false;
+      this.modal.isOpen = true;
+  }
 
   publishDeliveryMethod() {
     if (
@@ -257,6 +257,46 @@ toggleDeleteDeliveryMethod(deliveryMethod: DeliveryMethodModel): void {
       this.getDeliveryMethods();
       this.deleteRow = false;
       this.modal.isOpen = false;
+    }, () => {
+        this.toasterMessage = 'Something went wrong!';
+        this.toasterType = 'error';
+        this.toaster.isOpen = true;
+        setTimeout(() => {
+            this.closeToaster();
+        }, 3000);
+    });
+  }
+
+  performUpdateDeliverMethod(id: string) {
+    if (
+      this.deliveryMethodEdit.name === '' 
+      || this.deliveryMethodEdit.deliveryTime === '' 
+      || this.deliveryMethodEdit.deliveryFee === 0
+    ) {
+        this.toasterMessage = 'Please fill all the required fields!';
+        this.toasterType = 'error';
+        this.toaster.isOpen = true;
+        setTimeout(() => {
+            this.closeToaster();
+        }, 3000);
+        return;
+    }
+
+    this.deliveryMethodEdit.logo = "dhl.png";
+
+    this.deliveryMethodEdit.id = id;
+
+    this.deliveryApiService.updateDeliveryMethod(this.deliveryMethodEdit).subscribe((deliveryMethod: DeliveryMethodModel) => {
+        this.toggleEditDeliveryMethod(this.deliveryMethodEdit);
+        this.resetEditDeliveryMethod();
+        this.addRow = false;
+        this.toasterMessage = `${deliveryMethod.name} Delivery method updated successfully!`;
+        this.toasterType = 'success';
+        this.toaster.isOpen = true;
+        setTimeout(() => {
+            this.closeToaster();
+        }, 3000);
+        this.getDeliveryMethods();
     }, () => {
         this.toasterMessage = 'Something went wrong!';
         this.toasterType = 'error';

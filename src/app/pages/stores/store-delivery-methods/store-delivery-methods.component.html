@@ -239,7 +239,7 @@
                                     ></mat-icon>
                                     <mat-icon
                                         *ngIf="isEditRow(deliveryMethod.id)"
-                                        (click)="publishDeliveryMethod()"
+                                        (click)="performUpdateDeliverMethod(deliveryMethod.id)"
                                         class="cursor-pointer text-emerald-400"
                                         fontIcon="check_circle"
                                     ></mat-icon>

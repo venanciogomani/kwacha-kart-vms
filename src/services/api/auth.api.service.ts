@@ -146,8 +146,8 @@ export class AuthApiService {
 
     resetInactivityTimer(): void {
         clearTimeout(this.inactivityTimer);
-        this.inactivityTimer = setTimeout(() => this.logout(), 600000);
-        this.reserLogoutTimer();
+        this.inactivityTimer = setTimeout(() => this.logout(), 1800000); // 30 minute timeout
+        this.resetLogoutTimer();
     }
 
     setInitialToken(token: string) {
@@ -168,7 +168,7 @@ export class AuthApiService {
         sessionStorage.removeItem('token');
     }
 
-    reserLogoutTimer(): void {
+    resetLogoutTimer(): void {
         if (this.tokenExpirationTimer) {
             clearTimeout(this.tokenExpirationTimer);
         }
