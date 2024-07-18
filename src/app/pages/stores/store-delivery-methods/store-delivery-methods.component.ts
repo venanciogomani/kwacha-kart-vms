@@ -311,4 +311,50 @@ export class StoreDeliveryMethodsComponent {
     this.modal.isOpen = false;
     this.deleteRow = false;
   }
+
+  onFileSelected(event: Event) {
+    if (!event.target) return;
+    
+    const element = event.target as HTMLInputElement;
+
+    if (element.files?.length) {
+      const file = element.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = this.handleReaderLoaded.bind(this);
+      }
+    }
+  }
+
+  handleReaderLoaded(readerEvt: ProgressEvent<FileReader>) {
+    // TODO: continue from here
+    const binaryString = readerEvt.target?.result as string;
+    this.deliveryMethodEdit.logo = btoa(binaryString);
+
+    const img = new Image();
+    img.src = `data:image/png;base64,${this.deliveryMethodEdit.logo}`;
+
+    img.onload = () => {
+      if (img.width < 100 || img.height < 100) {
+        this.toasterMessage = 'Image size must exceed 100x100 pixels!';
+        this.toasterType = 'error';
+        this.toaster.isOpen = true;
+        setTimeout(() => {
+            this.closeToaster();
+        }, 3000);
+      } else {
+        this.deliveryMethodEdit.logo = `data:image/png;base64,${this.deliveryMethodEdit.logo}`;
+      }
+    };
+
+    img.onerror = () => {
+      this.toasterMessage = 'Failed to load image!';
+      this.toasterType = 'error';
+      this.toaster.isOpen = true;
+      setTimeout(() => {
+          this.closeToaster();
+      }, 3000);
+    };
+  }
 }

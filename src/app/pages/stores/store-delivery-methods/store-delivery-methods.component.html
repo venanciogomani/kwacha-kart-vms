@@ -115,7 +115,12 @@
                                 </div>
                             </td>
                             <th scope="row" class="px-4 py-4">
-                                Img
+                                <input 
+                                    type="file" 
+                                    placeholder="Image URL" 
+                                    class="w-full p-2 border-2 text-xs font-normal"
+                                    (change)="onFileSelected($event)"
+                                >
                             </th>
                             <th scope="row" class="px-4 py-4">
                                 <input 

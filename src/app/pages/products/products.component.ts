@@ -352,6 +352,7 @@ export class ProductsComponent {
         this.editProducts$.description = 'Some description';
         this.editProducts$.detailedDescription = 'Some detailed description';
         this.editProducts$.warranty = 'none';
+        this.editProducts$.image = ['product-placeholder'];
 
         this.productApiService.saveProduct(this.editProducts$).subscribe((product: ProductModel) => {
             this.addRow = false;
@@ -460,5 +461,40 @@ export class ProductsComponent {
     closeProductModal() {
         this.modal.isOpen = false;
         this.deleteRow = false;
+    }
+
+    toggleProductStatus(product: ProductModel) {
+        this.enrichProductDetails(product);
+
+        this.editProducts$.status = !this.editProducts$.status;
+
+        this.productApiService.updateProduct(this.editProducts$).subscribe(() => {
+            this.resetEditProduct();
+            this.toasterMessage = 'Product status updated successfully!';
+            this.toasterType ='success';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+            this.getAllProducts();
+        }, () => {
+            this.resetEditProduct();
+            this.toasterMessage = 'Something went wrong!';
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+        });
+    }
+
+    enrichProductDetails(product: ProductModel): void {
+        this.editProducts$ = {...product };
+    }
+
+    isStatusActive(status: boolean): boolean {
+        if (!status) return false;
+
+        return status;
     }
 }

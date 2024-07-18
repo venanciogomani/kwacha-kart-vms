@@ -89,6 +89,9 @@
                                 <th scope="col" class="px-4 py-3 cursor-pointer" (click)="sortBy('price')">
                                     COLORS
                                 </th>
+                                <th scope="col" class="px-4 py-3 cursor-pointer" (click)="sortBy('status')">
+                                    STATUS
+                                </th>
                                 <th scope="col" class="px-4 py-3">
                                     ACTIONS
                                 </th>
@@ -311,6 +314,14 @@
                                         <option value="silver">Silver</option>
                                         <option value="gold">Gold</option>
                                     </select>
+                                </th>
+                                <th scope="row" class="px-4 py-4">
+                                    <mat-slide-toggle
+                                        [checked]="isStatusActive(product.status)"
+                                        (click)="toggleProductStatus(product)"
+                                    >
+                                        {{ product.status ? 'Active' : 'Inactive' }}
+                                    </mat-slide-toggle>
                                 </th>
                                 <td class="px-4 py-4 relative">
                                     <div class="flex flex-row justify-between items-center">
