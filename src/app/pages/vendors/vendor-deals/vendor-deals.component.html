@@ -242,29 +242,66 @@
                                     </div>
                                 </td>
                                 <th scope="row" class="px-4 py-4">
-                                    <span class="font-normal">
+                                    <span class="font-normal" *ngIf="!isEditRow(promotion.id)">
                                         {{ promotion.name }}
                                     </span>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Update name" 
+                                        class="w-full p-2 border-2 font-normal text-xs"
+                                        *ngIf="isEditRow(promotion.id)"
+                                        [(ngModel)]="editPromotion.name"
+                                        [innerHTML]="sanitizeUserInput()"
+                                    >
                                 </th>
                                 <th scope="row" class="px-4 py-4">
-                                    <span class="font-normal">
+                                    <span class="font-normal" *ngIf="!isEditRow(promotion.id)">
                                         {{ promotion.description }}
                                     </span>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Update description" 
+                                        class="w-full p-2 border-2 font-normal text-xs"
+                                        *ngIf="isEditRow(promotion.id)"
+                                        [(ngModel)]="editPromotion.description"
+                                        [innerHTML]="sanitizeUserInput()"
+                                    >
                                 </th>
                                 <th scope="row" class="px-4 py-4">
-                                    <span class="font-normal">
+                                    <span class="font-normal" *ngIf="!isEditRow(promotion.id)">
                                         {{ formatPromotionDate(promotion.startDate) }}
                                     </span>
+                                    <input 
+                                        type="date" 
+                                        class="w-full p-2 border-2 font-normal text-xs"
+                                        *ngIf="isEditRow(promotion.id)"
+                                        [(ngModel)]="editPromotion.startDate"
+                                        [innerHTML]="sanitizeUserInput()"
+                                    >
                                 </th>
                                 <th scope="row" class="px-4 py-4">
-                                    <span class="font-normal">
+                                    <span class="font-normal" *ngIf="!isEditRow(promotion.id)">
                                         {{ formatPromotionDate(promotion.endDate) }}
                                     </span>
+                                    <input 
+                                        type="date"
+                                        class="w-full p-2 border-2 font-normal text-xs"
+                                        *ngIf="isEditRow(promotion.id)"
+                                        [(ngModel)]="editPromotion.endDate"
+                                        [innerHTML]="sanitizeUserInput()"
+                                    >
                                 </th>
                                 <th scope="row" class="px-4 py-4">
-                                    <span class="font-normal">
+                                    <span class="font-normal" *ngIf="!isEditRow(promotion.id)">
                                         {{ promotion.percentage }}%
                                     </span>
+                                    <input 
+                                        type="number" 
+                                        class="w-full p-2 border-2 font-normal text-xs"
+                                        *ngIf="isEditRow(promotion.id)"
+                                        [(ngModel)]="editPromotion.percentage"
+                                        [innerHTML]="sanitizeUserInput()"
+                                    >
                                 </th>
                                 <th scope="row" class="px-4 py-4">
                                     <span class="font-normal">
@@ -272,13 +309,26 @@
                                     </span>
                                 </th>
                                 <th scope="row" class="px-4 py-4">
-                                    <div class="flex flex-col">
-                                        <span *ngIf="!isEditRow(promotion.id)" class="font-normal">
+                                    <div class="flex flex-col" *ngIf="!isEditRow(promotion.id)">
+                                        <span class="font-normal">
                                             {{ promotion.status ? 'Active' : 'Inactive' }}
                                         </span>
-                                        <span *ngIf="!isEditRow(promotion.id)" class="font-normal pt-2">
+                                        <span class="font-normal pt-2">
                                             {{ promotion.isFeatured ? 'Featured' : 'Not Featured' }}
                                         </span>
+                                    </div>
+                                    <div class="flex flex-col" *ngIf="isEditRow(promotion.id)">
+                                        <mat-slide-toggle
+                                        [(ngModel)]="editPromotion.status"
+                                        >
+                                            {{ editPromotion.status ? 'Active' : 'Inactive' }}
+                                        </mat-slide-toggle>
+                                        <mat-slide-toggle
+                                            [(ngModel)]="editPromotion.isFeatured"
+                                            class="pt-2"
+                                        >
+                                            {{ editPromotion.isFeatured ? 'Featured' : 'Not Featured' }}
+                                        </mat-slide-toggle>
                                     </div>
                                 </th>
                                 <td class="px-4 py-4 relative">
@@ -291,18 +341,19 @@
                                         ></mat-icon>
                                         <mat-icon
                                             *ngIf="isEditRow(promotion.id)"
-                                            (click)="toggleEditPromotion(promotion.id)"
+                                            (click)="toggleEditPromotion(promotion)"
                                             class="cursor-pointer text-yellow-600"
                                             fontIcon="clear"
                                         ></mat-icon>
                                         <mat-icon
                                             *ngIf="!isEditRow(promotion.id)"
-                                            (click)="toggleEditPromotion(promotion.id)"
+                                            (click)="toggleEditPromotion(promotion)"
                                             class="cursor-pointer text-yellow-400"
                                             fontIcon="edit"
                                         ></mat-icon>
                                         <mat-icon
                                             *ngIf="isEditRow(promotion.id)"
+                                            (click)="performUpdatePromotion()"
                                             class="cursor-pointer text-emerald-400"
                                             fontIcon="check_circle"
                                         ></mat-icon>

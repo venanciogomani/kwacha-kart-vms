@@ -110,8 +110,10 @@ export class VendorDealsComponent {
     return this.editRow[id];
   }
 
-  toggleEditPromotion(id: string): void {
-    this.editRow[id] = !this.editRow[id];
+  toggleEditPromotion(promotionToEdit: VendorPromotionModel): void {
+    this.resetEditPromotion();
+    this.editRow[promotionToEdit.id] = !this.editRow[promotionToEdit.id];
+    this.editPromotion = this.editRow[promotionToEdit.id] == true ? promotionToEdit : {} as VendorPromotionModel;;
   }
 
   getPromotionById(id: string) {
@@ -322,6 +324,65 @@ export class VendorDealsComponent {
       this.closePromotionModal();
     }, () => {
       this.toasterMessage = 'Failed to delete promotion!';
+      this.toasterType = 'error';
+      this.toaster.isOpen = true;
+      setTimeout(() => {
+          this.closeToaster();
+      }, 3000);
+    });
+  }
+
+  performUpdatePromotion() {
+    if (this.editPromotion.name === ''
+      || this.editPromotion.startDate === ''
+      || this.editPromotion.endDate === ''
+      || this.editPromotion.percentage === 0
+    ) {
+      this.toasterMessage = 'Please fill all the fields!';
+      this.toasterType = 'error';
+      this.toaster.isOpen = true;
+      setTimeout(() => {
+          this.closeToaster();
+      }, 3000);
+
+      return;
+    }
+
+    if (new Date(this.editPromotion.startDate) > new Date(this.editPromotion.endDate)) {
+      this.toasterMessage = 'Start date should be before end date!';
+      this.toasterType = 'error';
+      this.toaster.isOpen = true;
+      setTimeout(() => {
+          this.closeToaster();
+      }, 3000);
+      return;
+    }
+
+    if (this.editPromotion.percentage <= 0) {
+      this.toasterMessage = 'Percentage should be greater than 0!';
+      this.toasterType = 'error';
+      this.toaster.isOpen = true;
+      setTimeout(() => {
+          this.closeToaster();
+      }, 3000);
+      return;
+    }
+
+    this.editPromotion.updatedAt = new Date().toISOString();
+
+    this.promotionsApiService.updatePromotion(this.editPromotion).subscribe(() => {
+      this.toasterMessage = 'Promotion updated successfully!';
+      this.toasterType ='success';
+      this.toaster.isOpen = true;
+      this.editRow[this.editPromotion.id] = !this.editRow[this.editPromotion.id];
+      setTimeout(() => {
+          this.closeToaster();
+      }, 3000);
+      this.getAllPromotions();
+      this.resetEditPromotion();
+      this.resetEditPromotion();
+    }, () => {
+      this.toasterMessage = 'Failed to update promotion!';
       this.toasterType = 'error';
       this.toaster.isOpen = true;
       setTimeout(() => {
