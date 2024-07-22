@@ -141,13 +141,16 @@ export interface VendorPromotionModel {
     name: string;
     description?: string;
     startDate: string;
-    endDate?: string;
+    endDate: string;
     img?: string;
+    percentage: number;
     productId: string[];
     status: boolean;
+    isFeatured: boolean;
     vendorId: string;
     createdAt: string;
     updatedAt?: string;
+    storeId: string;
 }
 
 export interface VendorRevenueModel {

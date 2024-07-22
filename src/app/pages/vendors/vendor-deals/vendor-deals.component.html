@@ -1,1 +1,487 @@
-<p>vendor-deals works!</p>
+<div class="p-4 flex flex-col">
+    <div class="flex flex-row px-4 items-center">
+        <h1 class="text-gray-700 text-lg md:text-2xl font-black">
+            Promotions
+        </h1>
+        <button class="py-2 px-4 text-sm bg-emerald-700 text-white ml-2 rounded-lg inline-block md:hidden">
+            Add Promotion
+        </button>
+    </div>
+    <div class="w-full p-4 flex flex-col">
+        <div class="py-2 px-3 bg-white rounded-lg">
+            <div class="w-full flex flex-row items-center justify-between pt-4">
+                <div class="flex flex-row items-center">
+                    <input
+                        type="text"
+                        class="
+                            py-3 px-3 text-sm
+                            text-gray-600 focus:outline-none border-2 border-gray-200 mr-2
+                            max-w-full md:max-w-[500px] min-w-[300px] md:min-w-[300px]
+                        "
+                        placeholder="Search for promotions"
+                        (input)="filterPromotionsBySearchTerm()"
+                        [(ngModel)]="searchTerm"
+                    />
+                    <button
+                        class="
+                            bg-emerald-600 py-3 px-3 rounded-lg text-sm
+                            text-white focus:outline-none"
+                    >
+                        Search
+                    </button>
+                </div>
+                <button
+                    (click)="toggleAddPromotion()"
+                    class="
+                        bg-transparent py-3 px-4 text-sm border-2 border-gray-700
+                        text-gray-700 hover:bg-gray-700 hover:border-gray-700 hover:text-white
+                        transition duration-200 ease-in-out hidden md:flex
+                    "
+                >
+                    {{ addRow ? 'Cancel' : 'Add Promotion' }}
+                </button>
+            </div>
+            <div class="flex flex-col py-2">
+                <!-- desktop table -->
+                <div class="relative overflow-x-auto shadow-md hidden md:block">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-white border-b bg-gray-700 border-gray-700">
+                            <tr>
+                                <th scope="col" class="p-4">
+                                    <div class="flex items-center">
+                                        <input 
+                                            type="checkbox"
+                                            class="w-4 h-4
+                                            text-gray-600
+                                            bg-gray-100
+                                            border-gray-300
+                                            rounded
+                                            focus:ring-gray-500
+                                            dark:focus:ring-gray-600
+                                            dark:ring-offset-gray-800
+                                            dark:focus:ring-offset-gray-800
+                                            focus:ring-2
+                                            dark:bg-gray-700
+                                            dark:border-gray-600"
+                                        />
+                                    </div>
+                                </th>
+                                <th scope="col" class="px-4 py-3 cursor-pointer" (click)="sortBy('name')">
+                                    <div class="flex flex-row items-center w-full">
+                                        NAME
+                                        <mat-icon
+                                            fontIcon="arrow_drop_down"
+                                        ></mat-icon>
+                                    </div>
+                                </th>
+                                <th scope="col" class="px-4 py-3 cursor-pointer">
+                                    DESCRIPTION
+                                </th>
+                                <th scope="col" class="px-4 py-3 cursor-pointer" (click)="sortBy('startDate')">
+                                    <div class="flex flex-row items-center">
+                                        START DATE
+                                        <mat-icon
+                                            fontIcon="arrow_drop_down"
+                                        ></mat-icon>
+                                    </div>
+                                </th>
+                                <th scope="col" class="px-4 py-3 cursor-pointer" (click)="sortBy('endDate')">
+                                    <div class="flex flex-row items-center">
+                                        END DATE
+                                        <mat-icon
+                                            fontIcon="arrow_drop_down"
+                                        ></mat-icon>
+                                    </div>
+                                </th>
+                                <th scope="col" class="px-4 py-3 cursor-pointer" (click)="sortBy('percentage')">
+                                    <div class="flex flex-row items-center">
+                                        PROMO %
+                                        <mat-icon
+                                            fontIcon="arrow_drop_down"
+                                        ></mat-icon>
+                                    </div>
+                                </th>
+                                <th scope="col" class="px-4 py-3 cursor-pointer" (click)="sortBy('vendor')">
+                                    <div class="flex flex-row items-center w-full">
+                                        CREATED BY
+                                        <mat-icon
+                                            fontIcon="arrow_drop_down"
+                                        ></mat-icon>
+                                    </div>
+                                </th>
+                                <th scope="col" class="px-4 py-3 cursor-pointer" (click)="sortBy('status')">
+                                    <div class="flex flex-row items-center w-full">
+                                        STATUS
+                                        <mat-icon
+                                            fontIcon="arrow_drop_down"
+                                        ></mat-icon>
+                                    </div>
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    ACTIONS
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700">
+                            <!-- Add New Role -->
+                            <tr class="border-b" *ngIf="addRow">
+                                <td class="w-4 p-4">
+                                    <div class="flex items-center">
+                                        <input 
+                                            type="checkbox"
+                                            class="w-4 h-4
+                                            text-gray-600
+                                            bg-gray-100
+                                            border-gray-300
+                                            rounded
+                                            focus:ring-gray-500
+                                            dark:focus:ring-gray-600
+                                            dark:ring-offset-gray-800
+                                            dark:focus:ring-offset-gray-800
+                                            focus:ring-2
+                                            dark:bg-gray-700
+                                            dark:border-gray-600"
+                                        />
+                                    </div>
+                                </td>
+                                <th scope="row" class="px-4 py-4">
+                                    <input 
+                                        type="text" 
+                                        placeholder="Name" 
+                                        class="w-full p-2 border-2 text-xs font-normal"
+                                        [(ngModel)]="editPromotion.name"
+                                        [innerHTML]="sanitizeUserInput()"
+                                    >
+                                </th>
+                                <th scope="row" class="px-4 py-4">
+                                    <input 
+                                        type="text" 
+                                        placeholder="Description" 
+                                        class="w-full p-2 border-2 text-xs font-normal"
+                                        [(ngModel)]="editPromotion.description"
+                                        [innerHTML]="sanitizeUserInput()"
+                                    >
+                                </th>
+                                <th scope="row" class="px-4 py-4">
+                                    <input 
+                                        type="date" 
+                                        class="w-full p-2 border-2 text-xs font-normal"
+                                        [(ngModel)]="editPromotion.startDate"
+                                        [innerHTML]="sanitizeUserInput()"
+                                    >
+                                </th>
+                                <th scope="row" class="px-4 py-4">
+                                    <input 
+                                        type="date" 
+                                        class="w-full p-2 border-2 text-xs font-normal"
+                                        [(ngModel)]="editPromotion.endDate"
+                                        [innerHTML]="sanitizeUserInput()"
+                                    >
+                                </th>
+                                <th scope="row" class="px-4 py-4">
+                                    <input 
+                                        type="number"
+                                        placeholder="Promotion price"
+                                        class="w-full p-2 border-2 text-xs font-normal"
+                                        [(ngModel)]="editPromotion.percentage"
+                                        [innerHTML]="sanitizeUserInput()"
+                                    >
+                                </th>
+                                <th scope="row" class="px-4 py-4">
+                                    Select input
+                                </th>
+                                <th scope="row" class="px-4 py-4">
+                                    <div class="flex flex-col">
+                                        <mat-slide-toggle
+                                        [(ngModel)]="editPromotion.status"
+                                        >
+                                            {{ editPromotion.status ? 'Active' : 'Inactive' }}
+                                        </mat-slide-toggle>
+                                        <mat-slide-toggle
+                                            [(ngModel)]="editPromotion.isFeatured"
+                                            class="pt-2"
+                                        >
+                                            {{ editPromotion.isFeatured ? 'Featured' : 'Not Featured' }}
+                                        </mat-slide-toggle>
+                                    </div>
+                                </th>
+                                <td class="px-4 py-4 relative">
+                                    <div class="flex flex-row justify-between items-center">
+                                        <mat-icon
+                                            class="cursor-pointer text-emerald-400"
+                                            fontIcon="check_circle"
+                                            (click)="publishPromotion()"
+                                        ></mat-icon>
+                                        <mat-icon
+                                            class="cursor-pointer text-rose-600"
+                                            fontIcon="delete"
+                                        ></mat-icon>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="border-b" *ngFor="let promotion of filteredPromotions$">
+                                <td class="w-4 p-4">
+                                    <div class="flex items-center">
+                                        <input 
+                                            type="checkbox"
+                                            class="w-4 h-4
+                                            text-gray-600
+                                            bg-gray-100
+                                            border-gray-300
+                                            rounded
+                                            focus:ring-gray-500
+                                            dark:focus:ring-gray-600
+                                            dark:ring-offset-gray-800
+                                            dark:focus:ring-offset-gray-800
+                                            focus:ring-2
+                                            dark:bg-gray-700
+                                            dark:border-gray-600
+                                            font-normal
+                                            "
+                                        />
+                                    </div>
+                                </td>
+                                <th scope="row" class="px-4 py-4">
+                                    <span class="font-normal">
+                                        {{ promotion.name }}
+                                    </span>
+                                </th>
+                                <th scope="row" class="px-4 py-4">
+                                    <span class="font-normal">
+                                        {{ promotion.description }}
+                                    </span>
+                                </th>
+                                <th scope="row" class="px-4 py-4">
+                                    <span class="font-normal">
+                                        {{ formatPromotionDate(promotion.startDate) }}
+                                    </span>
+                                </th>
+                                <th scope="row" class="px-4 py-4">
+                                    <span class="font-normal">
+                                        {{ formatPromotionDate(promotion.endDate) }}
+                                    </span>
+                                </th>
+                                <th scope="row" class="px-4 py-4">
+                                    <span class="font-normal">
+                                        {{ promotion.percentage }}%
+                                    </span>
+                                </th>
+                                <th scope="row" class="px-4 py-4">
+                                    <span class="font-normal">
+                                        {{ getCurrentVendorName(currentVendor$.name) }}
+                                    </span>
+                                </th>
+                                <th scope="row" class="px-4 py-4">
+                                    <div class="flex flex-col">
+                                        <span *ngIf="!isEditRow(promotion.id)" class="font-normal">
+                                            {{ promotion.status ? 'Active' : 'Inactive' }}
+                                        </span>
+                                        <span *ngIf="!isEditRow(promotion.id)" class="font-normal pt-2">
+                                            {{ promotion.isFeatured ? 'Featured' : 'Not Featured' }}
+                                        </span>
+                                    </div>
+                                </th>
+                                <td class="px-4 py-4 relative">
+                                    <div class="flex flex-row justify-between items-center">
+                                        <mat-icon
+                                            (click)="toggleViewPromotion(promotion.id)"
+                                            *ngIf="!isEditRow(promotion.id)"
+                                            class="cursor-pointer text-gray-600"
+                                            fontIcon="visibility"
+                                        ></mat-icon>
+                                        <mat-icon
+                                            *ngIf="isEditRow(promotion.id)"
+                                            (click)="toggleEditPromotion(promotion.id)"
+                                            class="cursor-pointer text-yellow-600"
+                                            fontIcon="clear"
+                                        ></mat-icon>
+                                        <mat-icon
+                                            *ngIf="!isEditRow(promotion.id)"
+                                            (click)="toggleEditPromotion(promotion.id)"
+                                            class="cursor-pointer text-yellow-400"
+                                            fontIcon="edit"
+                                        ></mat-icon>
+                                        <mat-icon
+                                            *ngIf="isEditRow(promotion.id)"
+                                            class="cursor-pointer text-emerald-400"
+                                            fontIcon="check_circle"
+                                        ></mat-icon>
+                                        <mat-icon
+                                            class="cursor-pointer text-rose-600"
+                                            (click)="toggleDeletePromotion(promotion)"
+                                            fontIcon="delete"
+                                        ></mat-icon>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr *ngIf="filteredPromotions$.length === 0">
+                                <td colspan="8" class="text-center py-4 text-gray-600">
+                                    No promotions found
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- mobile table -->
+                <div class="flex flex-col md:hidden first:mt-0 mt-4">
+                    <div class="flex flex-row items-center justify-between w-full p-3 bg-gray-100">
+                        <span class="text-sm text-gray-600 font-semibold">
+                            SMART BUSINESS CENTER
+                        </span>
+                        <mat-icon
+                            class="text-gray-600 cursor-pointer"
+                            fontIcon="arrow_drop_down"
+                        ></mat-icon>
+                    </div>
+                    <div class="flex flex-row items-center justify-between w-full border">
+                        <span class="text-sm text-gray-600 font-semibold w-1/4 p-3">
+                            VENDOR
+                        </span>
+                        <div class="w-3/4 flex flex-col p-3 border-l">
+                            <span class="text-sm text-gray-600 pl-2">
+                                Venancio Gomani
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex flex-row items-center justify-between w-full border">
+                        <span class="text-sm text-gray-600 font-semibold w-1/4 p-3">
+                            WEIGHT
+                        </span>
+                        <div class="w-3/4 flex flex-col p-3 border-l">
+                            <span class="text-sm text-gray-600 pl-2">
+                                8.0
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex flex-row items-center justify-between w-full border">
+                        <span class="text-sm text-gray-600 font-semibold w-1/4 p-3">
+                            REVENUE
+                        </span>
+                        <div class="w-3/4 flex flex-col p-3 border-l">
+                            <span class="text-sm text-gray-600 pl-2">
+                                ZK70,000
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex flex-row items-center justify-between w-full border">
+                        <span class="text-sm text-gray-600 font-semibold w-1/4 p-3">
+                            STATUS
+                        </span>
+                        <div class="w-3/4 flex flex-col p-3 border-l">
+                            <span class="text-sm text-gray-600 pl-2">
+                                <mat-slide-toggle>
+                                    Inactive
+                                </mat-slide-toggle>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex flex-row items-center justify-end w-full border p-3">
+                        <button
+                            class="
+                                bg-transparent border-2 border-gray-700 py-2 px-3 text-sm ml-1 text-gray-700
+                                transition duration-200 ease-in-out rounded-lg
+                            "
+                        >
+                            <mat-icon
+                                class="cursor-pointer"
+                                fontIcon="edit"
+                            ></mat-icon>
+                        </button>
+                        <button
+                            class="
+                                bg-gray-700 py-2 px-3 text-sm ml-1 text-white
+                                transition duration-200 ease-in-out rounded-lg
+                            "
+                        >
+                            <mat-icon
+                                class="cursor-pointer"
+                                fontIcon="delete"
+                            ></mat-icon>
+                        </button>
+                    </div>
+                </div>
+                <!-- Pagination -->
+                <div class="flex-row items-center justify-between my-4 flex" *ngIf="totalPromotions > pageSize">
+                    <div>
+                        <span class="text-sm text-gray-700">{{ startIndex + 1 }} - {{ endIndex }} of {{ totalPromotions }}</span>
+                    </div>
+                    <div class="flex flex-row border-2">
+                        <span 
+                            class="p-2 border-r-2 cursor-pointer bg-transparent hover:bg-gray-100 transition duration-200 ease-in-out"
+                            (click)="goToFirstPage()"
+                        >
+                            First
+                        </span>
+                        <span 
+                            class="p-2 border-r-2 cursor-pointer bg-transparent hover:bg-gray-100 transition duration-200 ease-in-out"
+                            (click)="goToPrevPage()"
+                        >
+                            Prev
+                        </span>
+                        <ng-container *ngFor="let page of pagesArray">
+                            <span
+                                class="py-2 px-4 border-r-2 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out"
+                                [ngClass]="{ 'bg-gray-700 text-white': page === currentPage, 'bg-transparent text-gray-700': page !== currentPage }"
+                                (click)="setPage(page)"
+                            >
+                                {{ page }}
+                            </span>
+                        </ng-container>
+                        <span
+                            class="p-2 border-r-2 cursor-pointer bg-transparent hover:bg-gray-100 transition duration-200 ease-in-out"
+                            (click)="goToNextPage()"
+                        >
+                            Next
+                        </span>
+                        <span 
+                            class="p-2 cursor-pointer bg-transparent hover:bg-gray-100 transition duration-200 ease-in-out"
+                            (click)="goToLastPage()"
+                        >
+                            Last
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Promotion Modal -->
+<app-modal>
+    <!-- Modal body -->
+    <div class="flex flex-col justify-center items-center p-4">
+        <div class="py-3">
+            Are you sure you want to delete this promotion?
+        </div>
+        <div class="flex flex-row items-center justify-center">
+            <button
+                type="submit"
+                (click)="performDeletePromotion()"
+                class="text-gray-600 text-sm mr-2 bg-transparent px-4 py-2 rounded-lg border-2 border-gray-600"
+            >
+                Delete
+            </button>
+            <button
+                (click)="closePromotionModal()"
+                class="text-white text-sm bg-rose-600 px-4 py-2 rounded-lg hover:bg-rose-500 transition duration-200 ease-in-out"
+            >
+                Cancel
+            </button>
+        </div>
+    </div>
+</app-modal>
+
+<app-toaster>
+    <div class="flex flex-row w-full h-full">
+        <span 
+            [ngClass]="{ 'text-green-500': toasterType === 'success', 'text-red-500': toasterType === 'error' }"
+        >
+            {{ toasterMessage }}
+        </span>
+        <mat-icon
+            (click)="closeToaster()"
+            fontIcon="close"
+            class="text-gray-500 ml-2 cursor-pointer"
+        ></mat-icon>
+    </div>
+</app-toaster>
