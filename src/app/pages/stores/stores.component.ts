@@ -152,7 +152,7 @@ export class StoresComponent {
     }
 
     getPlanById(id: string) {
-        return this.planApiService.getPlanById(id);
+        return this.allPlans$.find(plan => plan.id === id)?.name;
     }
 
     getAllPlans() {

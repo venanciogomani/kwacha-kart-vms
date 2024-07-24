@@ -111,6 +111,16 @@ export class StoreApiService {
         return this.http.delete<StoresModel>(this.apiUrl + 'stores/' + storeId, options)
     }
 
+    addPaymentDetails(payment: StorePaymentDetailsModel): Observable<StorePaymentDetailsModel> {
+        const authToken = this.authApiService.getAuthToken();
+        if (!authToken) {
+            return new Observable<StorePaymentDetailsModel>();
+        }
+        const headers = new HttpHeaders({ 'content-type': 'application/json' }).set('Authorization', `Bearer ${authToken}`);
+        const options = { headers, withCredentials: true };
+        return this.http.post<StorePaymentDetailsModel>(this.apiUrl + 'payment-methods/store', payment, options)
+    }
+
     getPaymentMethodById(id: string): PaymentMethodModel {
         return PaymentMethods.find(paymentMethod => paymentMethod.id === id && paymentMethod.status === true) || {} as PaymentMethodModel;
     }

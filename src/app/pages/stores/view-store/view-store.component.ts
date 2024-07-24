@@ -1,13 +1,14 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { StoreApiService } from 'src/services/api/store.api.service';
-import { PaymentMethodModel, StorePaymentDetailsModel, StoresModel, VendorModel } from 'src/state';
+import { PaymentAccountTypeModel, PaymentMethodModel, StorePaymentDetailsModel, StoresModel, UserModel, VendorModel } from 'src/state';
 import { capitalizeFirstLetter, maskString } from 'src/services/helpers';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
 import { ProductApiService } from 'src/services/api/products.api.service';
 import { AuthApiService, UserRole } from 'src/services/api/auth.api.service';
 import { PaymentApiService } from 'src/services/api/payment.api.service';
+import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
 
 @Component({
   selector: 'app-view-store',
@@ -16,23 +17,34 @@ import { PaymentApiService } from 'src/services/api/payment.api.service';
 })
 export class ViewStoreComponent {
     @ViewChild(ModalComponent) modal!: ModalComponent;
+    @ViewChild(ToasterComponent) toaster!: ToasterComponent;
+
+    toasterMessage = 'Something went wrong!';
+    toasterType = 'error';
 
     isLoading$ = true;
     
     showEdit = false;
+    isEditing = false;
     singleStoreId$ = this.router.snapshot.paramMap.get('id') || '';
     singleStore$: StoresModel = {} as StoresModel;
     transactionType: string = 'all';
     transactionTitle: string = 'Transactions History';
     hideAccountNumber: boolean = true;
     isShowAccountNumber: string[] = [];
+    currentUser: UserModel = {} as UserModel;
+    currentVendor: VendorModel = {} as VendorModel;
 
     isWidthdrawModal: boolean = false;
 
     vendors$: VendorModel[] = [];
 
     paymentDetails$: StorePaymentDetailsModel[] = [] as StorePaymentDetailsModel[];
+    editPaymentDetails$: StorePaymentDetailsModel = {} as StorePaymentDetailsModel;
+
     paymentMethods$: PaymentMethodModel[] = [] as PaymentMethodModel[];
+
+    paymentAccountTypes$: PaymentAccountTypeModel[] = [] as PaymentAccountTypeModel[];
 
     constructor(
         private router: ActivatedRoute,
@@ -50,18 +62,32 @@ export class ViewStoreComponent {
             this.getAllPaymentMethods();
         }
 
+        if (this.paymentAccountTypes$.length === 0) {
+            this.getAllPaymentAccountTypes();
+        }
+
         if (this.singleStoreId$) {
+            this.isLoading$ = true;
             this.getStore();
         }
 
         if (this.vendors$.length === 0) {
             this.getAllVendors();
         }
+
+        if (!this.currentUser.id) {
+            this.isLoading$ = true;
+            this.getMyCurrentUser();
+        }
     }
 
     async getStore() {
         (await this.storeApiService.getStoreById(this.singleStoreId$)).subscribe((store: StoresModel) => {
             this.singleStore$ = store;
+
+            if (!this.currentVendor.id) {
+                this.getMyCurrentVendor(store.vendorId);
+            }
 
             if (this.paymentDetails$.length === 0) {
                 this.getStorePaymentDetails();
@@ -77,8 +103,23 @@ export class ViewStoreComponent {
         });
     }
 
-    toggleEdit() {
+    toggleEditDropdown() {
         this.showEdit = !this.showEdit;
+    }
+
+    toggleEditMode() {
+        if (!this.checkPrivileges()) {
+            this.toasterMessage = "You do not have permission to perform this action.";
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+            return;
+        }
+
+        this.isEditing =!this.isEditing;
+        this.toggleEditDropdown();
     }
 
     setTransactionType(type: string): void {
@@ -90,7 +131,8 @@ export class ViewStoreComponent {
 
     sanitizeAccountNumber(account: StorePaymentDetailsModel | undefined) {
         if (account) {
-            return maskString(account.accountNumber);
+            const accountNumberToString = account.accountNumber.toString();
+            return maskString(accountNumberToString);
         }
 
         return '';
@@ -123,6 +165,12 @@ export class ViewStoreComponent {
         return this.paymentDetails$?.find(paymentDetail => paymentDetail.isPrimary);
     }
 
+    getPaymentAccountTypeById(id?: string): string {
+        if (!id) return 'Account';
+
+        return this.paymentAccountTypes$.find(paymentAccountType => paymentAccountType.id === id)?.name || 'Account';
+    }
+
     getPaymentMethodById(id: string | undefined) {
         return this.paymentDetails$?.find(paymentDetail => paymentDetail.paymentMethodId === id) || {} as StorePaymentDetailsModel;
     }
@@ -136,22 +184,80 @@ export class ViewStoreComponent {
     }
 
     async getAllPaymentMethods() {
-        return (await this.paymentApiService.getAllPaymentMethods()).subscribe((paymentMethods: PaymentMethodModel[]) => {
+        return this.paymentApiService.getAllPaymentMethods().subscribe((paymentMethods: PaymentMethodModel[]) => {
             if (paymentMethods?.length > 0) {
                 this.paymentMethods$ = paymentMethods;
             }
         });
     }
 
-    get getAllPaymentMethodTypes() {
-        return [] as PaymentMethodModel[];
+    async getAllPaymentAccountTypes() {
+        return this.paymentApiService.getAllPaymentMethodTypes().subscribe((paymentAccountTypes: PaymentAccountTypeModel[]) => {
+            if (paymentAccountTypes?.length > 0) {
+                this.paymentAccountTypes$ = paymentAccountTypes;
+            }
+        });
     }
 
     toggleAddPaymentModal() {
+        if (!this.checkPrivileges()) {
+            this.toasterMessage = "You do not have permission to perform this action.";
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+            return;
+        }
+        
         this.isWidthdrawModal = false;
         if (this.modal) {
+            this.resetPaymentDetails();
             this.modal.isOpen = !this.modal.isOpen;
         }
+    }
+
+    AddPaymentDetails() {
+        if (
+            this.editPaymentDetails$.paymentMethodId === ''
+            || this.editPaymentDetails$.accountNumber === ''
+            || this.editPaymentDetails$.accountName === ''
+        ) {
+            this.toasterMessage = "Please fill all required fields.";
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+            return;
+        }
+
+        this.editPaymentDetails$.storeId = this.singleStore$.id;
+        this.editPaymentDetails$.accountType = this.paymentMethods$.find(method => method.id === this.editPaymentDetails$.paymentMethodId)?.name || '';
+        this.editPaymentDetails$.accountTypeId = this.paymentMethods$.find(method => method.id === this.editPaymentDetails$.paymentMethodId)?.accountTypeId || '';
+
+        this.storeApiService.addPaymentDetails(this.editPaymentDetails$).subscribe(() => {
+            this.modal.isOpen = false;
+            this.getStorePaymentDetails();
+            this.resetPaymentDetails();
+            this.toasterMessage = "Payment details added successfully.";
+            this.toasterType ='success';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+        }, (error: any) => {
+            this.toasterMessage = error.error.message;
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+        });
+    }
+
+    resetPaymentDetails() {
+        this.editPaymentDetails$ = {} as StorePaymentDetailsModel;
     }
 
     toggleWithdrawPaymentModal() {
@@ -161,9 +267,10 @@ export class ViewStoreComponent {
         }
     }
 
+    performWithdraw() {}
+
     get getAllProductsByVendorIdOfStoreId() {
-        const vendorIds = this.vendors$.map(vendor => vendor.id);
-        const products = vendorIds.map(vendorId => this.productApiService.getProductsByVendorId(vendorId));
+        const products = this.productApiService.getProductsByVendorId(this.singleStore$.vendorId);
         return products.flat();
     }
 
@@ -175,5 +282,31 @@ export class ViewStoreComponent {
 
     hasRole(role: keyof UserRole): boolean {
         return this.authApiService.hasRole(role);
+    }
+
+    async getMyCurrentUser() {
+        (await (this.authApiService.getCurrentUser())).subscribe(async (user: UserModel) => {
+            this.currentUser = user;
+            this.isLoading$ = false;
+        });
+    }
+
+    async getMyCurrentVendor(vendorId: string) {
+        (await (this.vendorApiService.getVendorById(vendorId))).subscribe(async (vendor: VendorModel) => {
+            this.currentVendor = vendor;
+            this.isLoading$ = false;
+        })
+    }
+
+    editStore() {}
+
+    checkPrivileges(): Boolean {
+        const rolePrivilege = this.hasRole('ROLE_SUPER_ADMIN') || this.hasRole('ROLE_ADMIN');
+        const ownerPrivilege = this.currentVendor?.id === this.singleStore$.vendorId;
+        return rolePrivilege && ownerPrivilege;
+    }
+
+    closeToaster() {
+        this.toaster.isOpen = false;
     }
 }

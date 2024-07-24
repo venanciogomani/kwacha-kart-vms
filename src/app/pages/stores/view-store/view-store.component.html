@@ -3,8 +3,11 @@
         <span class="text-gray-700 text-xl font-semibold">
             {{ singleStore$.name }}
         </span>
-        <button class="py-2 px-4 text-sm bg-emerald-700 text-white ml-2 rounded-lg inline-block md:hidden">
-            Edit Store
+        <button 
+            class="py-2 px-4 text-sm bg-emerald-700 text-white ml-2 rounded-lg inline-block md:hidden"
+            (click)="toggleEditMode()"
+        >
+            {{ isEditing ? 'Cancel' : 'Edit'}}
         </button>
     </div>
     <div class="w-full px-4 flex flex-col">
@@ -36,21 +39,31 @@
                     <span class="text-gray-500 text-sm">
                         Account Holder
                     </span>
-                    <span class="font-semibold text-gray-600">
+                    <span class="font-semibold text-gray-600" *ngIf="!isEditing">
                         {{ getStorePrimaryPaymentDetails?.accountName }}
                     </span>
+                    <select class="p-2 w-full border-2 mt-2" *ngIf="isEditing">
+                        <option value="Lusaka">Vendor 1</option>
+                        <option value="Ndola">Vendor 2</option>
+                        <option value="Kabwe">Vendor 3</option>
+                    </select>
                 </div>
                 <div class="p-4 flex flex-col">
                     <span class="text-gray-500 text-sm">
                         Payment To
                     </span>
-                    <span class="font-semibold text-gray-600">
-                        {{ getPaymentMethodById(getStorePrimaryPaymentDetails?.paymentMethodId).accountType }}: {{ sanitizeAccountNumber(getStorePrimaryPaymentDetails) }}
+                    <span class="font-semibold text-gray-600" *ngIf="!isEditing">
+                        {{ getPaymentAccountTypeById(getStorePrimaryPaymentDetails?.accountType) }}: {{ sanitizeAccountNumber(getStorePrimaryPaymentDetails) }}
                     </span>
+                    <select class="p-2 w-full border-2 mt-2" *ngIf="isEditing">
+                        <option value="Lusaka">Payment Method 1</option>
+                        <option value="Ndola">Payment Method 2</option>
+                        <option value="Kabwe">Payment Method 3</option>
+                    </select>
                 </div>
                 <mat-icon
                     *ngIf="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN')"
-                    (click)="toggleEdit()"
+                    (click)="toggleEditDropdown()"
                     fontIcon="more_vert"
                     class="absolute top-2 right-2 text-gray-500 cursor-pointer"
                 ></mat-icon>
@@ -63,9 +76,10 @@
                             flex flex-row items-center justify-between w-[100px] py-2 cursor-pointer border-b border-gray-200
                             hover:bg-gray-100 transition duration-300 ease-in-out
                         "
+                        (click)="toggleEditMode()"
                     >
                         <span class="text-gray-700 pl-2">
-                            Edit
+                            {{ isEditing ? 'Cancel' : 'Edit'}}
                         </span>
                         <mat-icon
                             fontIcon="edit"
@@ -208,7 +222,7 @@
                     </span>
                 </div>
                 <div 
-                    (click)="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN') && toggleAddPaymentModal()"
+                    (click)="toggleAddPaymentModal()"
                     class="flex flex-row items-center p-2 rounded-full bg-emerald-500 hover:bg-emerald-600 transition duration-300 ease-in-out"
                     [ngClass]="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN') ? 'cursor-pointer' : 'cursor-not-allowed'"
                 >
@@ -528,14 +542,8 @@
     <!-- Modal body -->
     <div class="p-4 grid grid-cols-2" *ngIf="!isWidthdrawModal">
         <div class="flex flex-col p-2">
-            <span class="text-gray-500 text-sm font-semibold mb-2">Account Type</span>
-            <select class="p-2 w-full border-2">
-                <option *ngFor="let payType of getAllPaymentMethodTypes" [value]="payType.id">{{ payType.name }}</option>
-            </select>
-        </div>
-        <div class="flex flex-col p-2">
             <span class="text-gray-500 text-sm font-semibold mb-2">Payment Method</span>
-            <select class="p-2 w-full border-2">
+            <select class="p-2 w-full border-2" [(ngModel)]="editPaymentDetails$.paymentMethodId">
                 <option value="0" disabled>Select a Payment Method</option>
                 <option *ngFor="let method of paymentMethods$" [value]="method.id">{{ method.name }}</option>
             </select>
@@ -549,6 +557,7 @@
                     text-gray-600 focus:outline-none border-2 border-gray-200 mr-2
                 "
                 placeholder="Jane Tembo"
+                [(ngModel)]="editPaymentDetails$.accountName"
             />
         </div>
         <div class="flex flex-col p-2">
@@ -560,15 +569,14 @@
                     text-gray-600 focus:outline-none border-2 border-gray-200 mr-2
                 "
                 placeholder="0977 *** *** or 1234 5678 9012 3456"
+                [(ngModel)]="editPaymentDetails$.accountNumber"
             />
         </div>
         <div class="flex flex-col p-2">
-            <span class="text-gray-500 text-sm font-semibold mb-2">Status</span>
-            <mat-slide-toggle>
-                Inactive
-            </mat-slide-toggle>
+            <span class="text-gray-500 text-sm font-semibold mb-2">Primary</span>
             <mat-slide-toggle
                 class="mt-4"
+                [(ngModel)]="editPaymentDetails$.isPrimary"
             >
                 Set as Primary
             </mat-slide-toggle>
@@ -609,6 +617,7 @@
     <div class="flex items-center justify-end px-4 py-3 border-t border-gray-200">
         <button 
             class="text-gray-600 text-sm mr-2 bg-transparent px-4 py-2 rounded-lg border-2 border-gray-600"
+            (click)="!isWidthdrawModal ? AddPaymentDetails() : 'performWithdraw()'"
         >
             {{ !isWidthdrawModal ? 'Add Payment' : 'Withdraw' }}
         </button>
@@ -620,3 +629,18 @@
         </button>
     </div>
 </app-modal>
+
+<app-toaster>
+    <div class="flex flex-row w-full h-full">
+        <span 
+            [ngClass]="{ 'text-green-500': toasterType === 'success', 'text-red-500': toasterType === 'error' }"
+        >
+            {{ toasterMessage }}
+        </span>
+        <mat-icon
+            (click)="closeToaster()"
+            fontIcon="close"
+            class="text-gray-500 ml-2 cursor-pointer"
+        ></mat-icon>
+    </div>
+</app-toaster>
