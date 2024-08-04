@@ -405,4 +405,11 @@ export class StoresComponent {
     hasRole(role: keyof UserRole): boolean {
         return this.authApiService.hasRole(role);
     }
+
+    toggleSelectAll(event: any) {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach((checkbox: any) => {
+            checkbox.checked = event.target.checked;
+        });
+    }
 }

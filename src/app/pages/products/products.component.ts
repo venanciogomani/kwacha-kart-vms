@@ -502,4 +502,11 @@ export class ProductsComponent {
     priceToFormatted(price: number) {
         return convertToPrice(price);
     }
+
+    toggleSelectAll(event: any) {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach((checkbox: any) => {
+            checkbox.checked = event.target.checked;
+        });
+    }
 }

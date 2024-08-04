@@ -359,4 +359,11 @@ export class UsersComponent {
     toggleUserVerified() {
         this.editUsers$.isVerified = !this.editUsers$.isVerified;
     }
+
+    toggleSelectAll(event: any) {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach((checkbox: any) => {
+            checkbox.checked = event.target.checked;
+        });
+    }
 }

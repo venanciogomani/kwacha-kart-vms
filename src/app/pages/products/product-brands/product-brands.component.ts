@@ -256,4 +256,11 @@ export class ProductBrandsComponent {
             }, 3000);
         });
     }
+
+    toggleSelectAll(event: any) {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach((checkbox: any) => {
+            checkbox.checked = event.target.checked;
+        });
+    }
 }

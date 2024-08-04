@@ -342,4 +342,11 @@ export class StorePaymentMethodsComponent {
     this.modal.isOpen = false;
     this.deleteRow = false;
   }
+
+  toggleSelectAll(event: any) {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach((checkbox: any) => {
+        checkbox.checked = event.target.checked;
+    });
+  }
 }
