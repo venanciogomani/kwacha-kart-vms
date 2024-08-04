@@ -9,6 +9,7 @@ import { ChatBotComponent } from './chat-bot/chat-bot.component';
 import { FloatingMenuComponent } from './floating-menu/floating-menu.component';
 import { ToasterComponent } from './toaster/toaster.component';
 import { ModalComponent } from './modal/modal.component';
+import { FilterDrawerComponent } from './filter-drawer/filter-drawer.component';
 
 
 
@@ -21,7 +22,8 @@ import { ModalComponent } from './modal/modal.component';
         ChatBotComponent,
         FloatingMenuComponent,
         ToasterComponent,
-        ModalComponent
+        ModalComponent,
+        FilterDrawerComponent
     ],
     imports: [
         CommonModule,
@@ -35,7 +37,8 @@ import { ModalComponent } from './modal/modal.component';
         ChatBotComponent,
         FloatingMenuComponent,
         ToasterComponent,
-        ModalComponent
+        ModalComponent,
+        FilterDrawerComponent
     ]
 })
 export class SharedModule { }

@@ -3,12 +3,14 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Subject, filter, switchMap, takeUntil } from 'rxjs';
+import { FilterDrawerComponent } from 'src/app/shared/filter-drawer/filter-drawer.component';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
 import { AuthApiService, UserRole } from 'src/services/api/auth.api.service';
 import { PlanApiService } from 'src/services/api/plan.api.service';
 import { StoreApiService } from 'src/services/api/store.api.service';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
+import { capitalizeFirstLetter } from 'src/services/helpers';
 import { StorePlansModel, StoresModel, UserModel, VendorModel } from 'src/state';
 import { StoresState } from 'src/state/reducers/stores.reducer';
 import { selectLoading, selectStores } from 'src/state/selectors/stores.selectors';
@@ -25,6 +27,7 @@ type SortStatus = {
 export class StoresComponent {
     @ViewChild(ModalComponent) modal!: ModalComponent;
     @ViewChild(ToasterComponent) toaster!: ToasterComponent;
+    @ViewChild(FilterDrawerComponent) filterDrawer!: FilterDrawerComponent;
 
     userDescription: string = '<script>alert("XSS Attack")</script>';
     sanitizedDescription!: SafeHtml;
@@ -37,6 +40,20 @@ export class StoresComponent {
         city: false,
         status: false,
     };
+
+    filterStatus: {[key: string]: boolean} = {
+        vendor: false,
+        location: false,
+        plan: false,
+        status: false,
+    };
+    filterKeys: string[] = [
+        'vendor',
+        'location',
+        'plan',
+        'status'
+    ];
+    selectedFilterKeys: string[] = ['Super Vendor', 'Premium', 'Lusaka'];
 
     currentUser$: UserModel = {} as UserModel;
 
@@ -402,6 +419,10 @@ export class StoresComponent {
         this.modal.isOpen = false;
     }
 
+    toggleFilterDrawer() {
+        this.filterDrawer.isOpen = !this.filterDrawer.isOpen;
+    }
+
     hasRole(role: keyof UserRole): boolean {
         return this.authApiService.hasRole(role);
     }
@@ -411,5 +432,22 @@ export class StoresComponent {
         checkboxes.forEach((checkbox: any) => {
             checkbox.checked = event.target.checked;
         });
+    }
+
+    isFilterByOpen(key: string): boolean {
+        if (this.filterStatus.hasOwnProperty(key)) {
+            return this.filterStatus[key]
+        }
+        return false;
+    }
+
+    toggleFilterStatus(key: string) {
+        if (this.filterStatus.hasOwnProperty(key)) {
+            this.filterStatus[key] = !this.filterStatus[key];
+        }
+    }
+
+    formatFilterLabel(key: string) {
+        return capitalizeFirstLetter(key) || '';
     }
 }

@@ -30,17 +30,29 @@
                         Search
                     </button>
                 </div>
-                <button
-                    *ngIf="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN')"
-                    (click)="toggleAddStore()"
-                    class="
-                        bg-transparent py-3 px-4 text-sm border-2 border-gray-700
-                        text-gray-700 hover:bg-gray-700 hover:border-gray-700 hover:text-white
-                        transition duration-200 ease-in-out hidden md:flex
-                    "
-                >
-                    {{ addRow ? 'Cancel' : 'Add Store' }}
-                </button>
+                <div class="flex">
+                    <button
+                        (click)="toggleFilterDrawer()"
+                        class="
+                            bg-transparent py-3 px-2 me-2 text-sm
+                            text-gray-700 hover:bg-gray-700 hover:text-white
+                            transition duration-200 ease-in-out hidden md:flex
+                        "
+                    >
+                        <mat-icon>menu</mat-icon>
+                    </button>
+                    <button
+                        *ngIf="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN')"
+                        (click)="toggleAddStore()"
+                        class="
+                            bg-transparent py-3 px-4 text-sm border-2 border-gray-700
+                            text-gray-700 hover:bg-gray-700 hover:border-gray-700 hover:text-white
+                            transition duration-200 ease-in-out hidden md:flex
+                        "
+                    >
+                        {{ addRow ? 'Cancel' : 'Add Store' }}
+                    </button>
+                </div>
             </div>
             <div class="flex flex-col py-2">
                 <!-- desktop table -->
@@ -467,3 +479,80 @@
         ></mat-icon>
     </div>
 </app-toaster>
+
+<app-filter-drawer>
+    <div class="flex justify-between border-b">
+        <h3 class="text-xl text-gray-600 font-semibold">
+            Filter Stores
+        </h3>
+        <button
+            mat-icon-button
+            class="text-rose-600 text-xl"
+            (click)="toggleFilterDrawer()"
+        >
+            <mat-icon fontIcon="close"></mat-icon>
+        </button>
+    </div>
+    <div class="flex flex-col pt-4 pb-2 border-b">
+        <div class="grid grid-cols-3 gap-2">
+            <div class="flex justify-between items-center px-2 py-0 border-2 border-rose-700 text-rose-700 rounded-full text-xs" *ngFor="let selectedFilter of selectedFilterKeys">
+                <span>{{ formatFilterLabel(selectedFilter) }}</span>
+                <mat-icon fontIcon="close" class="text-xs pt-1 cursor-pointer"></mat-icon>
+            </div>
+        </div>
+        <span class="flex justify-end py-1 text-blue-700 text-sm cursor-pointer underline font-semibold">
+            Clear filters
+        </span>
+    </div>
+    <div class="flex flex-col pt-4">
+        <!-- Filter by -->
+        <div class="text-sm relative pb-3" *ngFor="let filter of filterKeys">
+            <div
+                (click)="toggleFilterStatus(filter)"
+                class="relative border-2 p-2 w-full cursor-pointer flex justify-between items-center"
+                [ngClass]="isFilterByOpen(filter) ? 'border-emerald-700' : 'border-gray-700'"
+            >
+                <span>{{ formatFilterLabel(filter) }}</span>
+                <mat-icon
+                    fontIcon="arrow_drop_down"
+                ></mat-icon>
+            </div>
+            <div *ngIf="isFilterByOpen(filter)" class="flex flex-col absolute top-12 shadow-md w-full z-10 bg-white">
+                <div class="flex flex-row p-3">
+                    <input 
+                        type="checkbox"
+                        class="w-4 h-4
+                            text-gray-600
+                            bg-gray-100
+                            border-gray-300
+                            rounded
+                            focus:ring-gray-500
+                            focus:ring-2
+                            font-normal
+                        "
+                    />
+                    <span class="text-gray-500 px-2 text-xs">
+                        {{formatFilterLabel(filter)}} 1
+                    </span>
+                </div>
+                <div class="flex flex-row p-3">
+                    <input 
+                        type="checkbox"
+                        class="w-4 h-4
+                            text-gray-600
+                            bg-gray-100
+                            border-gray-300
+                            rounded
+                            focus:ring-gray-500
+                            focus:ring-2
+                            font-normal
+                        "
+                    />
+                    <span class="text-gray-500 px-2 text-xs">
+                        {{formatFilterLabel(filter)}} 2
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-filter-drawer>
