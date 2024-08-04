@@ -28,3 +28,7 @@ export const formatDateString = (dateString: string) => {
     const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     return formattedDate;
 }
+
+export const convertToPrice = (amount: number) => {
+    return amount.toLocaleString('en-US', { style: 'currency', currency: 'ZMW' });
+}

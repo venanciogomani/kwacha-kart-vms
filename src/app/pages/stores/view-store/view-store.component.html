@@ -23,7 +23,7 @@
                             Main Balance
                         </span>
                         <span class="text-2xl text-gray-700 font-semibold">
-                            ZK673,412.00
+                            {{ mainBalance }}
                         </span>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                     </select>
                 </div>
                 <mat-icon
-                    *ngIf="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN')"
+                    *ngIf="checkPrivileges()"
                     (click)="toggleEditDropdown()"
                     fontIcon="more_vert"
                     class="absolute top-2 right-2 text-gray-500 cursor-pointer"
@@ -224,7 +224,7 @@
                 <div 
                     (click)="toggleAddPaymentModal()"
                     class="flex flex-row items-center p-2 rounded-full bg-emerald-500 hover:bg-emerald-600 transition duration-300 ease-in-out"
-                    [ngClass]="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN') ? 'cursor-pointer' : 'cursor-not-allowed'"
+                    [ngClass]="checkPrivileges() ? 'cursor-pointer' : 'cursor-not-allowed'"
                 >
                     <div class="bg-white rounded-full shadow-md text-emerald-500 font-black text-xl text-center px-2">
                         +
@@ -243,7 +243,7 @@
                                     {{ storePaymentDets.isPrimary ? 'Primary' : 'Secondary' }}
                                 </span>
                                 <span class="text-white font-semibold text-sm">
-                                    {{ getPaymentMethodById(storePaymentDets.paymentMethodId).accountType }}
+                                    {{ getPaymentMethodById(storePaymentDets.accountType) }}
                                 </span>
                             </div>
                             <div class="flex flex-row items-center">
@@ -251,16 +251,16 @@
                                     (click)="toggleOnHideAccountNumber(storePaymentDets)"
                                     fontIcon="visibility_off"
                                     class="text-white text-sm cursor-pointer mr-2"
-                                    *ngIf="!isShowAccountNumberToggle(storePaymentDets) && (hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN'))"
+                                    *ngIf="!isShowAccountNumberToggle(storePaymentDets) && checkPrivileges()"
                                 ></mat-icon>
                                 <mat-icon
                                     (click)="toggleOnHideAccountNumber(storePaymentDets)"
                                     fontIcon="visibility"
                                     class="text-white text-sm cursor-pointer mr-2"
-                                    *ngIf="isShowAccountNumberToggle(storePaymentDets) && (hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN'))"
+                                    *ngIf="isShowAccountNumberToggle(storePaymentDets) && checkPrivileges()"
                                 ></mat-icon>
                                 <mat-icon
-                                    *ngIf="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN')"
+                                    *ngIf="checkPrivileges()"
                                     fontIcon="edit"
                                     class="text-white text-sm cursor-pointer"
                                 ></mat-icon>
@@ -290,7 +290,7 @@
                             </div>
                             <div class="flex flex-col pl-4">
                                 <span class="text-white text-xs">
-                                    Type
+                                    Payment Method
                                 </span>
                                 <span class="text-white text-sm">
                                     {{ getPaymentMethodNameById(storePaymentDets.paymentMethodId) }}
@@ -430,9 +430,9 @@
                     </span>
                 </div>
                 <div
-                    (click)="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN') && toggleWithdrawPaymentModal()"
+                    (click)="toggleWithdrawPaymentModal()"
                     class="flex flex-row bg-gray-700 rounded-xl p-2 items-center hover:bg-gray-600 transition duration-300 ease-in-out"
-                    [ngClass]="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN') ? 'cursor-pointer' : 'cursor-not-allowed'"
+                    [ngClass]="checkPrivileges() ? 'cursor-pointer' : 'cursor-not-allowed'"
                 >
                     <div class="flex items-center justify-center bg-white h-12 w-12 rounded-full">
                         <mat-icon
@@ -446,7 +446,7 @@
                 </div>
                 <div 
                     class="flex flex-row bg-emerald-500 rounded-xl p-2 items-center hover:bg-emerald-400 transition duration-300 ease-in-out mt-4"
-                    [ngClass]="hasRole('ROLE_SUPER_ADMIN') || hasRole('ROLE_ADMIN') ? 'cursor-pointer' : 'cursor-not-allowed'"
+                    [ngClass]="checkPrivileges() ? 'cursor-pointer' : 'cursor-not-allowed'"
                 >
                     <div class="flex items-center justify-center bg-white h-12 w-12 rounded-full">
                         <mat-icon

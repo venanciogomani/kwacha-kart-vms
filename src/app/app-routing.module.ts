@@ -40,6 +40,7 @@ import { OnboardingComponent } from './templates/onboarding/onboarding.component
 import { DashboardComponent } from './templates/dashboard/dashboard.component';
 import { StorePaymentMethodsComponent } from './pages/stores/store-payment-methods/store-payment-methods.component';
 import { StoreDeliveryMethodsComponent } from './pages/stores/store-delivery-methods/store-delivery-methods.component';
+import { StorePaymentCenterComponent } from './pages/stores/store-payment-center/store-payment-center.component';
 
 const routes: Routes = [
     {
@@ -75,6 +76,10 @@ const routes: Routes = [
             {
                 path: 'store/view/:id',
                 component: ViewStoreComponent
+            },
+            {
+                path: 'store/payment-center',
+                component: StorePaymentCenterComponent
             },
             {
                 path: 'store/plans',

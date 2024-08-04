@@ -14,6 +14,7 @@ import { ProductBrandModel, ProductCategoryModel, ProductModel } from 'src/state
 import { selectLoading, selectProducts } from 'src/state/selectors/products.selectors';
 import { selectMyUser } from 'src/state/selectors/user.selectors';
 import { selectVendors } from 'src/state/selectors/vendors.selectors';
+import { convertToPrice } from 'src/services/helpers';
 
 type SortStatus = {
     [key in 'title' | 'price' | 'salePrice' | 'quantity']: boolean;
@@ -496,5 +497,9 @@ export class ProductsComponent {
         if (!status) return false;
 
         return status;
+    }
+
+    priceToFormatted(price: number) {
+        return convertToPrice(price);
     }
 }

@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { StoreApiService } from 'src/services/api/store.api.service';
-import { PaymentAccountTypeModel, PaymentMethodModel, StorePaymentDetailsModel, StoresModel, UserModel, VendorModel } from 'src/state';
+import { PaymentAccountTypeModel, PaymentMethodModel, StorePaymentDetailsModel, StoresModel, UserModel, VendorDeductionModel, VendorModel } from 'src/state';
 import { capitalizeFirstLetter, maskString } from 'src/services/helpers';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { VendorApiService } from 'src/services/api/vendor.api.service';
@@ -9,6 +9,7 @@ import { ProductApiService } from 'src/services/api/products.api.service';
 import { AuthApiService, UserRole } from 'src/services/api/auth.api.service';
 import { PaymentApiService } from 'src/services/api/payment.api.service';
 import { ToasterComponent } from 'src/app/shared/toaster/toaster.component';
+import { convertToPrice } from 'src/services/helpers';
 
 @Component({
   selector: 'app-view-store',
@@ -35,12 +36,15 @@ export class ViewStoreComponent {
     currentUser: UserModel = {} as UserModel;
     currentVendor: VendorModel = {} as VendorModel;
 
+    mainBalance: number = 673412.50;
+
     isWidthdrawModal: boolean = false;
 
     vendors$: VendorModel[] = [];
 
     paymentDetails$: StorePaymentDetailsModel[] = [] as StorePaymentDetailsModel[];
     editPaymentDetails$: StorePaymentDetailsModel = {} as StorePaymentDetailsModel;
+    editWithdraw$: VendorDeductionModel = {} as VendorDeductionModel;
 
     paymentMethods$: PaymentMethodModel[] = [] as PaymentMethodModel[];
 
@@ -79,6 +83,8 @@ export class ViewStoreComponent {
             this.isLoading$ = true;
             this.getMyCurrentUser();
         }
+
+        convertToPrice(this.mainBalance);
     }
 
     async getStore() {
@@ -172,7 +178,11 @@ export class ViewStoreComponent {
     }
 
     getPaymentMethodById(id: string | undefined) {
-        return this.paymentDetails$?.find(paymentDetail => paymentDetail.paymentMethodId === id) || {} as StorePaymentDetailsModel;
+        if (!id) return 'Account Type';
+
+        const paymentAccountType = this.paymentAccountTypes$.find(accountType => accountType.id === id)?.name;
+
+        return paymentAccountType || 'Unknown';
     }
 
     getPaymentMethodNameById(id: string) {
@@ -261,10 +271,25 @@ export class ViewStoreComponent {
     }
 
     toggleWithdrawPaymentModal() {
-        this.isWidthdrawModal = !this.isWidthdrawModal;
+        if (!this.checkPrivileges()) {
+            this.toasterMessage = "You do not have permission to perform this action.";
+            this.toasterType = 'error';
+            this.toaster.isOpen = true;
+            setTimeout(() => {
+                this.closeToaster();
+            }, 3000);
+            return;
+        }
+
+        this.isWidthdrawModal = true;
         if (this.modal) {
+            this.resetWithdraw();
             this.modal.isOpen = !this.modal.isOpen;
         }
+    }
+
+    resetWithdraw() {
+        this.editWithdraw$ = {} as VendorDeductionModel;
     }
 
     performWithdraw() {}

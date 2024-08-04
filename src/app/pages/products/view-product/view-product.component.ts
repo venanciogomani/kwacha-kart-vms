@@ -147,4 +147,8 @@ export class ViewProductComponent {
     sanitizeUserInput() {
         this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(this.userDescription);
     }
+
+    backToProductsPage() {
+        this.router.navigate([`dashboard/products`]);
+    }
 }

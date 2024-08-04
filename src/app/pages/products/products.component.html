@@ -248,10 +248,10 @@
                                 <th scope="row" class="px-4 py-4">
                                     <div class="flex flex-col">
                                         <span *ngIf="!isEditRow(product.id)" class="font-normal">
-                                            ZK{{ product.price }}
+                                            {{ priceToFormatted(product.price) }}
                                         </span>
                                         <span *ngIf="!isEditRow(product.id) && product.salePrice > 0" class="font-normal text-xs text-rose-500">
-                                            ZK{{ product.salePrice }}
+                                            {{ priceToFormatted(product.salePrice) }}
                                         </span>
                                         <input
                                             *ngIf="isEditRow(product.id)"

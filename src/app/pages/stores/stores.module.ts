@@ -14,6 +14,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { StorePaymentMethodsComponent } from './store-payment-methods/store-payment-methods.component';
 import { StoreDeliveryMethodsComponent } from './store-delivery-methods/store-delivery-methods.component';
+import { StorePaymentCenterComponent } from './store-payment-center/store-payment-center.component';
 
 
 
@@ -26,6 +27,7 @@ import { StoreDeliveryMethodsComponent } from './store-delivery-methods/store-de
     ViewStoreComponent,
     StorePaymentMethodsComponent,
     StoreDeliveryMethodsComponent,
+    StorePaymentCenterComponent,
   ],
   imports: [
     CommonModule,
