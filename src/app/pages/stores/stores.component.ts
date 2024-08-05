@@ -19,6 +19,11 @@ type SortStatus = {
     [key in 'name' | 'city' | 'status']: boolean;
 }
 
+interface IFilterModel {
+    id: string;
+    name: string;
+}
+
 @Component({
   selector: 'app-stores',
   templateUrl: './stores.component.html',
@@ -53,7 +58,22 @@ export class StoresComponent {
         'plan',
         'status'
     ];
-    selectedFilterKeys: string[] = ['Super Vendor', 'Premium', 'Lusaka'];
+    selectedVendors: IFilterModel[] = [];
+    selectedLocations: IFilterModel[] = [
+        { id: 'lusaka', name: 'Lusaka' },
+        { id: 'kabwe', name: 'Kabwe' },
+        { id: 'ndola', name: 'Ndola' },
+        { id: 'kitwe', name: 'Kitwe' },
+        { id: 'kafue', name: 'Kafue' },
+        { id: 'livingstone', name: 'Livingstone' }
+    ];
+    selectedPlans: IFilterModel[] = [];
+    selectedStatuses: IFilterModel[] = [
+        { id: 'active', name: 'Active' },
+        { id: 'inactive', name: 'Inactive' },
+    ];
+
+    selectedFilterKeys: IFilterModel[] = [];
 
     currentUser$: UserModel = {} as UserModel;
 
@@ -165,6 +185,9 @@ export class StoresComponent {
     async getAllVendors() {
         return (await this.vendorApiService.getAllVendors()).subscribe((vendors: VendorModel[]) => {
             this.vendors$ = vendors;
+            vendors.forEach(vendor => this.selectedVendors.push(
+                { id: vendor.id, name: vendor.name }
+            ));
         });
     }
 
@@ -175,6 +198,9 @@ export class StoresComponent {
     getAllPlans() {
         this.planApiService.getAllPlans().subscribe((plans: StorePlansModel[]) => {
             this.allPlans$ = plans;
+            plans.forEach(plan => this.selectedPlans.push(
+                { id: plan.id, name: plan.name }
+            ));
         });
     }
 
@@ -210,6 +236,28 @@ export class StoresComponent {
         this.calculateTotalPages();
         this.isStoresLoading$ = false;
         this.authApiService.resetInactivityTimer(); // reset inactivity timer
+    }
+
+    performFilterByValue(value: IFilterModel) {
+        const index = this.selectedFilterKeys.indexOf(value);
+        if (index > -1) {
+            this.selectedFilterKeys.splice(index, 1);
+        } else {
+            this.selectedFilterKeys.push(value);
+        }
+    }
+
+    clearFilterByValue(value: IFilterModel) {
+        const index = this.selectedFilterKeys.indexOf(value);
+        if (index > -1) {
+            this.selectedFilterKeys.splice(index, 1);
+        }
+    }
+
+    clearFilters() {
+        this.selectedFilterKeys = [];
+        // TODO: once filtering is enabled, uncomment below
+        // this.filterStoresBySearchTerm();
     }
 
     goToPrevPage() {
@@ -449,5 +497,29 @@ export class StoresComponent {
 
     formatFilterLabel(key: string) {
         return capitalizeFirstLetter(key) || '';
+    }
+
+    getFiltersByKey(key: string): IFilterModel[] {
+        switch (key) {
+            case 'vendor':
+                return this.selectedVendors;
+            case 'plan':
+                return this.selectedPlans;
+            case 'status':
+                return this.selectedStatuses;
+            case 'location':
+                return this.selectedLocations;
+            default:
+                return [];
+        }
+    }
+
+    getSelectedFilterById(id: string, key: string): string {
+        const filters = this.getFiltersByKey(key);
+        return filters.find((filter: IFilterModel) => filter.id === id)?.name || '';
+    }
+
+    isFilterValueSelected(value: IFilterModel): boolean {
+        return this.selectedFilterKeys.indexOf(value) > -1;
     }
 }

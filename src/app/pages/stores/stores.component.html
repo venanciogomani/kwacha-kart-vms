@@ -493,14 +493,14 @@
             <mat-icon fontIcon="close"></mat-icon>
         </button>
     </div>
-    <div class="flex flex-col pt-4 pb-2 border-b">
+    <div class="flex flex-col pt-4 pb-2 border-b" *ngIf="selectedFilterKeys.length > 0">
         <div class="grid grid-cols-3 gap-2">
             <div class="flex justify-between items-center px-2 py-0 border-2 border-rose-700 text-rose-700 rounded-full text-xs" *ngFor="let selectedFilter of selectedFilterKeys">
-                <span>{{ formatFilterLabel(selectedFilter) }}</span>
-                <mat-icon fontIcon="close" class="text-xs pt-1 cursor-pointer"></mat-icon>
+                <span>{{ selectedFilter.name }}</span>
+                <mat-icon fontIcon="close" class="text-xs pt-1 cursor-pointer" (click)="clearFilterByValue(selectedFilter)"></mat-icon>
             </div>
         </div>
-        <span class="flex justify-end py-1 text-blue-700 text-sm cursor-pointer underline font-semibold">
+        <span class="flex justify-end py-1 text-blue-700 text-sm cursor-pointer underline font-semibold" (click)="clearFilters()">
             Clear filters
         </span>
     </div>
@@ -518,7 +518,7 @@
                 ></mat-icon>
             </div>
             <div *ngIf="isFilterByOpen(filter)" class="flex flex-col absolute top-12 shadow-md w-full z-10 bg-white">
-                <div class="flex flex-row p-3">
+                <div class="flex flex-row p-3" *ngFor="let filterKey of getFiltersByKey(filter)">
                     <input 
                         type="checkbox"
                         class="w-4 h-4
@@ -530,26 +530,11 @@
                             focus:ring-2
                             font-normal
                         "
+                        (change)="performFilterByValue(filterKey)"
+                        [checked]="isFilterValueSelected(filterKey)"
                     />
                     <span class="text-gray-500 px-2 text-xs">
-                        {{formatFilterLabel(filter)}} 1
-                    </span>
-                </div>
-                <div class="flex flex-row p-3">
-                    <input 
-                        type="checkbox"
-                        class="w-4 h-4
-                            text-gray-600
-                            bg-gray-100
-                            border-gray-300
-                            rounded
-                            focus:ring-gray-500
-                            focus:ring-2
-                            font-normal
-                        "
-                    />
-                    <span class="text-gray-500 px-2 text-xs">
-                        {{formatFilterLabel(filter)}} 2
+                        {{formatFilterLabel(filterKey.name)}}
                     </span>
                 </div>
             </div>
