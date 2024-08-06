@@ -6,7 +6,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrls: ['./filter-drawer.component.scss']
 })
 export class FilterDrawerComponent {
-  @Input() isOpen: boolean = true; // TODO: invert this value
+  @Input() isOpen: boolean = false;
   @Output() isOpenChange = new EventEmitter<boolean>();
 
   closeModal() {
