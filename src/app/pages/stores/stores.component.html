@@ -190,7 +190,7 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr class="border-b" *ngFor="let store of fileterdStores$">
+                            <tr class="border-b" *ngFor="let store of filteredStores$">
                                 <td class="w-4 p-4">
                                     <div class="flex items-center">
                                         <input 
@@ -308,7 +308,7 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr *ngIf="fileterdStores$.length === 0">
+                            <tr *ngIf="filteredStores$.length === 0">
                                 <td colspan="8" class="text-center py-4 text-gray-600">
                                     No stores found
                                 </td>

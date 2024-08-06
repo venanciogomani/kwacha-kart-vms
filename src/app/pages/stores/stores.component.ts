@@ -60,12 +60,12 @@ export class StoresComponent {
     ];
     selectedVendors: IFilterModel[] = [];
     selectedLocations: IFilterModel[] = [
-        { id: 'lusaka', name: 'Lusaka' },
-        { id: 'kabwe', name: 'Kabwe' },
-        { id: 'ndola', name: 'Ndola' },
-        { id: 'kitwe', name: 'Kitwe' },
-        { id: 'kafue', name: 'Kafue' },
-        { id: 'livingstone', name: 'Livingstone' }
+        { id: 'Lusaka', name: 'Lusaka' },
+        { id: 'Kabwe', name: 'Kabwe' },
+        { id: 'Ndola', name: 'Ndola' },
+        { id: 'Kitwe', name: 'Kitwe' },
+        { id: 'Kafue', name: 'Kafue' },
+        { id: 'Livingstone', name: 'Livingstone' }
     ];
     selectedPlans: IFilterModel[] = [];
     selectedStatuses: IFilterModel[] = [
@@ -78,7 +78,7 @@ export class StoresComponent {
     currentUser$: UserModel = {} as UserModel;
 
     stores$: StoresModel[] = [];
-    fileterdStores$: StoresModel[] = [];
+    filteredStores$: StoresModel[] = [];
     isStoresLoading$ = false;
 
     editStore: StoresModel = {
@@ -225,10 +225,12 @@ export class StoresComponent {
         this.startIndex = (this.currentPage - 1) * this.pageSize;
         this.endIndex = (this.startIndex + this.pageSize) > this.stores$.length ? this.stores$.length : (this.startIndex + this.pageSize);
 
+        const availableStores = this.filterStoresBySelectedKeys();
+
         if (!this.searchTerm) {
-            this.fileterdStores$ = this.stores$.slice(this.startIndex, this.endIndex);
+            this.filteredStores$ = availableStores.slice(this.startIndex, this.endIndex);
         } else {
-            this.fileterdStores$ = this.stores$.filter(store => {
+            this.filteredStores$ = availableStores.filter(store => {
                 return store.name.toLowerCase().includes(this.searchTerm.toLowerCase());
             }).slice(this.startIndex, this.endIndex);
         }
@@ -238,6 +240,40 @@ export class StoresComponent {
         this.authApiService.resetInactivityTimer(); // reset inactivity timer
     }
 
+    filterStoresBySelectedKeys(): StoresModel[] {
+        const allStores: StoresModel[] = [];
+        if (this.selectedFilterKeys.length > 0) {
+            allStores.push(...this.stores$.filter(store => this.selectedFilterKeys.some(filter => {
+                let isVendorFilter = false;
+                if (filter.id === store.vendorId) {
+                    isVendorFilter = true;
+                }
+
+                let isPlanFilter = false;
+                if (filter.id === store.planId) {
+                    isPlanFilter = true;
+                }
+
+                let isStatusFilter = false;
+                if (filter.id === 'active' || filter.id === 'inactive') {
+                    const statusState = filter.id === 'active' ? true : false;
+                    isStatusFilter = Boolean(store.status) === statusState;
+                }
+
+                let isLocationFilter = false;
+                if (filter.id === store.city) {
+                    isLocationFilter = true;
+                }
+                
+                return isVendorFilter || isPlanFilter || isStatusFilter || isLocationFilter;
+            })));
+        } else {
+            allStores.push(...this.stores$);
+        }
+
+        return allStores;
+    }
+
     performFilterByValue(value: IFilterModel) {
         const index = this.selectedFilterKeys.indexOf(value);
         if (index > -1) {
@@ -245,6 +281,8 @@ export class StoresComponent {
         } else {
             this.selectedFilterKeys.push(value);
         }
+
+        this.filterStoresBySearchTerm();
     }
 
     clearFilterByValue(value: IFilterModel) {
@@ -252,12 +290,23 @@ export class StoresComponent {
         if (index > -1) {
             this.selectedFilterKeys.splice(index, 1);
         }
+        this.closeFiltersDropdowns();
+        this.filterStoresBySearchTerm();
     }
 
     clearFilters() {
         this.selectedFilterKeys = [];
-        // TODO: once filtering is enabled, uncomment below
-        // this.filterStoresBySearchTerm();
+        this.filterStoresBySearchTerm();
+        this.closeFiltersDropdowns();
+    }
+
+    closeFiltersDropdowns() {
+        this.filterStatus = {
+            vendor: false,
+            location: false,
+            plan: false,
+            status: false,
+        };
     }
 
     goToPrevPage() {
@@ -294,7 +343,7 @@ export class StoresComponent {
     }
 
     sortBy(key: string) {
-        this.fileterdStores$.sort((a: any, b: any) => {
+        this.filteredStores$.sort((a: any, b: any) => {
             if (a[key] < b[key]) {
                 return this.sortDirection === 'asc' ? -1 : 1;
             }
@@ -469,6 +518,7 @@ export class StoresComponent {
 
     toggleFilterDrawer() {
         this.filterDrawer.isOpen = !this.filterDrawer.isOpen;
+        this.closeFiltersDropdowns();
     }
 
     hasRole(role: keyof UserRole): boolean {
