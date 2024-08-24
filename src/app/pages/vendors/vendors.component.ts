@@ -12,6 +12,13 @@ import { StoreRoleModel, StoresModel, VendorModel } from 'src/state';
 import { selectLoading, selectVendors } from 'src/state/selectors/vendors.selectors';
 import { selectStores } from 'src/state/selectors/stores.selectors';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
+import { capitalizeFirstLetter } from 'src/services/helpers';
+import { FilterDrawerComponent } from 'src/app/shared/filter-drawer/filter-drawer.component';
+
+interface IFilterModel {
+    id: string;
+    name: string;
+}
 
 @Component({
   selector: 'app-vendors',
@@ -21,6 +28,7 @@ import { ModalComponent } from 'src/app/shared/modal/modal.component';
 export class VendorsComponent {
     @ViewChild(ModalComponent) modal!: ModalComponent;
     @ViewChild(ToasterComponent) toaster!: ToasterComponent;
+    @ViewChild(FilterDrawerComponent) filterDrawer!: FilterDrawerComponent;
 
     userDescription: string = '<script>alert("XSS Attack")</script>';
     sanitizedDescription!: SafeHtml;
@@ -82,6 +90,41 @@ export class VendorsComponent {
     endIndex = 0;
 
     sortDirection = 'asc';
+
+    selectedFilterKeys: IFilterModel[] = [];
+    selectedStores: IFilterModel[] = [];
+    selectedLocations: IFilterModel[] = [
+        { id: 'Lusaka', name: 'Lusaka' },
+        { id: 'Kabwe', name: 'Kabwe' },
+        { id: 'Ndola', name: 'Ndola' },
+        { id: 'Kitwe', name: 'Kitwe' },
+        { id: 'Kafue', name: 'Kafue' },
+        { id: 'Livingstone', name: 'Livingstone' }
+    ];
+    selectedRoles: IFilterModel[] = [];
+    selectedStatuses: IFilterModel[] = [
+        { id: 'active', name: 'Active' },
+        { id: 'inactive', name: 'Inactive' },
+    ];
+    selectedVerified: IFilterModel[] = [
+        { id: 'verified', name: 'Verified' },
+        { id: 'unverified', name: 'Unverified' },
+    ];
+
+    filterStatus: {[key: string]: boolean} = {
+        stores: false,
+        locations: false,
+        roles: false,
+        verified: false,
+        statuses: false,
+    };
+    filterKeys: string[] = [
+        'stores',
+        'locations',
+        'roles',
+        'statuses',
+        'verified'
+    ];
 
     private destroy$: Subject<void> = new Subject<void>();
 
@@ -219,6 +262,9 @@ export class VendorsComponent {
     async getAllStores() {
         return (await this.storeApiService.getAllStores()).subscribe((stores: StoresModel[]) => {
             this.allStores$ = stores;
+            stores.forEach(store => this.selectedStores.push(
+                { id: store.id, name: store.name }
+            ));
         });
     }
 
@@ -229,6 +275,9 @@ export class VendorsComponent {
     async getAllRoles() {
         return (await this.roleApiService.getAllRoles()).subscribe((roles: StoreRoleModel[]) => {
             this.availableRoles$ = roles;
+            roles.forEach(role => this.selectedRoles.push(
+                { id: role.id, name: role.name }
+            ));
         });
     }
 
@@ -474,5 +523,86 @@ export class VendorsComponent {
 
     hasRole(role: keyof UserRole): boolean {
         return this.authApiService.hasRole(role);
+    }
+
+    toggleFilterDrawer() {
+        this.filterDrawer.isOpen = !this.filterDrawer.isOpen;
+        this.closeFiltersDropdowns();
+    }
+
+    clearFilterByValue(value: IFilterModel) {
+        const index = this.selectedFilterKeys.indexOf(value);
+        if (index > -1) {
+            this.selectedFilterKeys.splice(index, 1);
+        }
+        this.closeFiltersDropdowns();
+        //this.filterStoresBySearchTerm();
+    }
+
+    closeFiltersDropdowns() {
+        this.filterStatus = {
+            stores: false,
+            locations: false,
+            roles: false,
+            statuses: false,
+            verified: false,
+        };
+    }
+
+    clearFilters() {
+        this.selectedFilterKeys = [];
+        //this.filterStoresBySearchTerm();
+        this.closeFiltersDropdowns();
+    }
+
+    toggleFilterStatus(key: string) {
+        if (this.filterStatus.hasOwnProperty(key)) {
+            this.filterStatus[key] = !this.filterStatus[key];
+        }
+    }
+
+    isFilterByOpen(key: string): boolean {
+        if (this.filterStatus.hasOwnProperty(key)) {
+            return this.filterStatus[key]
+        }
+        return false;
+    }
+
+    getFiltersByKey(key: string): IFilterModel[] {
+        switch (key) {
+            case 'stores':
+                return this.selectedStores;
+            case 'locations':
+                return this.selectedLocations;
+            case 'roles':
+                return this.selectedRoles;
+            case 'locations':
+                return this.selectedLocations;
+            case 'statuses':
+                return this.selectedStatuses;
+            case 'verified':
+                return this.selectedVerified;
+            default:
+                return [];
+        }
+    }
+
+    performFilterByValue(value: IFilterModel) {
+        const index = this.selectedFilterKeys.indexOf(value);
+        if (index > -1) {
+            this.selectedFilterKeys.splice(index, 1);
+        } else {
+            this.selectedFilterKeys.push(value);
+        }
+
+        // this.filterStoresBySearchTerm();
+    }
+
+    isFilterValueSelected(value: IFilterModel): boolean {
+        return this.selectedFilterKeys.indexOf(value) > -1;
+    }
+
+    formatFilterLabel(key: string) {
+        return capitalizeFirstLetter(key) || '';
     }
 }
